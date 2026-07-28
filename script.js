@@ -15,17 +15,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function normalizeText(text) {
         if (!text) return '';
-        return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     }
 
     searchInput.addEventListener('input', function () {
-        const query = normalizeText(this.value.trim());
+        const rawQuery = this.value.trim();
+        const query = normalizeText(rawQuery);
         let nationalVisibleCount = 0;
         let regionalVisibleCount = 0;
 
+        // Separar la consulta en palabras individuales para una búsqueda más fina
+        const queryWords = query ? query.split(/\s+/) : [];
+
         nationalItems.forEach(item => {
             const text = normalizeText(item.textContent);
-            if (query === '' || text.includes(query)) {
+            
+            // Comprobamos si el elemento contiene todas las palabras ingresadas en el buscador
+            const matches = queryWords.length === 0 || queryWords.every(word => text.includes(word));
+
+            if (matches) {
                 item.style.display = '';
                 nationalVisibleCount++;
             } else {
@@ -36,12 +44,14 @@ document.addEventListener('DOMContentLoaded', function () {
         categoryItems.forEach(item => {
             const details = item.querySelector('details');
             const text = normalizeText(item.textContent);
+            
+            const matches = queryWords.length === 0 || queryWords.every(word => text.includes(word));
 
             if (query === '') {
                 item.style.display = '';
                 if (details) details.open = false;
                 regionalVisibleCount++;
-            } else if (text.includes(query)) {
+            } else if (matches) {
                 item.style.display = '';
                 if (details) details.open = true;
                 regionalVisibleCount++;
