@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>24col - Trámites sin Enredos</title>
     
+    <!-- Políticas de Seguridad e Inserción de Cabeceras HTTP desde el Meta Tag -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    
     <!-- Importación de Google Fonts: Archivo Black -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -233,9 +238,9 @@
 
         <!-- Buscador -->
         <div class="search-container">
-            <form onsubmit="event.preventDefault();">
+            <form id="searchForm">
                 <label for="searchInput"><strong>buscar -</strong> </label>
-                <input type="text" id="searchInput" name="q" placeholder="" autocomplete="off">
+                <input type="text" id="searchInput" name="q" placeholder="" autocomplete="off" maxlength="100">
                 <input type="submit" value="Ir">
             </form>
         </div>
@@ -247,11 +252,11 @@
         
         <div class="national-links" id="nationalLinksBlock">
             <ul>
-                <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
-                <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
-                <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
-                <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
-                <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS (Fosyga)</span></li>
+                <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
+                <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
+                <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
+                <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
+                <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS (Fosyga)</span></li>
             </ul>
         </div>
 
@@ -265,11 +270,11 @@
                     <summary>Impuestos Regionales <span class="category-desc">- Vehículos, Predial, Licorera</span></summary>
                     <div class="cities-menu">
                         Selecciona tu ubicación: <br>
-                        <a href="ciudad.html?cat=impuestos&city=bogota">Bogotá D.C.</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=medellin">Medellín / Ant.</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=cali">Cali / Valle</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=barranquilla">Barranquilla / Atl.</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=monteria">Montería / Cór.</a>
+                        <a href="ciudad.html?cat=impuestos&amp;city=bogota">Bogotá D.C.</a> | 
+                        <a href="ciudad.html?cat=impuestos&amp;city=medellin">Medellín / Ant.</a> | 
+                        <a href="ciudad.html?cat=impuestos&amp;city=cali">Cali / Valle</a> | 
+                        <a href="ciudad.html?cat=impuestos&amp;city=barranquilla">Barranquilla / Atl.</a> | 
+                        <a href="ciudad.html?cat=impuestos&amp;city=monteria">Montería / Cór.</a>
                     </div>
                 </details>
             </div>
@@ -279,11 +284,11 @@
                     <summary>Servicios Públicos <span class="category-desc">- Agua, Luz, Gas y Alcaldías</span></summary>
                     <div class="cities-menu">
                         Selecciona tu ubicación: <br>
-                        <a href="ciudad.html?cat=hogar&city=bogota">Bogotá D.C.</a> | 
-                        <a href="ciudad.html?cat=hogar&city=medellin">Medellín</a> | 
-                        <a href="ciudad.html?cat=hogar&city=cali">Cali</a> | 
-                        <a href="ciudad.html?cat=hogar&city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=hogar&city=monteria">Montería</a>
+                        <a href="ciudad.html?cat=hogar&amp;city=bogota">Bogotá D.C.</a> | 
+                        <a href="ciudad.html?cat=hogar&amp;city=medellin">Medellín</a> | 
+                        <a href="ciudad.html?cat=hogar&amp;city=cali">Cali</a> | 
+                        <a href="ciudad.html?cat=hogar&amp;city=barranquilla">Barranquilla</a> | 
+                        <a href="ciudad.html?cat=hogar&amp;city=monteria">Montería</a>
                     </div>
                 </details>
             </div>
@@ -293,11 +298,11 @@
                     <summary>Movilidad y Tránsito Local <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span></summary>
                     <div class="cities-menu">
                         Selecciona tu ubicación: <br>
-                        <a href="ciudad.html?cat=movilidad&city=bogota">Bogotá D.C.</a> | 
-                        <a href="ciudad.html?cat=movilidad&city=medellin">Medellín</a> | 
-                        <a href="ciudad.html?cat=movilidad&city=cali">Cali</a> | 
-                        <a href="ciudad.html?cat=movilidad&city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=movilidad&city=monteria">Montería</a>
+                        <a href="ciudad.html?cat=movilidad&amp;city=bogota">Bogotá D.C.</a> | 
+                        <a href="ciudad.html?cat=movilidad&amp;city=medellin">Medellín</a> | 
+                        <a href="ciudad.html?cat=movilidad&amp;city=cali">Cali</a> | 
+                        <a href="ciudad.html?cat=movilidad&amp;city=barranquilla">Barranquilla</a> | 
+                        <a href="ciudad.html?cat=movilidad&amp;city=monteria">Montería</a>
                     </div>
                 </details>
             </div>
@@ -312,63 +317,74 @@
     </footer>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const nationalItems = document.querySelectorAll('.searchable-item');
-        const categoryItems = document.querySelectorAll('.searchable-category');
-        const nationalTitle = document.getElementById('nationalSectionTitle');
-        const regionalTitle = document.getElementById('regionalSectionTitle');
-        const noResultsMsg = document.getElementById('noResultsMsg');
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+            const nationalItems = document.querySelectorAll('.searchable-item');
+            const categoryItems = document.querySelectorAll('.searchable-category');
+            const nationalTitle = document.getElementById('nationalSectionTitle');
+            const regionalTitle = document.getElementById('regionalSectionTitle');
+            const noResultsMsg = document.getElementById('noResultsMsg');
 
-        // Normalización para ignorar tildes y mayúsculas
-        function normalizeText(text) {
-            return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
-
-        searchInput.addEventListener('input', function () {
-            const query = normalizeText(this.value.trim());
-            let nationalVisibleCount = 0;
-            let regionalVisibleCount = 0;
-
-            // Filtrado de trámites nacionales
-            nationalItems.forEach(item => {
-                const text = normalizeText(item.textContent);
-                if (query === '' || text.includes(query)) {
-                    item.style.display = '';
-                    nationalVisibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // Filtrado de categorías regionales
-            categoryItems.forEach(item => {
-                const details = item.querySelector('details');
-                const text = normalizeText(item.textContent);
-
-                if (query === '') {
-                    item.style.display = '';
-                    details.open = false; // Cierra si el buscador está vacío
-                    regionalVisibleCount++;
-                } else if (text.includes(query)) {
-                    item.style.display = '';
-                    details.open = true;  // Abre automáticamente si hay coincidencia
-                    regionalVisibleCount++;
-                } else {
-                    item.style.display = 'none';
-                    details.open = false;
-                }
-            });
-
-            // Visibilidad de títulos de sección según resultados
-            nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
-            regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
-
-            // Mensaje de sin resultados
-            if (nationalVisibleCount === 0 && regionalVisibleCount === 0) {
-                noResultsMsg.style.display = 'block';
-            } else {
-                noResultsMsg.style.display = 'none';
+            // Previene el envío del formulario usando el listener nativo
+            if (searchForm) {
+                searchForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                });
             }
+
+            // Normalización segura para ignorar tildes y mayúsculas
+            function normalizeText(text) {
+                if (!text) return '';
+                return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            }
+
+            searchInput.addEventListener('input', function () {
+                const query = normalizeText(this.value.trim());
+                let nationalVisibleCount = 0;
+                let regionalVisibleCount = 0;
+
+                // Filtrado de trámites nacionales
+                nationalItems.forEach(item => {
+                    const text = normalizeText(item.textContent);
+                    if (query === '' || text.includes(query)) {
+                        item.style.display = '';
+                        nationalVisibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Filtrado de categorías regionales
+                categoryItems.forEach(item => {
+                    const details = item.querySelector('details');
+                    const text = normalizeText(item.textContent);
+
+                    if (query === '') {
+                        item.style.display = '';
+                        if (details) details.open = false;
+                        regionalVisibleCount++;
+                    } else if (text.includes(query)) {
+                        item.style.display = '';
+                        if (details) details.open = true;
+                        regionalVisibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                        if (details) details.open = false;
+                    }
+                });
+
+                // Visibilidad de títulos de sección
+                nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
+                regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
+
+                // Mensaje de sin resultados
+                if (nationalVisibleCount === 0 && regionalVisibleCount === 0) {
+                    noResultsMsg.style.display = 'block';
+                } else {
+                    noResultsMsg.style.display = 'none';
+                }
+            });
         });
     </script>
 
