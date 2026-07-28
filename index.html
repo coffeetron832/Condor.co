@@ -27,15 +27,51 @@
             flex: 1; /* Empuja el footer hacia abajo si sobra espacio */
         }
 
-        /* Logo centrado y grande */
+        /* Contenedor del texto con efecto de escritura y la imagen */
         .logo-container {
             margin: 20px auto 10px auto;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
         }
 
+        /* Efecto de máquina de escribir para el texto inicial */
+        .typewriter-text {
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 42px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #000000;
+            width: 0;
+            animation: typing 1.2s steps(5, end) forwards, blink 0.75s step-end infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 145px; } /* Ajustado al ancho exacto de "24col" */
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #000000; }
+        }
+
+        /* Oculta la imagen inicialmente y la muestra al terminar la escritura */
         .logo-img {
             width: 280px;
             height: auto;
+            opacity: 0;
+            animation: fadeInImage 0.5s ease forwards;
+            animation-delay: 1.3s; /* Comienza justo después de terminar de escribir */
+        }
+
+        @keyframes fadeInImage {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Lista de Categorías estilo texto plano / enlaces clásicos */
@@ -100,8 +136,9 @@
 
     <div class="container">
         
-        <!-- Logo centrado y en grande -->
+        <!-- Texto con efecto de escritura seguido de la imagen -->
         <div class="logo-container">
+            <div class="typewriter-text">24col</div>
             <img src="condor01.png" alt="24col" class="logo-img">
         </div>
 
@@ -126,7 +163,7 @@
 
     <!-- Pie de página sticky -->
     <footer>
-        Colombia · Directorio Ciudadano 24/7 · 2026 24col
+        2026 24col · por: jahp
     </footer>
 
 </body>
