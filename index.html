@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>24col - Trámites sin Enredos</title>
+    
+    <!-- Importación de Google Fonts: Archivo Black -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+
     <style>
         html, body {
             height: 100%;
@@ -38,8 +44,7 @@
         }
 
         .typewriter-text {
-            font-family: Arial, sans-serif;
-            font-weight: bold;
+            font-family: 'Archivo Black', sans-serif;
             font-size: 42px;
             white-space: nowrap;
             overflow: hidden;
@@ -47,11 +52,12 @@
             width: 0;
             animation: typing 1.2s steps(5, end) forwards, blink 0.75s step-end infinite;
             margin-bottom: 10px;
+            line-height: 1;
         }
 
         @keyframes typing {
             from { width: 0; }
-            to { width: 145px; }
+            to { width: 150px; } /* Ajustado para la anchura de Archivo Black */
         }
 
         @keyframes blink {
