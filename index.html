@@ -22,12 +22,12 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 620px;
             margin: 0 auto;
-            flex: 1; /* Empuja el footer hacia abajo si sobra espacio */
+            flex: 1; /* Empuja el footer hacia abajo */
         }
 
-        /* Contenedor del texto con efecto de escritura y la imagen */
+        /* Logo y animación inicial */
         .logo-container {
             margin: 20px auto 10px auto;
             display: flex;
@@ -37,7 +37,6 @@
             min-height: 100px;
         }
 
-        /* Efecto de máquina de escribir para el texto inicial */
         .typewriter-text {
             font-family: Arial, sans-serif;
             font-weight: bold;
@@ -52,7 +51,7 @@
 
         @keyframes typing {
             from { width: 0; }
-            to { width: 145px; } /* Ajustado al ancho exacto de "24col" */
+            to { width: 145px; }
         }
 
         @keyframes blink {
@@ -60,13 +59,12 @@
             50% { border-color: #000000; }
         }
 
-        /* Oculta la imagen inicialmente y la muestra al terminar la escritura */
         .logo-img {
             width: 280px;
             height: auto;
             opacity: 0;
             animation: fadeInImage 0.5s ease forwards;
-            animation-delay: 1.3s; /* Comienza justo después de terminar de escribir */
+            animation-delay: 1.3s;
         }
 
         @keyframes fadeInImage {
@@ -74,11 +72,48 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Lista de Categorías con despliegue animado */
+        /* Secciones de Contenido */
+        .section-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            border-bottom: 1px solid #000000;
+            padding-bottom: 4px;
+            margin: 25px 0 15px 0;
+            text-align: left;
+        }
+
+        /* Enlaces Nacionales (Nivel General) */
+        .national-links {
+            text-align: left;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .national-links ul {
+            list-style-type: square;
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .national-links a {
+            color: #0000ee;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .link-desc {
+            color: #333333;
+            font-weight: normal;
+        }
+
+        /* Categorías Regionales con Despliegue */
         .categories-list {
-            text-align: center;
-            margin: 30px 0;
-            font-size: 16px;
+            text-align: left;
+            margin: 15px 0;
+            font-size: 15px;
             line-height: 1.8;
         }
 
@@ -86,18 +121,17 @@
             margin-bottom: 10px;
         }
 
-        /* Estilos para details y summary */
         details summary {
             cursor: pointer;
             color: #0000ee;
             font-weight: bold;
             text-decoration: underline;
-            list-style: none; /* Oculta la flecha por defecto */
+            list-style: none;
             display: inline-block;
         }
 
         details summary::-webkit-details-marker {
-            display: none; /* Oculta la flecha en Chrome/Safari */
+            display: none;
         }
 
         .category-desc {
@@ -105,10 +139,9 @@
             font-weight: normal;
         }
 
-        /* Submenú de ciudades con animación */
         .cities-menu {
             margin-top: 6px;
-            padding: 8px 0;
+            padding: 8px 10px;
             background-color: #f9f9f9;
             border: 1px solid #eeeeee;
             font-size: 14px;
@@ -119,7 +152,7 @@
             color: #0000ee;
             font-weight: normal;
             text-decoration: underline;
-            margin: 0 6px;
+            margin: 0 4px;
         }
 
         @keyframes fadeInDown {
@@ -133,9 +166,9 @@
             }
         }
 
-        /* Barra de Búsqueda clásica sin colores */
+        /* Buscador */
         .search-container {
-            margin: 25px 0;
+            margin: 30px 0 15px 0;
             font-size: 15px;
         }
 
@@ -166,7 +199,7 @@
         }
 
         footer {
-            margin-top: auto; /* Se fija dinámicamente al fondo */
+            margin-top: auto;
             padding-top: 20px;
             font-size: 12px;
             color: #555555;
@@ -177,77 +210,78 @@
 
     <div class="container">
         
-        <!-- Texto con efecto de escritura seguido de la imagen -->
+        <!-- Identidad y Logo -->
         <div class="logo-container">
             <div class="typewriter-text">24col</div>
             <img src="condor01.png" alt="24col" class="logo-img">
         </div>
 
-        <!-- Categorías listadas estilo texto plano con despliegue de ciudades -->
+        <!-- SECCIÓN 1: Portal Nacional (Acceso Directo) -->
+        <div class="section-title">Trámites Nacionales (Toda Colombia)</div>
+        
+        <div class="national-links">
+            <ul>
+                <li><a href="https://www.dian.gov.co" target="_blank" rel="noopener">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
+                <li><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
+                <li><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
+                <li><a href="https://www.runt.gov.co" target="_blank" rel="noopener">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
+                <li><a href="https://www.adres.gov.co" target="_blank" rel="noopener">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS (Fosyga)</span></li>
+            </ul>
+        </div>
+
+        <!-- SECCIÓN 2: Portales Locales / Departamentales -->
+        <div class="section-title">Trámites Específicos por Ciudad o Departamento</div>
+
         <div class="categories-list">
             
             <div class="category-item">
                 <details>
-                    <summary>Todos los portales <span class="category-desc">- accesos directos y estado</span></summary>
+                    <summary>Impuestos Regionales <span class="category-desc">- Vehículos, Predial, Licorera</span></summary>
                     <div class="cities-menu">
-                        Selecciona ciudad: 
-                        <a href="ciudad.html?cat=todos&city=bogota">Bogotá</a> | 
-                        <a href="ciudad.html?cat=todos&city=medellin">Medellín</a> | 
-                        <a href="ciudad.html?cat=todos&city=cali">Cali</a> | 
-                        <a href="ciudad.html?cat=todos&city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=todos&city=cartagena">Cartagena</a>
+                        Selecciona tu ubicación: <br>
+                        <a href="ciudad.html?cat=impuestos&city=bogota">Bogotá D.C.</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=medellin">Medellín / Ant.</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=cali">Cali / Valle</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=barranquilla">Barranquilla / Atl.</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=monteria">Montería / Cór.</a>
                     </div>
                 </details>
             </div>
 
             <div class="category-item">
                 <details>
-                    <summary>Identidad y Citas <span class="category-desc">- cédula, pasaporte, registraduría</span></summary>
+                    <summary>Servicios Públicos <span class="category-desc">- Agua, Luz, Gas y Alcaldías</span></summary>
                     <div class="cities-menu">
-                        Selecciona ciudad: 
-                        <a href="ciudad.html?cat=identidad&city=bogota">Bogotá</a> | 
-                        <a href="ciudad.html?cat=identidad&city=medellin">Medellín</a> | 
-                        <a href="ciudad.html?cat=identidad&city=cali">Cali</a> | 
-                        <a href="ciudad.html?cat=identidad&city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=identidad&city=cartagena">Cartagena</a>
-                    </div>
-                </details>
-            </div>
-
-            <div class="category-item">
-                <details>
-                    <summary>Impuestos y Facturas <span class="category-desc">- DIAN, RUT, impuestos</span></summary>
-                    <div class="cities-menu">
-                        Selecciona ciudad: 
-                        <a href="ciudad.html?cat=impuestos&city=bogota">Bogotá</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=medellin">Medellín</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=cali">Cali</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=impuestos&city=cartagena">Cartagena</a>
-                    </div>
-                </details>
-            </div>
-
-            <div class="category-item">
-                <details>
-                    <summary>Servicios del Hogar <span class="category-desc">- agua, luz, gas, alcaldías</span></summary>
-                    <div class="cities-menu">
-                        Selecciona ciudad: 
-                        <a href="ciudad.html?cat=hogar&city=bogota">Bogotá</a> | 
+                        Selecciona tu ubicación: <br>
+                        <a href="ciudad.html?cat=hogar&city=bogota">Bogotá D.C.</a> | 
                         <a href="ciudad.html?cat=hogar&city=medellin">Medellín</a> | 
                         <a href="ciudad.html?cat=hogar&city=cali">Cali</a> | 
                         <a href="ciudad.html?cat=hogar&city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=hogar&city=cartagena">Cartagena</a>
+                        <a href="ciudad.html?cat=hogar&city=monteria">Montería</a>
+                    </div>
+                </details>
+            </div>
+
+            <div class="category-item">
+                <details>
+                    <summary>Movilidad y Tránsito Local <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span></summary>
+                    <div class="cities-menu">
+                        Selecciona tu ubicación: <br>
+                        <a href="ciudad.html?cat=movilidad&city=bogota">Bogotá D.C.</a> | 
+                        <a href="ciudad.html?cat=movilidad&city=medellin">Medellín</a> | 
+                        <a href="ciudad.html?cat=movilidad&city=cali">Cali</a> | 
+                        <a href="ciudad.html?cat=movilidad&city=barranquilla">Barranquilla</a> | 
+                        <a href="ciudad.html?cat=movilidad&city=monteria">Montería</a>
                     </div>
                 </details>
             </div>
 
         </div>
 
-        <!-- Barra de búsqueda en español -->
+        <!-- Buscador -->
         <div class="search-container">
             <form action="#" method="get">
-                <label for="searchInput"><strong>buscar -</strong> </label>
+                <label for="searchInput"><strong>buscar portal -</strong> </label>
                 <input type="text" id="searchInput" name="q" placeholder="">
                 <input type="submit" value="Ir">
             </form>
@@ -255,7 +289,7 @@
 
     </div>
 
-    <!-- Pie de página sticky -->
+    <!-- Pie de página -->
     <footer>
         &copy; 2026 Cóndor.co - Iniciativa independiente para el pueblo colombiano · Por: jahp
     </footer>
