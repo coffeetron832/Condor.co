@@ -197,6 +197,16 @@
             cursor: pointer;
         }
 
+        /* Mensaje cuando la búsqueda no coincide */
+        .no-results {
+            display: none;
+            text-align: left;
+            font-size: 14px;
+            color: #666666;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
         footer {
             margin-top: auto;
             padding-top: 20px;
@@ -215,25 +225,36 @@
             <img src="condor01.png" alt="24col" class="logo-img">
         </div>
 
+        <!-- Buscador -->
+        <div class="search-container">
+            <form onsubmit="event.preventDefault();">
+                <label for="searchInput"><strong>buscar -</strong> </label>
+                <input type="text" id="searchInput" name="q" placeholder="" autocomplete="off">
+                <input type="submit" value="Ir">
+            </form>
+        </div>
+
+        <div id="noResultsMsg" class="no-results">No se encontraron trámites o ciudades que coincidan con la búsqueda.</div>
+
         <!-- SECCIÓN 1: Portal Nacional (Acceso Directo) -->
-        <div class="section-title">Trámites Nacionales (Toda Colombia)</div>
+        <div class="section-title" id="nationalSectionTitle">Trámites Nacionales (Toda Colombia)</div>
         
-        <div class="national-links">
+        <div class="national-links" id="nationalLinksBlock">
             <ul>
-                <li><a href="https://www.dian.gov.co" target="_blank" rel="noopener">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
-                <li><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
-                <li><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
-                <li><a href="https://www.runt.gov.co" target="_blank" rel="noopener">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
-                <li><a href="https://www.adres.gov.co" target="_blank" rel="noopener">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS (Fosyga)</span></li>
+                <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
+                <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
+                <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
+                <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
+                <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS (Fosyga)</span></li>
             </ul>
         </div>
 
         <!-- SECCIÓN 2: Portales Locales / Departamentales -->
-        <div class="section-title">Trámites Específicos por Ciudad o Departamento</div>
+        <div class="section-title" id="regionalSectionTitle">Trámites Específicos por Ciudad o Departamento</div>
 
-        <div class="categories-list">
+        <div class="categories-list" id="regionalCategoriesBlock">
             
-            <div class="category-item">
+            <div class="category-item searchable-category">
                 <details>
                     <summary>Impuestos Regionales <span class="category-desc">- Vehículos, Predial, Licorera</span></summary>
                     <div class="cities-menu">
@@ -247,7 +268,7 @@
                 </details>
             </div>
 
-            <div class="category-item">
+            <div class="category-item searchable-category">
                 <details>
                     <summary>Servicios Públicos <span class="category-desc">- Agua, Luz, Gas y Alcaldías</span></summary>
                     <div class="cities-menu">
@@ -261,7 +282,7 @@
                 </details>
             </div>
 
-            <div class="category-item">
+            <div class="category-item searchable-category">
                 <details>
                     <summary>Movilidad y Tránsito Local <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span></summary>
                     <div class="cities-menu">
@@ -277,21 +298,73 @@
 
         </div>
 
-        <!-- Buscador -->
-        <div class="search-container">
-            <form action="#" method="get">
-                <label for="searchInput"><strong>buscar -</strong> </label>
-                <input type="text" id="searchInput" name="q" placeholder="">
-                <input type="submit" value="Ir">
-            </form>
-        </div>
-
     </div>
 
     <!-- Pie de página -->
     <footer>
         &copy; 2026 (24col) - Iniciativa independiente para el pueblo colombiano · Por: jahp
     </footer>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const nationalItems = document.querySelectorAll('.searchable-item');
+        const categoryItems = document.querySelectorAll('.searchable-category');
+        const nationalTitle = document.getElementById('nationalSectionTitle');
+        const regionalTitle = document.getElementById('regionalSectionTitle');
+        const noResultsMsg = document.getElementById('noResultsMsg');
+
+        // Normalización para ignorar tildes y mayúsculas
+        function normalizeText(text) {
+            return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        searchInput.addEventListener('input', function () {
+            const query = normalizeText(this.value.trim());
+            let nationalVisibleCount = 0;
+            let regionalVisibleCount = 0;
+
+            // Filtrado de trámites nacionales
+            nationalItems.forEach(item => {
+                const text = normalizeText(item.textContent);
+                if (query === '' || text.includes(query)) {
+                    item.style.display = '';
+                    nationalVisibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Filtrado de categorías regionales
+            categoryItems.forEach(item => {
+                const details = item.querySelector('details');
+                const text = normalizeText(item.textContent);
+
+                if (query === '') {
+                    item.style.display = '';
+                    details.open = false; // Cierra si el buscador está vacío
+                    regionalVisibleCount++;
+                } else if (text.includes(query)) {
+                    item.style.display = '';
+                    details.open = true;  // Abre automáticamente si hay coincidencia
+                    regionalVisibleCount++;
+                } else {
+                    item.style.display = 'none';
+                    details.open = false;
+                }
+            });
+
+            // Visibilidad de títulos de sección según resultados
+            nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
+            regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
+
+            // Mensaje de sin resultados
+            if (nationalVisibleCount === 0 && regionalVisibleCount === 0) {
+                noResultsMsg.style.display = 'block';
+            } else {
+                noResultsMsg.style.display = 'none';
+            }
+        });
+    </script>
 
 </body>
 </html>
