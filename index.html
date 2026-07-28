@@ -429,6 +429,22 @@
                 flex-direction: row;
             }
         }
+
+    .logo-container {
+    width: 5rem; /* O el ancho que prefieras para tu logo */
+    height: auto; /* Permite que mantenga su proporción natural, o asígnale un alto fijo */
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Mantiene la proporción de tu logo sin recortarlo */
+    border-radius: 0; /* Sin bordes redondeados */
+}
     </style>
 </head>
 <body>
@@ -443,8 +459,8 @@
     <!-- Cabecera -->
     <header class="container">
         <!-- Espacio para imagen / logo -->
-        <div class="logo-placeholder">
-    <img src="condor01.png" alt="Cóndor.co" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        <div class="logo-container">
+    <img src="logo.png" alt="Cóndor.co" class="logo-img">
 </div>
         
         <!-- Nombre centrado -->
