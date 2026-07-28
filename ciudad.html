@@ -49,7 +49,27 @@
         .category-subtitle {
             font-size: 15px;
             color: #555555;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+        }
+
+        /* Espacio para la imagen de la ciudad */
+        .city-banner-container {
+            width: 100%;
+            max-height: 200px;
+            margin: 0 0 20px 0;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            background-color: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .city-banner-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
         }
 
         /* Lista de portales y trámites */
@@ -123,6 +143,11 @@
         <div class="city-title" id="cityName">Ciudad</div>
         <div class="category-subtitle" id="categoryName">Categoría seleccionada</div>
 
+        <!-- Espacio reservado para la imagen representativa de la ciudad -->
+        <div class="city-banner-container" id="cityBannerWrapper">
+            <img id="cityBanner" src="" alt="Imagen de la ciudad" class="city-banner-img">
+        </div>
+
         <!-- Listado de enlaces oficiales -->
         <div class="links-list">
             <ul id="linksContainer">
@@ -159,6 +184,15 @@
             'cali': 'Cali / Valle del Cauca',
             'barranquilla': 'Barranquilla / Atlántico',
             'monteria': 'Montería / Córdoba'
+        };
+
+        // Mapeo de imágenes por ciudad (Puedes cambiar las rutas según tus archivos reales)
+        const cityImages = {
+            'bogota': 'img/bogota.jpg',
+            'medellin': 'img/medellin.jpg',
+            'cali': 'img/cali.jpeg',
+            'barranquilla': 'img/barranquilla.jpg',
+            'monteria': 'img/monteria.jpg'
         };
 
         const catNames = {
@@ -239,10 +273,22 @@
             }
         };
 
-        // Renderizado dinámico en la interfaz
+        // Asignación de textos y títulos
         document.getElementById('cityName').textContent = cityNames[cityParam] || cityParam;
         document.getElementById('categoryName').textContent = catNames[catParam] || 'Trámites locales';
 
+        // Configuración de la imagen de la ciudad
+        const imgElement = document.getElementById('cityBanner');
+        const imgPath = cityImages[cityParam] || `img/${cityParam}.jpg`;
+        imgElement.src = imgPath;
+        imgElement.alt = `Fotografía de ${cityNames[cityParam] || cityParam}`;
+
+        // Si la imagen no carga/no existe, oculta el contenedor para evitar marcas rotas
+        imgElement.onerror = function() {
+            document.getElementById('cityBannerWrapper').style.display = 'none';
+        };
+
+        // Renderizado del listado de enlaces
         const container = document.getElementById('linksContainer');
         const cityObj = linksData[cityParam] || linksData['monteria'];
         const list = cityObj[catParam] || cityObj['impuestos'] || [];
