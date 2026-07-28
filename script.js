@@ -18,15 +18,42 @@ document.addEventListener('DOMContentLoaded', function () {
         return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
+    // Mapa de términos clave para enriquecer búsquedas por palabras asociadas (ej. Hacienda -> Impuestos)
+    const keywordSynonyms = {
+        'hacienda': ['impuestos', 'predial', 'vehiculos', 'retencion', 'ica', 'dian'],
+        'predial': ['impuestos', 'hacienda', 'casa'],
+        'vehiculo': ['vehiculos', 'impuestos', 'movilidad', 'tránsito', 'transito', 'patios', 'runt', 'simit'],
+        'soat': ['runt', 'simit', 'movilidad', 'tránsito', 'transito'],
+        'fotomulta': ['simit', 'runt', 'movilidad', 'tránsito', 'transito'],
+        'fosyga': ['adres', 'bdua', 'eps', 'salud'],
+        'cedula': ['registraduria', 'duplicado', 'identificacion']
+    };
+
     searchInput.addEventListener('input', function () {
         const query = normalizeText(this.value.trim());
         let nationalVisibleCount = 0;
         let regionalVisibleCount = 0;
 
+        // Obtener posibles sinónimos/relacionados de la búsqueda
+        let searchTerms = [query];
+        if (query !== '') {
+            Object.keys(keywordSynonyms).forEach(key => {
+                if (key.includes(query) || query.includes(key)) {
+                    searchTerms = searchTerms.concat(keywordSynonyms[key]);
+                }
+            });
+        }
+
+        const isMatch = (textToTest) => {
+            if (query === '') return true;
+            const normalizedTarget = normalizeText(textToTest);
+            return searchTerms.some(term => normalizedTarget.includes(term));
+        };
+
         // 1. Filtrado de enlaces nacionales
         nationalItems.forEach(item => {
-            const text = normalizeText(item.textContent);
-            if (query === '' || text.includes(query)) {
+            const text = item.textContent;
+            if (isMatch(text)) {
                 item.style.display = '';
                 nationalVisibleCount++;
             } else {
@@ -34,65 +61,51 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // 2. Filtrado granular de categorías regionales y sus enlaces internos
+        // 2. Filtrado de categorías regionales y enlaces de ciudades
         categoryItems.forEach(item => {
             const details = item.querySelector('details');
             const summary = item.querySelector('summary');
             const cityLinks = item.querySelectorAll('.cities-menu a');
-            
-            const summaryText = normalizeText(summary ? summary.textContent : '');
+
+            const summaryText = summary ? summary.textContent : '';
+            const isCategoryMatch = isMatch(summaryText);
 
             if (query === '') {
-                // Estado inicial: mostrar la categoría, ocultar/mostrar todos los enlaces e invisibilizar separadores |
+                // Estado inicial
                 item.style.display = '';
                 if (details) details.open = false;
-                
                 cityLinks.forEach(link => {
                     link.style.display = '';
                     if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
                         link.nextSibling.textContent = ' | ';
                     }
                 });
-                
                 regionalVisibleCount++;
             } else {
-                let matchedLinksCount = 0;
+                let visibleLinksInCategory = 0;
 
                 cityLinks.forEach(link => {
-                    const linkText = normalizeText(link.textContent);
-                    const isLinkMatch = linkText.includes(query);
+                    const linkText = link.textContent;
+                    const linkUrl = link.getAttribute('href') || '';
+                    const isLinkMatch = isMatch(linkText) || isMatch(linkUrl);
 
-                    if (isLinkMatch) {
+                    // Muestra el enlace si coincide la ciudad O si la categoría completa coincide (ej: "hacienda" -> "Impuestos")
+                    if (isLinkMatch || isCategoryMatch) {
                         link.style.display = '';
-                        matchedLinksCount++;
+                        visibleLinksInCategory++;
                     } else {
                         link.style.display = 'none';
                     }
 
-                    // Ocultar dinámicamente los separadores "|" entre enlaces
+                    // Ajuste de separadores "|"
                     if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
-                        link.nextSibling.textContent = isLinkMatch ? ' | ' : '';
+                        link.nextSibling.textContent = (isLinkMatch || isCategoryMatch) ? ' | ' : '';
                     }
                 });
 
-                const isSummaryMatch = summaryText.includes(query);
-
-                // Si coincide el nombre del trámite/categoría O al menos una ciudad interna
-                if (isSummaryMatch || matchedLinksCount > 0) {
+                if (visibleLinksInCategory > 0 || isCategoryMatch) {
                     item.style.display = '';
                     if (details) details.open = true;
-
-                    // Si la búsqueda coincide con el título de la categoría (ej: "Predial"),
-                    // se muestran todas las ciudades de esa categoría
-                    if (isSummaryMatch && matchedLinksCount === 0) {
-                        cityLinks.forEach(link => {
-                            link.style.display = '';
-                            if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
-                                link.nextSibling.textContent = ' | ';
-                            }
-                        });
-                    }
-
                     regionalVisibleCount++;
                 } else {
                     item.style.display = 'none';
@@ -101,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // 3. Control de títulos de sección y mensaje sin resultados
+        // 3. Control de visibilidad de secciones y mensaje
         if (nationalTitle) nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
         if (regionalTitle) regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
 
