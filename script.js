@@ -15,25 +15,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function normalizeText(text) {
         if (!text) return '';
-        return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
     searchInput.addEventListener('input', function () {
-        const rawQuery = this.value.trim();
-        const query = normalizeText(rawQuery);
+        const query = normalizeText(this.value.trim());
         let nationalVisibleCount = 0;
         let regionalVisibleCount = 0;
 
-        // Separar la consulta en palabras individuales para una búsqueda más fina
-        const queryWords = query ? query.split(/\s+/) : [];
-
+        // 1. Filtrado de enlaces nacionales
         nationalItems.forEach(item => {
             const text = normalizeText(item.textContent);
-            
-            // Comprobamos si el elemento contiene todas las palabras ingresadas en el buscador
-            const matches = queryWords.length === 0 || queryWords.every(word => text.includes(word));
-
-            if (matches) {
+            if (query === '' || text.includes(query)) {
                 item.style.display = '';
                 nationalVisibleCount++;
             } else {
@@ -41,33 +34,79 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        // 2. Filtrado granular de categorías regionales y sus enlaces internos
         categoryItems.forEach(item => {
             const details = item.querySelector('details');
-            const text = normalizeText(item.textContent);
+            const summary = item.querySelector('summary');
+            const cityLinks = item.querySelectorAll('.cities-menu a');
             
-            const matches = queryWords.length === 0 || queryWords.every(word => text.includes(word));
+            const summaryText = normalizeText(summary ? summary.textContent : '');
 
             if (query === '') {
+                // Estado inicial: mostrar la categoría, ocultar/mostrar todos los enlaces e invisibilizar separadores |
                 item.style.display = '';
                 if (details) details.open = false;
-                regionalVisibleCount++;
-            } else if (matches) {
-                item.style.display = '';
-                if (details) details.open = true;
+                
+                cityLinks.forEach(link => {
+                    link.style.display = '';
+                    if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
+                        link.nextSibling.textContent = ' | ';
+                    }
+                });
+                
                 regionalVisibleCount++;
             } else {
-                item.style.display = 'none';
-                if (details) details.open = false;
+                let matchedLinksCount = 0;
+
+                cityLinks.forEach(link => {
+                    const linkText = normalizeText(link.textContent);
+                    const isLinkMatch = linkText.includes(query);
+
+                    if (isLinkMatch) {
+                        link.style.display = '';
+                        matchedLinksCount++;
+                    } else {
+                        link.style.display = 'none';
+                    }
+
+                    // Ocultar dinámicamente los separadores "|" entre enlaces
+                    if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
+                        link.nextSibling.textContent = isLinkMatch ? ' | ' : '';
+                    }
+                });
+
+                const isSummaryMatch = summaryText.includes(query);
+
+                // Si coincide el nombre del trámite/categoría O al menos una ciudad interna
+                if (isSummaryMatch || matchedLinksCount > 0) {
+                    item.style.display = '';
+                    if (details) details.open = true;
+
+                    // Si la búsqueda coincide con el título de la categoría (ej: "Predial"),
+                    // se muestran todas las ciudades de esa categoría
+                    if (isSummaryMatch && matchedLinksCount === 0) {
+                        cityLinks.forEach(link => {
+                            link.style.display = '';
+                            if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
+                                link.nextSibling.textContent = ' | ';
+                            }
+                        });
+                    }
+
+                    regionalVisibleCount++;
+                } else {
+                    item.style.display = 'none';
+                    if (details) details.open = false;
+                }
             }
         });
 
-        nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
-        regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
+        // 3. Control de títulos de sección y mensaje sin resultados
+        if (nationalTitle) nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
+        if (regionalTitle) regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
 
-        if (nationalVisibleCount === 0 && regionalVisibleCount === 0) {
-            noResultsMsg.style.display = 'block';
-        } else {
-            noResultsMsg.style.display = 'none';
+        if (noResultsMsg) {
+            noResultsMsg.style.display = (nationalVisibleCount === 0 && regionalVisibleCount === 0) ? 'block' : 'none';
         }
     });
 });
