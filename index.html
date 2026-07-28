@@ -3,668 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cóndor.co - Trámites sin Enredos</title>
-    <!-- Iconos Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>24col - Trámites sin Enredos</title>
     <style>
-        * {
-            box-sizing: border-box;
+        html, body {
+            height: 100%;
             margin: 0;
-            padding: 0;
         }
 
         body {
-            background-color: #f7f5f0;
-            color: #111827;
             font-family: Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        ::selection {
-            background-color: #dbeafe;
-        }
-
-        /* Estructura general de contenedores */
-        .container {
-            max-width: 56rem;
-            margin-left: auto;
-            margin-right: auto;
-            width: 100%;
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-        }
-
-        /* Franja tricolor */
-        .tricolor-bar {
-            width: 100%;
-            display: flex;
-            height: 6px;
-        }
-        .tricolor-yellow {
-            width: 50%;
-            background-color: #facc15;
-        }
-        .tricolor-blue {
-            width: 25%;
-            background-color: #2563eb;
-        }
-        .tricolor-red {
-            width: 25%;
-            background-color: #dc2626;
-        }
-
-        /* Cabecera */
-        header.container {
-            padding-top: 2rem;
-            padding-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background-color: #ffffff;
+            color: #000000;
             text-align: center;
-        }
-
-        .logo-placeholder {
-            width: 5rem;
-            height: 5rem;
-            margin-bottom: 1rem;
-            background-color: rgba(229, 231, 235, 0.8);
-            border-radius: 9999px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #d1d5db;
-            color: #9ca3af;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        h1.title {
-            font-size: 1.875rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            color: #111827;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            flex: 1; /* Empuja el footer hacia abajo si sobra espacio */
         }
 
-        h1.title span {
-            color: #b45309;
+        /* Logo centrado y grande */
+        .logo-container {
+            margin: 20px auto 10px auto;
+            display: block;
         }
 
-        .divider {
-            width: 100%;
-            border-top: 1px solid #d1d5db;
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
+        .logo-img {
+            width: 280px;
+            height: auto;
         }
 
-        /* Navegación */
-        nav.categories {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
+        /* Lista de Categorías estilo texto plano / enlaces clásicos */
+        .categories-list {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 16px;
+            line-height: 1.8;
         }
 
-        @media (min-width: 768px) {
-            nav.categories {
-                gap: 2rem;
-            }
-        }
-
-        nav.categories a {
-            color: #2563eb;
-            text-decoration: none;
-        }
-
-        nav.categories a:hover {
+        .categories-list a {
+            color: #0000ee;
+            font-weight: bold;
             text-decoration: underline;
         }
 
-        nav.categories span {
-            color: #9ca3af;
+        .categories-list span {
+            color: #333333;
         }
 
-        /* Contenido principal */
-        main.container {
-            margin-bottom: 4rem;
-            flex-grow: 1;
+        /* Barra de Búsqueda clásica sin colores */
+        .search-container {
+            margin: 25px 0;
+            font-size: 15px;
         }
 
-        .welcome-box {
-            margin-bottom: 2rem;
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .welcome-box h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #111827;
-            letter-spacing: -0.025em;
-        }
-
-        .welcome-box p {
-            color: #4b5563;
-            margin-top: 0.5rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-
-        /* Barra de búsqueda */
-        .search-wrapper {
-            position: relative;
-        }
-
-        .search-icon-container {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            display: flex;
-            align-items: center;
-            padding-left: 0.875rem;
-            pointer-events: none;
-            color: #9ca3af;
-        }
-
-        .search-input {
-            width: 100%;
-            padding-left: 2.5rem;
-            padding-right: 1rem;
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-            background-color: #f9fafb;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            outline: none;
-            transition: border-color 0.2s;
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-        }
-
-        .search-input:focus {
-            border-color: #2563eb;
-        }
-
-        /* Alerta de seguridad */
-        .security-alert {
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background-color: rgba(254, 243, 199, 0.9);
-            border: 1px solid #fde68a;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            color: #78350f;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .security-alert i {
-            color: #b45309;
-            flex-shrink: 0;
-            margin-top: 0.125rem;
-        }
-
-        /* Listado de servicios */
-        .directory-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .directory-title {
-            font-weight: 600;
-            color: #111827;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .last-update {
-            font-size: 0.75rem;
-            color: #6b7280;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            background-color: rgba(229, 231, 235, 0.6);
-            padding: 0.25rem 0.625rem;
-            border-radius: 0.375rem;
-        }
-
-        .services-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .service-item {
-            padding: 1rem;
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 1rem;
-            transition: border-color 0.2s;
-        }
-
-        @media (min-width: 640px) {
-            .service-item {
-                flex-direction: row;
-                align-items: center;
-            }
-        }
-
-        .service-item:hover {
-            border-color: #d1d5db;
-        }
-
-        .service-link {
-            font-weight: 500;
-            color: #2563eb;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            font-size: 1rem;
-        }
-
-        .service-link:hover {
-            text-decoration: underline;
-        }
-
-        .service-description {
-            font-size: 0.875rem;
-            color: #4b5563;
-            margin-top: 0.25rem;
-        }
-
-        .service-status-container {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            align-self: flex-start;
-            flex-shrink: 0;
-        }
-
-        @media (min-width: 640px) {
-            .service-status-container {
-                align-self: center;
-            }
-        }
-
-        /* Badges de estado */
-        .badge {
+        .search-container form {
             display: inline-flex;
             align-items: center;
-            gap: 0.375rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            gap: 5px;
         }
 
-        .badge-emerald {
-            background-color: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
+        .search-container input[type="text"] {
+            padding: 4px 8px;
+            font-size: 14px;
+            width: 220px;
+            border: 1px solid #7f7f7f;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .badge-emerald .dot {
-            width: 0.375rem;
-            height: 0.375rem;
-            border-radius: 9999px;
-            background-color: #10b981;
+        .search-container input[type="text"]:focus {
+            border-color: #000000;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
         }
 
-        .badge-amber {
-            background-color: #fffbeb;
-            color: #b45309;
-            border: 1px solid #fde68a;
+        .search-container input[type="submit"] {
+            padding: 4px 10px;
+            font-size: 14px;
+            cursor: pointer;
         }
 
-        .badge-amber .dot {
-            width: 0.375rem;
-            height: 0.375rem;
-            border-radius: 9999px;
-            background-color: #f59e0b;
+        footer {
+            margin-top: auto; /* Se fija dinámicamente al fondo */
+            padding-top: 20px;
+            font-size: 12px;
+            color: #555555;
         }
-
-        .badge-rose {
-            background-color: #fff1f2;
-            color: #be123c;
-            border: 1px solid #fecdd3;
-        }
-
-        .badge-rose .dot {
-            width: 0.375rem;
-            height: 0.375rem;
-            border-radius: 9999px;
-            background-color: #f43f5e;
-        }
-
-        /* Sugerir enlace */
-        .suggest-box {
-            margin-top: 2.5rem;
-            padding: 1.5rem;
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        @media (min-width: 640px) {
-            .suggest-box {
-                text-align: left;
-                flex-direction: row;
-            }
-        }
-
-        .suggest-title {
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .suggest-desc {
-            font-size: 0.875rem;
-            color: #4b5563;
-            margin-top: 0.125rem;
-        }
-
-        .btn-dark {
-            flex-shrink: 0;
-            padding: 0.5rem 1rem;
-            background-color: #111827;
-            color: #ffffff;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .btn-dark:hover {
-            background-color: #1f2937;
-        }
-
-        /* Pie de página */
-        footer.container {
-            padding-bottom: 2rem;
-        }
-
-        .footer-content {
-            border-top: 1px solid #d1d5db;
-            padding-top: 1.5rem;
-            font-size: 0.875rem;
-            color: #6b7280;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        @media (min-width: 640px) {
-            .footer-content {
-                flex-direction: row;
-            }
-        }
-
-    .logo-container {
-    width: 19rem; /* O el ancho que prefieras para tu logo */
-    height: auto; /* Permite que mantenga su proporción natural, o asígnale un alto fijo */
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.logo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Mantiene la proporción de tu logo sin recortarlo */
-    border-radius: 0; /* Sin bordes redondeados */
-}
     </style>
 </head>
 <body>
 
-    <!-- Franja tricolor de la bandera de Colombia -->
-    <div class="tricolor-bar">
-        <div class="tricolor-yellow"></div>
-        <div class="tricolor-blue"></div>
-        <div class="tricolor-red"></div>
+    <div class="container">
+        
+        <!-- Logo centrado y en grande -->
+        <div class="logo-container">
+            <img src="condor01.png" alt="24col" class="logo-img">
+        </div>
+
+        <!-- Categorías listadas estilo texto plano -->
+        <div class="categories-list">
+            <div><a href="#">Todos los portales</a> - accesos directos y estado</div>
+            <div><a href="#identity">Identidad y Citas</a> - cédula, pasaporte, registraduría</div>
+            <div><a href="#taxes">Impuestos y Facturas</a> - DIAN, RUT, impuestos</div>
+            <div><a href="#home">Servicios del Hogar</a> - agua, luz, gas, alcaldías</div>
+        </div>
+
+        <!-- Barra de búsqueda en español -->
+        <div class="search-container">
+            <form action="#" method="get">
+                <label for="searchInput"><strong>buscar -</strong> </label>
+                <input type="text" id="searchInput" name="q" placeholder="">
+                <input type="submit" value="Ir">
+            </form>
+        </div>
+
     </div>
 
-    <!-- Cabecera -->
-    <header class="container">
-        <!-- Espacio para imagen / logo -->
-        <div class="logo-container">
-    <img src="condor01.png" alt="Cóndor.co" class="logo-img">
-</div>
-        
-        <!-- Nombre centrado -->
-        <h1 class="title">
-            Cóndor<span>.</span>co
-        </h1>
-        
-        <div class="divider"></div>
-
-        <!-- Categorías básicas -->
-        <nav class="categories">
-            <a href="#">Todos los portales</a>
-            <span>|</span>
-            <a href="#">Identidad y Citas</a>
-            <span>|</span>
-            <a href="#">Impuestos y Facturas</a>
-            <span>|</span>
-            <a href="#">Servicios del Hogar</a>
-        </nav>
-        <div class="divider" style="margin-bottom: 0;"></div>
-    </header>
-
-    <!-- Contenido Principal -->
-    <main class="container">
-        
-        <!-- Mensaje de bienvenida / Propósito claro -->
-        <div class="welcome-box">
-            <h2>
-                Enlaces 100% oficiales. Sin trampas ni vueltas.
-            </h2>
-            <p>
-                Buscar un trámite en internet no debería ser un riesgo. Aquí reunimos los accesos auténticos a las páginas del gobierno y empresas de servicios públicos para protegerte de <strong>sitios falsos o engañosos</strong>, informándote además <strong>si la página está funcionando bien o si está caída</strong> antes de que pierdas tu tiempo.
-            </p>
-            
-            <!-- Barra de búsqueda -->
-            <div class="search-wrapper">
-                <span class="search-icon-container">
-                    <i data-lucide="search" style="width: 1rem; height: 1rem;"></i>
-                </span>
-                <input type="text" id="searchInput" placeholder="¿Qué necesitas hacer hoy? (ej. Pagar luz, Cita Pasaporte, Consultar Sisbén, DIAN)..." class="search-input">
-            </div>
-        </div>
-
-        <!-- Banner de aviso de seguridad corto -->
-        <div class="security-alert">
-            <i data-lucide="shield-alert" style="width: 1.25rem; height: 1.25rem;"></i>
-            <div>
-                <strong>Consejo de seguridad:</strong> Nunca ingreses tus claves o tarjetas en páginas que prometan "agilizar trámites" a cambio de dinero. Todos los enlaces listados aquí te llevan directamente a las fuentes gubernamentales verificadas.
-            </div>
-        </div>
-
-        <!-- Listado de Servicios con mejor segmentación (Tarjetas) -->
-        <div>
-            <div class="directory-header">
-                <h3 class="directory-title">Directorio de Accesos Oficiales</h3>
-                <span class="last-update" id="lastUpdate">
-                    <i data-lucide="refresh-cw" style="width: 0.75rem; height: 0.75rem;"></i> Revisado hace un momento
-                </span>
-            </div>
-
-            <div class="services-list" id="servicesList">
-                
-                <!-- Servicio 1 -->
-                <div class="service-item" data-name="dian impuestos muisca factura rut">
-                    <div>
-                        <div>
-                            <a href="https://www.dian.gov.co" target="_blank" class="service-link">
-                                Portal Oficial DIAN (RUT, Impuestos y Facturación)
-                                <i data-lucide="external-link" style="width: 0.875rem; height: 0.875rem;"></i>
-                            </a>
-                        </div>
-                        <p class="service-description">Entra a declarar, descargar tu RUT o gestionar factura electrónica sin intermediarios.</p>
-                    </div>
-                    <div class="service-status-container">
-                        <span class="badge badge-emerald">
-                            <span class="dot"></span>
-                            Página Funcionando
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Servicio 2 -->
-                <div class="service-item" data-name="sisben grupo puntaje subsidio planeacion">
-                    <div>
-                        <div>
-                            <a href="https://www.sisben.gov.co" target="_blank" class="service-link">
-                                Consulta de Grupo Sisbén IV
-                                <i data-lucide="external-link" style="width: 0.875rem; height: 0.875rem;"></i>
-                            </a>
-                        </div>
-                        <p class="service-description">Verifica en qué grupo quedaste para subsidios y ayudas del Estado.</p>
-                    </div>
-                    <div class="service-status-container">
-                        <span class="badge badge-emerald">
-                            <span class="dot"></span>
-                            Página Funcionando
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Servicio 3 -->
-                <div class="service-item" data-name="registraduria cedula documento duplicado votacion">
-                    <div>
-                        <div>
-                            <a href="https://www.registraduria.gov.co" target="_blank" class="service-link">
-                                Registraduría (Estado de Cédula y Duplicados)
-                                <i data-lucide="external-link" style="width: 0.875rem; height: 0.875rem;"></i>
-                            </a>
-                        </div>
-                        <p class="service-description">Revisa si tu documento ya está listo para reclamar o saca un duplicado en línea.</p>
-                    </div>
-                    <div class="service-status-container">
-                        <span class="badge badge-amber">
-                            <span class="dot"></span>
-                            Entrada Lenta / Fallando
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Servicio 4 -->
-                <div class="service-item" data-name="runt licencia conduccion pase carro moto transito">
-                    <div>
-                        <div>
-                            <a href="https://www.runt.com.co" target="_blank" class="service-link">
-                                Consulta de Ciudadano RUNT
-                                <i data-lucide="external-link" style="width: 0.875rem; height: 0.875rem;"></i>
-                            </a>
-                        </div>
-                        <p class="service-description">Mira los datos de tus vehículos, vigencia de tu licencia de conducción o multas asociadas.</p>
-                    </div>
-                    <div class="service-status-container">
-                        <span class="badge badge-emerald">
-                            <span class="dot"></span>
-                            Página Funcionando
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Servicio 5 -->
-                <div class="service-item" data-name="cancilleria pasaporte citas cita viaje">
-                    <div>
-                        <div>
-                            <a href="https://www.cancilleria.gov.co" target="_blank" class="service-link">
-                                Cancillería - Agendamiento de Citas para Pasaporte
-                                <i data-lucide="external-link" style="width: 0.875rem; height: 0.875rem;"></i>
-                            </a>
-                        </div>
-                        <p class="service-description">Enlace directo a la plataforma de turnos oficial para expedir tu pasaporte.</p>
-                    </div>
-                    <div class="service-status-container">
-                        <span class="badge badge-rose">
-                            <span class="dot"></span>
-                            Caída / Sin Servicio
-                        </span>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Botón para aportar -->
-        <div class="suggest-box">
-            <div>
-                <h4 class="suggest-title">¿No encuentras el servicio público de tu ciudad?</h4>
-                <p class="suggest-desc">Ayúdanos a añadir las páginas oficiales de tu empresa de agua, luz o alcaldía local.</p>
-            </div>
-            <a href="#" class="btn-dark">
-                <i data-lucide="plus-circle" style="width: 1rem; height: 1rem;"></i>
-                Sugerir un enlace
-            </a>
-        </div>
-    </main>
-
-    <!-- Pie de página -->
-    <footer class="container">
-        <div class="footer-content">
-            <p>&copy; 2026 Cóndor.co - Iniciativa cívica e independiente para la ciudadanía.</p>
-            <div>
-                Por: jahp
-            </div>
-        </div>
+    <!-- Pie de página sticky -->
+    <footer>
+        Colombia · Directorio Ciudadano 24/7 · 2026 24col
     </footer>
 
-    <!-- Script de Inicialización y Filtro -->
-    <script>
-        lucide.createIcons();
-
-        const searchInput = document.getElementById('searchInput');
-        const serviceItems = document.querySelectorAll('.service-item');
-
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-
-            serviceItems.forEach(item => {
-                const keywords = item.getAttribute('data-name');
-                const textContent = item.textContent.toLowerCase();
-                
-                if (keywords.includes(term) || textContent.includes(term)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    </script>
 </body>
 </html>
