@@ -149,64 +149,113 @@
     <script>
         // Lectura de parámetros URL (?cat=...&city=...)
         const urlParams = new URLSearchParams(window.location.search);
-        const cityParam = urlParams.get('city') || 'bogota';
-        const catParam = urlParams.get('cat') || 'todos';
+        const cityParam = urlParams.get('city') || 'monteria';
+        const catParam = urlParams.get('cat') || 'impuestos';
 
-        // Mapeo de nombres legibles
+        // Mapeo de nombres legibles para la cabecera
         const cityNames = {
             'bogota': 'Bogotá D.C.',
-            'medellin': 'Medellín',
-            'cali': 'Cali',
-            'barranquilla': 'Barranquilla',
-            'cartagena': 'Cartagena'
+            'medellin': 'Medellín / Antioquia',
+            'cali': 'Cali / Valle del Cauca',
+            'barranquilla': 'Barranquilla / Atlántico',
+            'monteria': 'Montería / Córdoba'
         };
 
         const catNames = {
-            'todos': 'Todos los portales principales',
-            'identidad': 'Identidad, Citas y Documentación',
-            'impuestos': 'Impuestos, Hacienda y Trámites Fiscales',
-            'hogar': 'Servicios Públicos y Portal del Municipio'
+            'impuestos': 'Impuestos Regionales, Predial y Vehículos',
+            'hogar': 'Servicios Públicos y Portal del Municipio',
+            'movilidad': 'Movilidad, Tránsito Local y Comparendos'
         };
 
-        // Base de datos local liviana para enlaces por ciudad/categoría
+        // Base de datos de portales organizada por [ciudad][categoría]
         const linksData = {
-            'bogota': [
-                { name: 'Alcaldía Mayor / SuperCADE', url: 'https://bogota.gov.co', desc: 'atención ciudadana y trámites distritales' },
-                { name: 'Secretaría de Hacienda (DIB)', url: 'https://www.haciendabogota.gov.co', desc: 'pago de impuesto predial y vehículo' },
-                { name: 'EAAB - Acueducto de Bogotá', url: 'https://www.acueducto.com.co', desc: 'duplicado y pago de factura de agua' },
-                { name: 'Movilidad Bogotá', url: 'https://www.movilidadbogota.gov.co', desc: 'comparendos y agendamiento de citas' }
-            ],
-            'medellin': [
-                { name: 'Alcaldía de Medellín', url: 'https://www.medellin.gov.co', desc: 'portal único de trámites y citas' },
-                { name: 'EPM - Empresas Públicas', url: 'https://www.epm.com.co', desc: 'pago de factura unificada de servicios' },
-                { name: 'Hacienda Medellín', url: 'https://www.medellin.gov.co/hacienda', desc: 'impuesto predial e industria y comercio' }
-            ],
-            'cali': [
-                { name: 'Alcaldía de Santiago de Cali', url: 'https://www.cali.gov.co', desc: 'ventanilla única de atención al ciudadano' },
-                { name: 'EMCALI', url: 'https://www.emcali.com.co', desc: 'pago de servicios de energía, acueducto y alcantarillado' }
-            ],
-            'barranquilla': [
-                { name: 'Alcaldía de Barranquilla', url: 'https://www.barranquilla.gov.co', desc: 'portales de atención distrital' },
-                { name: 'Triple A', url: 'https://www.aaa.com.co', desc: 'pago de factura de acueducto y aseo' }
-            ],
-            'cartagena': [
-                { name: 'Alcaldía Mayor de Cartagena', url: 'https://www.cartagena.gov.co', desc: 'trámites distritales y tributarios' },
-                { name: 'Acuacar - Aguas de Cartagena', url: 'https://www.acuacar.com', desc: 'pago y gestión de servicios de agua' }
-            ]
+            'monteria': {
+                'impuestos': [
+                    { name: 'Alcaldía de Montería - Impuesto Predial', url: 'https://www.monteria.gov.co', desc: 'descarga y pago de factura predial unificada' },
+                    { name: 'Gobernación de Córdoba - Impuesto Vehicular', url: 'https://www.cordoba.gov.co', desc: 'liquidación y pago de impuesto de vehículos' }
+                ],
+                'hogar': {
+                    { name: 'Alcaldía de Montería (Portal Oficial)', url: 'https://www.monteria.gov.co', desc: 'trámites, ventanilla única y boletines' },
+                    { name: 'Veolia Montería', url: 'https://www.veolia.com.co/monteria', desc: 'pago de factura de acueducto y alcantarillado' },
+                    { name: 'Afinia (Grupo EPM)', url: 'https://www.afinia.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Surtigas', url: 'https://www.surtigas.com.co', desc: 'pago y gestión de servicio de gas natural' }
+                },
+                'movilidad': [
+                    { name: 'Secretaría de Tránsito de Montería', url: 'https://www.monteria.gov.co/transito', desc: 'consulta de pico y placa, trámites y acuerdos de pago' }
+                ]
+            },
+            'bogota': {
+                'impuestos': [
+                    { name: 'Secretaría de Hacienda (DIB)', url: 'https://www.haciendabogota.gov.co', desc: 'pago de impuesto predial y vehículos Bogotá' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía Mayor de Bogotá', url: 'https://bogota.gov.co', desc: 'portal único de trámites distritales' },
+                    { name: 'EAAB - Acueducto de Bogotá', url: 'https://www.acueducto.com.co', desc: 'duplicado y pago de factura de agua' },
+                    { name: 'Vanti (Gas Natural)', url: 'https://www.grupovanti.com', desc: 'pago de servicio de gas domiciliario' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Movilidad de Bogotá', url: 'https://www.movilidadbogota.gov.co', desc: 'pico y placa, agendamiento y comparendos' }
+                ]
+            },
+            'medellin': {
+                'impuestos': [
+                    { name: 'Hacienda Medellín', url: 'https://www.medellin.gov.co/hacienda', desc: 'impuesto predial e industria y comercio' },
+                    { name: 'Gobernación de Antioquia', url: 'https://www.antioquia.gov.co', desc: 'impuesto vehicular de Antioquia' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Medellín', url: 'https://www.medellin.gov.co', desc: 'portal oficial del municipio' },
+                    { name: 'EPM - Empresas Públicas de Medellín', url: 'https://www.epm.com.co', desc: 'pago unificado de agua, luz y gas' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Movilidad de Medellín', url: 'https://www.medellin.gov.co/movilidad', desc: 'pico y placa y trámites de tránsito' }
+                ]
+            },
+            'cali': {
+                'impuestos': [
+                    { name: 'Hacienda Municipal de Cali', url: 'https://www.cali.gov.co/hacienda', desc: 'impuesto predial e ICA' },
+                    { name: 'Gobernación del Valle del Cauca', url: 'https://www.valledelcauca.gov.co', desc: 'impuesto automotor del departamento' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Santiago de Cali', url: 'https://www.cali.gov.co', desc: 'ventanilla única de atención' },
+                    { name: 'EMCALI', url: 'https://www.emcali.com.co', desc: 'pago de energía, acueducto y alcantarillado' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Movilidad de Cali', url: 'https://www.cali.gov.co/movilidad', desc: 'servicios de tránsito y pico y placa' }
+                ]
+            },
+            'barranquilla': {
+                'impuestos': [
+                    { name: 'Gerencia de Ingresos - Barranquilla', url: 'https://www.barranquilla.gov.co/hacienda', desc: 'impuesto predial distrital' },
+                    { name: 'Gobernación del Atlántico', url: 'https://www.atlantico.gov.co', desc: 'impuesto sobre vehículos automotores' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Barranquilla', url: 'https://www.barranquilla.gov.co', desc: 'portales de atención distrital' },
+                    { name: 'Triple A', url: 'https://www.aaa.com.co', desc: 'pago de factura de acueducto, alcantarillado y aseo' },
+                    { name: 'Gases del Caribe', url: 'https://www.gascaribe.com', desc: 'pago y duplicado de factura de gas' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Tránsito de Barranquilla', url: 'https://www.barranquilla.gov.co/transito', desc: 'trámites y consultas de movilidad' }
+                ]
+            }
         };
 
-        // Renderizado en DOM
+        // Renderizado dinámico en la interfaz
         document.getElementById('cityName').textContent = cityNames[cityParam] || cityParam;
-        document.getElementById('categoryName').textContent = catNames[catParam] || catParam;
+        document.getElementById('categoryName').textContent = catNames[catParam] || 'Trámites locales';
 
         const container = document.getElementById('linksContainer');
-        const list = linksData[cityParam] || linksData['bogota'];
+        const cityObj = linksData[cityParam] || linksData['monteria'];
+        const list = cityObj[catParam] || cityObj['impuestos'] || [];
 
-        list.forEach(item => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="${item.url}" target="_blank" rel="noopener">${item.name}</a> <span class="link-desc">- ${item.desc}</span>`;
-            container.appendChild(li);
-        });
+        if (list.length === 0) {
+            container.innerHTML = '<li><span class="link-desc">No se encontraron enlaces para esta categoría en la ciudad seleccionada.</span></li>';
+        } else {
+            list.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${item.url}" target="_blank" rel="noopener">${item.name}</a> <span class="link-desc">- ${item.desc}</span>`;
+                container.appendChild(li);
+            });
+        }
     </script>
 
 </body>
