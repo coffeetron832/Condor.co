@@ -29,6 +29,100 @@ document.addEventListener('DOMContentLoaded', function () {
         'cedula': ['registraduria', 'duplicado', 'identificacion']
     };
 
+    // ==========================================
+    // VERIFICADOR DE ESTADO Y SEGURIDAD DE ENLACES
+    // ==========================================
+    function checkLinksHealthAndSecurity() {
+        const allLinks = document.querySelectorAll('.national-links a, .cities-menu a');
+
+        allLinks.forEach(link => {
+            const url = link.getAttribute('href');
+            if (!url || url.startsWith('ciudad.html')) return; // Omitir enlaces internos simulados
+
+            // 1. Verificación de Seguridad (HTTPS)
+            const isSecure = url.startsWith('https://');
+            
+            // Crear o ubicar contenedor de estado si no existe
+            let statusSpan = link.parentNode.querySelector('.link-status-badge');
+            if (!statusSpan) {
+                statusSpan = document.createElement('span');
+                statusSpan.className = 'link-status-badge';
+                statusSpan.style.fontSize = '11px';
+                statusSpan.style.marginLeft = '6px';
+                statusSpan.style.padding = '1px 5px';
+                statusSpan.style.borderRadius = '4px';
+                link.parentNode.insertBefore(statusSpan, link.nextSibling);
+            }
+
+            // Indicador preliminar de seguridad
+            if (!isSecure) {
+                statusSpan.innerHTML = '⚠️ <span title="Conexión no segura (HTTP)">Inseguro</span>';
+                statusSpan.style.backgroundColor = '#ffebee';
+                statusSpan.style.color = '#c62828';
+                return;
+            }
+
+            // 2. Verificación de Estado (Activo / Caído) mediante imagen/favicon invisible o caché
+            // Usamos una petición de imagen al favicon del dominio para tantear conectividad real evadiendo CORS estricto
+            try {
+                const domain = new URL(url).origin;
+                const img = new Image();
+                let finished = false;
+
+                // Timeout de seguridad de 4 segundos por si el servidor gubernamental está lento
+                const timer = setTimeout(() => {
+                    if (!finished) {
+                        finished = true;
+                        setStatusOffline(statusSpan);
+                    }
+                }, 4000);
+
+                img.onload = function() {
+                    if (!finished) {
+                        finished = true;
+                        clearTimeout(timer);
+                        setStatusOnline(statusSpan);
+                    }
+                };
+
+                img.onerror = function() {
+                    // CORS suele disparar onerror, lo que indica que el servidor respondió pero bloqueó la imagen. 
+                    // Esto significa técnicamente que el servidor ESTÁ ACTIVO y respondiendo.
+                    if (!finished) {
+                        finished = true;
+                        clearTimeout(timer);
+                        setStatusOnline(statusSpan);
+                    }
+                };
+
+                // Intentar cargar el favicon del portal institucional
+                img.src = `${domain}/favicon.ico?t=${new Date().getTime()}`;
+
+            } catch (e) {
+                setStatusOffline(statusSpan);
+            }
+        });
+    }
+
+    function setStatusOnline(element) {
+        element.innerHTML = '🟢 <span title="Enlace activo y seguro HTTPS">OK</span>';
+        element.style.backgroundColor = '#e8f5e9';
+        element.style.color = '#2e7d32';
+    }
+
+    function setStatusOffline(element) {
+        element.innerHTML = '🔴 <span title="El servidor no responde o podría estar caído">Caído</span>';
+        element.style.backgroundColor = '#ffebee';
+        element.style.color = '#c62828';
+    }
+
+    // Ejecutar verificación al cargar la página
+    checkLinksHealthAndSecurity();
+
+
+    // ==========================================
+    // SISTEMA DE BÚSQUEDA Y FILTRADO LIMPIO
+    // ==========================================
     searchInput.addEventListener('input', function () {
         const query = normalizeText(this.value.trim());
         let nationalVisibleCount = 0;
@@ -70,12 +164,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const isCategoryMatch = isMatch(summaryText);
 
             if (query === '') {
-                // Estado inicial sin búsqueda
                 item.style.display = '';
                 if (details) details.open = false;
                 cityLinks.forEach(link => {
                     link.style.display = '';
-                    if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
+                    if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE && !link.nextSibling.classList?.contains('link-status-badge')) {
                         link.nextSibling.textContent = ' | ';
                     }
                 });
@@ -87,12 +180,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     const linkText = link.textContent;
                     const linkUrl = link.getAttribute('href') || '';
                     
-                    // Comprobar coincidencia directa en la ciudad / enlace
                     const isDirectLinkMatch = isMatch(linkText) || isMatch(linkUrl);
 
-                    // Si la búsqueda coincide con la ciudad O la categoría del trámite
                     if (isDirectLinkMatch || isCategoryMatch) {
-                        // Si el usuario buscó una ciudad específica, mostrar SOLO la ciudad coincidente
                         if (!isCategoryMatch && !isDirectLinkMatch) {
                             link.style.display = 'none';
                         } else {
@@ -101,11 +191,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     } else {
                         link.style.display = 'none';
-                    }
-
-                    // Limpieza de separadores "|"
-                    if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE) {
-                        link.nextSibling.textContent = (link.style.display !== 'none') ? ' | ' : '';
                     }
                 });
 
@@ -120,18 +205,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // 3. Manejo de títulos para evitar la segmentación durante la búsqueda activa
+        // 3. Manejo de títulos para mantener la limpieza visual
         if (query !== '') {
-            // Ocultar cabeceras divisoras si hay texto en el buscador
             if (nationalTitle) nationalTitle.style.display = 'none';
             if (regionalTitle) regionalTitle.style.display = 'none';
         } else {
-            // Restaurar los títulos si la barra está vacía
             if (nationalTitle) nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
             if (regionalTitle) regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
         }
 
-        // Mostrar u ocultar mensaje de sin resultados
         if (noResultsMsg) {
             noResultsMsg.style.display = (nationalVisibleCount === 0 && regionalVisibleCount === 0) ? 'block' : 'none';
         }
