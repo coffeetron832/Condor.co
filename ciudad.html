@@ -52,11 +52,14 @@
             margin-bottom: 20px;
         }
 
-        /* Espacio para la imagen de la ciudad */
+        /* Espacio para la imagen de la ciudad y sus créditos */
+        .city-banner-wrapper {
+            margin: 0 0 20px 0;
+        }
+
         .city-banner-container {
             width: 100%;
             max-height: 200px;
-            margin: 0 0 20px 0;
             overflow: hidden;
             border: 1px solid #e0e0e0;
             background-color: #f9f9f9;
@@ -70,6 +73,19 @@
             height: 200px;
             object-fit: cover;
             display: block;
+        }
+
+        .image-credit {
+            font-size: 11px;
+            color: #777777;
+            text-align: right;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .image-credit a {
+            color: #555555;
+            text-decoration: underline;
         }
 
         /* Lista de portales y trámites */
@@ -143,10 +159,13 @@
         <div class="city-title" id="cityName">Ciudad</div>
         <div class="category-subtitle" id="categoryName">Categoría seleccionada</div>
 
-        <!-- Espacio reservado para la imagen representativa de la ciudad -->
-        <div class="city-banner-container" id="cityBannerWrapper">
-            <img id="cityBanner" src="" alt="Imagen de la ciudad" class="city-banner-img">
-        </div>
+        <!-- Espacio reservado para la imagen representativa de la ciudad y su crédito -->
+        <figure class="city-banner-wrapper" id="cityBannerWrapper">
+            <div class="city-banner-container">
+                <img id="cityBanner" src="" alt="Imagen de la ciudad" class="city-banner-img">
+            </div>
+            <figcaption class="image-credit" id="imageCredit">Foto: Crédito de la imagen</figcaption>
+        </figure>
 
         <!-- Listado de enlaces oficiales -->
         <div class="links-list">
@@ -186,13 +205,22 @@
             'monteria': 'Montería / Córdoba'
         };
 
-        // Mapeo de imágenes por ciudad (Puedes cambiar las rutas según tus archivos reales)
+        // Mapeo de imágenes por ciudad
         const cityImages = {
             'bogota': 'img/BOGOTA.jpeg',
             'medellin': 'img/medellin.jpg',
             'cali': 'img/cali.jpeg',
             'barranquilla': 'img/barranquilla.jpg',
             'monteria': 'img/monteria.jpg'
+        };
+
+        // Créditos de las imágenes por ciudad (Puedes ingresar texto o HTML ligero como enlaces)
+        const cityCredits = {
+            'bogota': 'Foto: Unsplash / Dominio Público',
+            'medellin': 'Foto: Archivo Municipal',
+            'cali': 'Foto: Wikimedia Commons',
+            'barranquilla': 'Foto: Archivo Local',
+            'monteria': 'Foto: Alcaldía de Montería'
         };
 
         const catNames = {
@@ -279,11 +307,16 @@
 
         // Configuración de la imagen de la ciudad
         const imgElement = document.getElementById('cityBanner');
+        const creditElement = document.getElementById('imageCredit');
         const imgPath = cityImages[cityParam] || `img/${cityParam}.jpg`;
+        
         imgElement.src = imgPath;
         imgElement.alt = `Fotografía de ${cityNames[cityParam] || cityParam}`;
+        
+        // Asignar el texto de crédito
+        creditElement.innerHTML = cityCredits[cityParam] || 'Foto: Crédito de la imagen';
 
-        // Si la imagen no carga/no existe, oculta el contenedor para evitar marcas rotas
+        // Si la imagen no carga/no existe, oculta todo el contenedor junto con el crédito
         imgElement.onerror = function() {
             document.getElementById('cityBannerWrapper').style.display = 'none';
         };
