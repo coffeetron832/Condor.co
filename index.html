@@ -316,77 +316,7 @@
         &copy; 2026 (24col) - Iniciativa independiente para el pueblo colombiano · Por: jahp
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const searchForm = document.getElementById('searchForm');
-            const searchInput = document.getElementById('searchInput');
-            const nationalItems = document.querySelectorAll('.searchable-item');
-            const categoryItems = document.querySelectorAll('.searchable-category');
-            const nationalTitle = document.getElementById('nationalSectionTitle');
-            const regionalTitle = document.getElementById('regionalSectionTitle');
-            const noResultsMsg = document.getElementById('noResultsMsg');
-
-            // Previene el envío del formulario usando el listener nativo
-            if (searchForm) {
-                searchForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                });
-            }
-
-            // Normalización segura para ignorar tildes y mayúsculas
-            function normalizeText(text) {
-                if (!text) return '';
-                return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            }
-
-            searchInput.addEventListener('input', function () {
-                const query = normalizeText(this.value.trim());
-                let nationalVisibleCount = 0;
-                let regionalVisibleCount = 0;
-
-                // Filtrado de trámites nacionales
-                nationalItems.forEach(item => {
-                    const text = normalizeText(item.textContent);
-                    if (query === '' || text.includes(query)) {
-                        item.style.display = '';
-                        nationalVisibleCount++;
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-
-                // Filtrado de categorías regionales
-                categoryItems.forEach(item => {
-                    const details = item.querySelector('details');
-                    const text = normalizeText(item.textContent);
-
-                    if (query === '') {
-                        item.style.display = '';
-                        if (details) details.open = false;
-                        regionalVisibleCount++;
-                    } else if (text.includes(query)) {
-                        item.style.display = '';
-                        if (details) details.open = true;
-                        regionalVisibleCount++;
-                    } else {
-                        item.style.display = 'none';
-                        if (details) details.open = false;
-                    }
-                });
-
-                // Visibilidad de títulos de sección
-                nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
-                regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
-
-                // Mensaje de sin resultados
-                if (nationalVisibleCount === 0 && regionalVisibleCount === 0) {
-                    noResultsMsg.style.display = 'block';
-                } else {
-                    noResultsMsg.style.display = 'none';
-                }
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 
 </body>
 </html>
