@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24col - Trámites por Ciudad</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Encabezado compacto */
+        .header-nav {
+            margin: 10px 0 20px 0;
+            font-size: 14px;
+        }
+
+        .header-nav a {
+            color: #0000ee;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .city-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: capitalize;
+        }
+
+        .category-subtitle {
+            font-size: 15px;
+            color: #555555;
+            margin-bottom: 25px;
+        }
+
+        /* Lista de portales y trámites */
+        .links-list {
+            text-align: left;
+            margin: 20px 0;
+            font-size: 15px;
+            line-height: 2;
+        }
+
+        .links-list ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+
+        .links-list a {
+            color: #0000ee;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .link-desc {
+            color: #333333;
+            font-weight: normal;
+        }
+
+        /* Barra de búsqueda interna */
+        .search-container {
+            margin: 30px 0 15px 0;
+            font-size: 15px;
+        }
+
+        .search-container form {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-container input[type="text"] {
+            padding: 4px 8px;
+            font-size: 14px;
+            width: 220px;
+            border: 1px solid #7f7f7f;
+            outline: none;
+        }
+
+        .search-container input[type="submit"] {
+            padding: 4px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        footer {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 12px;
+            color: #555555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Navegación superior estilo retro -->
+        <div class="header-nav">
+            <a href="index.html">&laquo; Volver a 24col</a>
+        </div>
+
+        <!-- Título dinámico de la ciudad y categoría -->
+        <div class="city-title" id="cityName">Ciudad</div>
+        <div class="category-subtitle" id="categoryName">Categoría seleccionada</div>
+
+        <!-- Listado de enlaces oficiales -->
+        <div class="links-list">
+            <ul id="linksContainer">
+                <!-- Se cargan dinámicamente con JS según los parámetros -->
+            </ul>
+        </div>
+
+        <!-- Búsqueda específica -->
+        <div class="search-container">
+            <form action="#" method="get">
+                <label for="searchInput"><strong>buscar en esta ciudad -</strong> </label>
+                <input type="text" id="searchInput" name="q" placeholder="">
+                <input type="submit" value="Ir">
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Pie de página sticky -->
+    <footer>
+        &copy; 2026 Cóndor.co - Iniciativa independiente para el pueblo colombiano · Por: jahp
+    </footer>
+
+    <script>
+        // Lectura de parámetros URL (?cat=...&city=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const cityParam = urlParams.get('city') || 'bogota';
+        const catParam = urlParams.get('cat') || 'todos';
+
+        // Mapeo de nombres legibles
+        const cityNames = {
+            'bogota': 'Bogotá D.C.',
+            'medellin': 'Medellín',
+            'cali': 'Cali',
+            'barranquilla': 'Barranquilla',
+            'cartagena': 'Cartagena'
+        };
+
+        const catNames = {
+            'todos': 'Todos los portales principales',
+            'identidad': 'Identidad, Citas y Documentación',
+            'impuestos': 'Impuestos, Hacienda y Trámites Fiscales',
+            'hogar': 'Servicios Públicos y Portal del Municipio'
+        };
+
+        // Base de datos local liviana para enlaces por ciudad/categoría
+        const linksData = {
+            'bogota': [
+                { name: 'Alcaldía Mayor / SuperCADE', url: 'https://bogota.gov.co', desc: 'atención ciudadana y trámites distritales' },
+                { name: 'Secretaría de Hacienda (DIB)', url: 'https://www.haciendabogota.gov.co', desc: 'pago de impuesto predial y vehículo' },
+                { name: 'EAAB - Acueducto de Bogotá', url: 'https://www.acueducto.com.co', desc: 'duplicado y pago de factura de agua' },
+                { name: 'Movilidad Bogotá', url: 'https://www.movilidadbogota.gov.co', desc: 'comparendos y agendamiento de citas' }
+            ],
+            'medellin': [
+                { name: 'Alcaldía de Medellín', url: 'https://www.medellin.gov.co', desc: 'portal único de trámites y citas' },
+                { name: 'EPM - Empresas Públicas', url: 'https://www.epm.com.co', desc: 'pago de factura unificada de servicios' },
+                { name: 'Hacienda Medellín', url: 'https://www.medellin.gov.co/hacienda', desc: 'impuesto predial e industria y comercio' }
+            ],
+            'cali': [
+                { name: 'Alcaldía de Santiago de Cali', url: 'https://www.cali.gov.co', desc: 'ventanilla única de atención al ciudadano' },
+                { name: 'EMCALI', url: 'https://www.emcali.com.co', desc: 'pago de servicios de energía, acueducto y alcantarillado' }
+            ],
+            'barranquilla': [
+                { name: 'Alcaldía de Barranquilla', url: 'https://www.barranquilla.gov.co', desc: 'portales de atención distrital' },
+                { name: 'Triple A', url: 'https://www.aaa.com.co', desc: 'pago de factura de acueducto y aseo' }
+            ],
+            'cartagena': [
+                { name: 'Alcaldía Mayor de Cartagena', url: 'https://www.cartagena.gov.co', desc: 'trámites distritales y tributarios' },
+                { name: 'Acuacar - Aguas de Cartagena', url: 'https://www.acuacar.com', desc: 'pago y gestión de servicios de agua' }
+            ]
+        };
+
+        // Renderizado en DOM
+        document.getElementById('cityName').textContent = cityNames[cityParam] || cityParam;
+        document.getElementById('categoryName').textContent = catNames[catParam] || catParam;
+
+        const container = document.getElementById('linksContainer');
+        const list = linksData[cityParam] || linksData['bogota'];
+
+        list.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="${item.url}" target="_blank" rel="noopener">${item.name}</a> <span class="link-desc">- ${item.desc}</span>`;
+            container.appendChild(li);
+        });
+    </script>
+
+</body>
+</html>
