@@ -74,7 +74,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Lista de Categorías estilo texto plano / enlaces clásicos */
+        /* Lista de Categorías con despliegue animado */
         .categories-list {
             text-align: center;
             margin: 30px 0;
@@ -82,14 +82,55 @@
             line-height: 1.8;
         }
 
-        .categories-list a {
+        .category-item {
+            margin-bottom: 10px;
+        }
+
+        /* Estilos para details y summary */
+        details summary {
+            cursor: pointer;
             color: #0000ee;
             font-weight: bold;
             text-decoration: underline;
+            list-style: none; /* Oculta la flecha por defecto */
+            display: inline-block;
         }
 
-        .categories-list span {
+        details summary::-webkit-details-marker {
+            display: none; /* Oculta la flecha en Chrome/Safari */
+        }
+
+        .category-desc {
             color: #333333;
+            font-weight: normal;
+        }
+
+        /* Submenú de ciudades con animación */
+        .cities-menu {
+            margin-top: 6px;
+            padding: 8px 0;
+            background-color: #f9f9f9;
+            border: 1px solid #eeeeee;
+            font-size: 14px;
+            animation: fadeInDown 0.3s ease-out;
+        }
+
+        .cities-menu a {
+            color: #0000ee;
+            font-weight: normal;
+            text-decoration: underline;
+            margin: 0 6px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Barra de Búsqueda clásica sin colores */
@@ -142,12 +183,65 @@
             <img src="condor01.png" alt="24col" class="logo-img">
         </div>
 
-        <!-- Categorías listadas estilo texto plano -->
+        <!-- Categorías listadas estilo texto plano con despliegue de ciudades -->
         <div class="categories-list">
-            <div><a href="#">Todos los portales</a> - accesos directos y estado</div>
-            <div><a href="#identity">Identidad y Citas</a> - cédula, pasaporte, registraduría</div>
-            <div><a href="#taxes">Impuestos y Facturas</a> - DIAN, RUT, impuestos</div>
-            <div><a href="#home">Servicios del Hogar</a> - agua, luz, gas, alcaldías</div>
+            
+            <div class="category-item">
+                <details>
+                    <summary>Todos los portales <span class="category-desc">- accesos directos y estado</span></summary>
+                    <div class="cities-menu">
+                        Selecciona ciudad: 
+                        <a href="ciudad.html?cat=todos&city=bogota">Bogotá</a> | 
+                        <a href="ciudad.html?cat=todos&city=medellin">Medellín</a> | 
+                        <a href="ciudad.html?cat=todos&city=cali">Cali</a> | 
+                        <a href="ciudad.html?cat=todos&city=barranquilla">Barranquilla</a> | 
+                        <a href="ciudad.html?cat=todos&city=cartagena">Cartagena</a>
+                    </div>
+                </details>
+            </div>
+
+            <div class="category-item">
+                <details>
+                    <summary>Identidad y Citas <span class="category-desc">- cédula, pasaporte, registraduría</span></summary>
+                    <div class="cities-menu">
+                        Selecciona ciudad: 
+                        <a href="ciudad.html?cat=identidad&city=bogota">Bogotá</a> | 
+                        <a href="ciudad.html?cat=identidad&city=medellin">Medellín</a> | 
+                        <a href="ciudad.html?cat=identidad&city=cali">Cali</a> | 
+                        <a href="ciudad.html?cat=identidad&city=barranquilla">Barranquilla</a> | 
+                        <a href="ciudad.html?cat=identidad&city=cartagena">Cartagena</a>
+                    </div>
+                </details>
+            </div>
+
+            <div class="category-item">
+                <details>
+                    <summary>Impuestos y Facturas <span class="category-desc">- DIAN, RUT, impuestos</span></summary>
+                    <div class="cities-menu">
+                        Selecciona ciudad: 
+                        <a href="ciudad.html?cat=impuestos&city=bogota">Bogotá</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=medellin">Medellín</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=cali">Cali</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=barranquilla">Barranquilla</a> | 
+                        <a href="ciudad.html?cat=impuestos&city=cartagena">Cartagena</a>
+                    </div>
+                </details>
+            </div>
+
+            <div class="category-item">
+                <details>
+                    <summary>Servicios del Hogar <span class="category-desc">- agua, luz, gas, alcaldías</span></summary>
+                    <div class="cities-menu">
+                        Selecciona ciudad: 
+                        <a href="ciudad.html?cat=hogar&city=bogota">Bogotá</a> | 
+                        <a href="ciudad.html?cat=hogar&city=medellin">Medellín</a> | 
+                        <a href="ciudad.html?cat=hogar&city=cali">Cali</a> | 
+                        <a href="ciudad.html?cat=hogar&city=barranquilla">Barranquilla</a> | 
+                        <a href="ciudad.html?cat=hogar&city=cartagena">Cartagena</a>
+                    </div>
+                </details>
+            </div>
+
         </div>
 
         <!-- Barra de búsqueda en español -->
@@ -163,7 +257,7 @@
 
     <!-- Pie de página sticky -->
     <footer>
-        2026 24col · por: jahp
+        &copy; 2026 Cóndor.co - Iniciativa independiente para el pueblo colombiano · Por: jahp
     </footer>
 
 </body>
