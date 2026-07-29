@@ -175,9 +175,10 @@
 
         <!-- Búsqueda específica -->
         <div class="search-container">
-            <form action="#" method="get">
+            <form id="searchForm" action="https://www.google.com/search" method="get" target="_blank">
                 <label for="searchInput"><strong>buscar en esta ciudad -</strong> </label>
-                <input type="text" id="searchInput" name="q" placeholder="">
+                <input type="text" id="searchInput" placeholder="ej. certificado, pago, cita">
+                <input type="hidden" id="hiddenQuery" name="q">
                 <input type="submit" value="Ir">
             </form>
         </div>
@@ -235,11 +236,11 @@
 
         // Créditos de las imágenes por ciudad
         const cityCredits = {
-            'bogota': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:BOGOTA_CITY.jpg">KEVIN CASTAÑEDA VILLAMIL</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons',
-            'medellin': '<a href="https://commons.wikimedia.org/wiki/File:Medell%C3%ADn-1.jpg">Michu2709</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons',
-            'cali': '<a href="https://commons.wikimedia.org/wiki/File:Panor%C3%A1mica_-_Cali_-_Valle_del_Cauca_-_Colombia.jpg">Neoredacturus</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons',
-            'barranquilla': '<a href="https://commons.wikimedia.org/wiki/File:Barranquilla_panoramica.jpg">Hsolp</a>, CC0, via Wikimedia Commons',
-            'monteria': '<a href="https://commons.wikimedia.org/wiki/File:Ronda_del_Sin%C3%BA.jpg">Vgallego66</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons'
+            'bogota': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:BOGOTA_CITY.jpg" target="_blank">KEVIN CASTAÑEDA VILLAMIL</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>, vía Wikimedia Commons',
+            'medellin': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:Medell%C3%ADn-1.jpg" target="_blank">Michu2709</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>, vía Wikimedia Commons',
+            'cali': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:Panor%C3%A1mica_-_Cali_-_Valle_del_Cauca_-_Colombia.jpg" target="_blank">Neoredacturus</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>, vía Wikimedia Commons',
+            'barranquilla': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:Barranquilla_panoramica.jpg" target="_blank">Hsolp</a>, CC0, vía Wikimedia Commons',
+            'monteria': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:Ronda_del_Sin%C3%BA.jpg" target="_blank">Vgallego66</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>, vía Wikimedia Commons'
         };
 
         const catNames = {
@@ -257,6 +258,7 @@
                 'hogar': [
                     { name: 'Alcaldía Mayor de Bogotá', url: 'https://bogota.gov.co', desc: 'portal único de trámites distritales' },
                     { name: 'EAAB - Acueducto de Bogotá', url: 'https://www.acueducto.com.co', desc: 'duplicado y pago de factura de agua' },
+                    { name: 'Enel Colombia', url: 'https://www.enel.com.co', desc: 'pago de factura de energía eléctrica' },
                     { name: 'Vanti (Gas Natural)', url: 'https://www.grupovanti.com', desc: 'pago de servicio de gas domiciliario' }
                 ],
                 'movilidad': [
@@ -283,7 +285,8 @@
                 ],
                 'hogar': [
                     { name: 'Alcaldía de Santiago de Cali', url: 'https://www.cali.gov.co', desc: 'ventanilla única de atención' },
-                    { name: 'EMCALI', url: 'https://www.emcali.com.co', desc: 'pago de energía, acueducto y alcantarillado' }
+                    { name: 'EMCALI', url: 'https://www.emcali.com.co', desc: 'pago de energía, acueducto y alcantarillado' },
+                    { name: 'Gases del Occidente', url: 'https://www.gdo.com.co', desc: 'pago y duplicado de factura de gas natural' }
                 ],
                 'movilidad': [
                     { name: 'Secretaría de Movilidad de Cali', url: 'https://www.cali.gov.co/movilidad', desc: 'servicios de tránsito y pico y placa' }
@@ -297,6 +300,7 @@
                 'hogar': [
                     { name: 'Alcaldía de Barranquilla', url: 'https://www.barranquilla.gov.co', desc: 'portales de atención distrital' },
                     { name: 'Triple A', url: 'https://www.aaa.com.co', desc: 'pago de factura de acueducto, alcantarillado y aseo' },
+                    { name: 'Air-e', url: 'https://www.air-e.com', desc: 'pago de factura de energía eléctrica' },
                     { name: 'Gases del Caribe', url: 'https://www.gascaribe.com', desc: 'pago y duplicado de factura de gas' }
                 ],
                 'movilidad': [
@@ -319,59 +323,160 @@
                 ]
             },
             'cartagena': {
-                'impuestos': [{ name: 'Alcaldía de Cartagena - Hacienda', url: 'https://www.cartagena.gov.co', desc: 'impuesto predial e ICA' }],
-                'hogar': [{ name: 'Alcaldía de Cartagena', url: 'https://www.cartagena.gov.co', desc: 'portal oficial distrital' }],
-                'movilidad': [{ name: 'DATT Cartagena', url: 'https://www.transitocartagena.gov.co', desc: 'trámites y comparendos' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Cartagena - Hacienda', url: 'https://www.cartagena.gov.co', desc: 'impuesto predial e ICA' },
+                    { name: 'Gobernación de Bolívar', url: 'https://www.bolivar.gov.co', desc: 'impuesto vehicular del departamento' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Cartagena', url: 'https://www.cartagena.gov.co', desc: 'portal oficial distrital' },
+                    { name: 'Acuacar (Aguas de Cartagena)', url: 'https://www.acuacar.com', desc: 'pago y duplicado de factura de agua' },
+                    { name: 'Afinia (Grupo EPM)', url: 'https://www.afinia.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Surtigas', url: 'https://www.surtigas.com.co', desc: 'pago de factura de gas domiciliario' }
+                ],
+                'movilidad': [
+                    { name: 'DATT Cartagena', url: 'https://www.transitocartagena.gov.co', desc: 'trámites, comparendos y pico y placa' }
+                ]
             },
             'bucaramanga': {
-                'impuestos': [{ name: 'Alcaldía de Bucaramanga - Impuestos', url: 'https://www.bucaramanga.gov.co', desc: 'pago predial e impuestos locales' }],
-                'hogar': [{ name: 'Alcaldía de Bucaramanga', url: 'https://www.bucaramanga.gov.co', desc: 'portal oficial del municipio' }],
-                'movilidad': [{ name: 'Tránsito Bucaramanga', url: 'https://www.transitobucaramanga.gov.co', desc: 'trámites y servicios de movilidad' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Bucaramanga - Impuestos', url: 'https://www.bucaramanga.gov.co', desc: 'pago predial e impuestos locales' },
+                    { name: 'Gobernación de Santander', url: 'https://www.santander.gov.co', desc: 'impuesto sobre vehículos automotores' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Bucaramanga', url: 'https://www.bucaramanga.gov.co', desc: 'portal oficial del municipio' },
+                    { name: 'amb (Acueducto Metropolitano de Bucaramanga)', url: 'https://www.amb.com.co', desc: 'pago de factura de agua' },
+                    { name: 'ESSA (Electrificadora de Santander)', url: 'https://www.essa.com.co', desc: 'pago de servicio de energía' },
+                    { name: 'Gasoriente', url: 'https://www.grupovanti.com', desc: 'pago de factura de gas domiciliario' }
+                ],
+                'movilidad': [
+                    { name: 'Tránsito Bucaramanga', url: 'https://www.transitobucaramanga.gov.co', desc: 'trámites, fotomultas y pico y placa' }
+                ]
             },
             'pereira': {
-                'impuestos': [{ name: 'Alcaldía de Pereira - Hacienda', url: 'https://www.pereira.gov.co', desc: 'impuesto predial y tributos' }],
-                'hogar': [{ name: 'Alcaldía de Pereira', url: 'https://www.pereira.gov.co', desc: 'portal oficial municipal' }],
-                'movilidad': [{ name: 'Instituto de Tránsito de Pereira', url: 'https://www.pereira.gov.co/transito', desc: 'trámites de movilidad' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Pereira - Hacienda', url: 'https://www.pereira.gov.co', desc: 'impuesto predial y tributos locales' },
+                    { name: 'Gobernación de Risaralda', url: 'https://www.risaralda.gov.co', desc: 'impuesto vehicular de Risaralda' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Pereira', url: 'https://www.pereira.gov.co', desc: 'portal oficial municipal' },
+                    { name: 'Aguas y Aguas de Pereira', url: 'https://www.aguasyaguas.com.co', desc: 'pago de factura de acueducto' },
+                    { name: 'Energía de Pereira', url: 'https://www.energiadepereira.com', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Efigas', url: 'https://www.efigas.com.co', desc: 'pago de factura de gas natural' }
+                ],
+                'movilidad': [
+                    { name: 'Instituto de Tránsito de Pereira', url: 'https://www.pereira.gov.co/transito', desc: 'trámites de movilidad y pico y placa' }
+                ]
             },
             'manizales': {
-                'impuestos': [{ name: 'Alcaldía de Manizales - Hacienda', url: 'https://manizales.gov.co', desc: 'impuesto predial y consulta tributaria' }],
-                'hogar': [{ name: 'Alcaldía de Manizales', url: 'https://manizales.gov.co', desc: 'portal institucional' }],
-                'movilidad': [{ name: 'STT Manizales', url: 'https://manizales.gov.co/transito', desc: 'servicios de tránsito' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Manizales - Hacienda', url: 'https://manizales.gov.co', desc: 'impuesto predial y consulta tributaria' },
+                    { name: 'Gobernación de Caldas', url: 'https://caldas.gov.co', desc: 'impuesto vehicular de Caldas' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Manizales', url: 'https://manizales.gov.co', desc: 'portal institucional' },
+                    { name: 'Aguas de Manizales', url: 'https://www.aguasdemanizales.com.co', desc: 'pago de servicio de acueducto y alcantarillado' },
+                    { name: 'CHEC (Grupo EPM)', url: 'https://www.chec.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Efigas', url: 'https://www.efigas.com.co', desc: 'pago de factura de gas natural' }
+                ],
+                'movilidad': [
+                    { name: 'STT Manizales', url: 'https://manizales.gov.co/transito', desc: 'servicios de tránsito y comparendos' }
+                ]
             },
             'cucuta': {
-                'impuestos': [{ name: 'Alcaldía de Cúcuta - Impuestos', url: 'https://cucuta.gov.co', desc: 'impuesto predial' }],
-                'hogar': [{ name: 'Alcaldía de Cúcuta', url: 'https://cucuta.gov.co', desc: 'portal municipal de atención' }],
-                'movilidad': [{ name: 'Secretaría de Tránsito de Cúcuta', url: 'https://cucuta.gov.co/transito', desc: 'consultas y trámites' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Cúcuta - Impuestos', url: 'https://cucuta.gov.co', desc: 'impuesto predial e industria y comercio' },
+                    { name: 'Gobernación de Norte de Santander', url: 'https://www.nortedesantander.gov.co', desc: 'pago de impuesto vehicular' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Cúcuta', url: 'https://cucuta.gov.co', desc: 'portal municipal de atención' },
+                    { name: 'EIS Cúcuta / Veolia Cúcuta', url: 'https://www.veolia.com.co/cucuta', desc: 'pago de agua y aseo urbano' },
+                    { name: 'CENS (Grupo EPM)', url: 'https://www.cens.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Gases del Oriente', url: 'https://www.gaspaisas.com.co', desc: 'pago de factura de gas domiciliario' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Tránsito de Cúcuta', url: 'https://cucuta.gov.co/transito', desc: 'consultas, comparendos y pico y placa' }
+                ]
             },
             'ibague': {
-                'impuestos': [{ name: 'Alcaldía de Ibagué - Predial', url: 'https://ibague.gov.co', desc: 'pago de impuesto predial' }],
-                'hogar': [{ name: 'Alcaldía de Ibagué', url: 'https://ibague.gov.co', desc: 'portal único de servicios' }],
-                'movilidad': [{ name: 'Secretaría de Movilidad de Ibagué', url: 'https://ibague.gov.co/movilidad', desc: 'trámites y pico y placa' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Ibagué - Predial', url: 'https://ibague.gov.co', desc: 'pago de impuesto predial unificado' },
+                    { name: 'Gobernación del Tolima', url: 'https://www.tolima.gov.co', desc: 'impuesto sobre vehículos automotores' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Ibagué', url: 'https://ibague.gov.co', desc: 'portal único de servicios' },
+                    { name: 'IBAL (Empresa Ibaguereña de Acueducto)', url: 'https://www.ibal.gov.co', desc: 'pago y duplicado de factura de agua' },
+                    { name: 'CELSIA', url: 'https://www.celsia.com', desc: 'pago de servicio de energía eléctrica' },
+                    { name: 'Alcanos de Colombia', url: 'https://www.alcanos.com.co', desc: 'pago de factura de gas natural' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Movilidad de Ibagué', url: 'https://ibague.gov.co/movilidad', desc: 'trámites, trámites RUNT y pico y placa' }
+                ]
             },
             'santamarta': {
-                'impuestos': [{ name: 'Alcaldía de Santa Marta - Hacienda', url: 'https://santamarta.gov.co', desc: 'impuestos distritales' }],
-                'hogar': [{ name: 'Alcaldía de Santa Marta', url: 'https://santamarta.gov.co', desc: 'portal distrital' }],
-                'movilidad': [{ name: 'STTM Santa Marta', url: 'https://santamarta.gov.co/transito', desc: 'trámites de tránsito' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Santa Marta - Hacienda', url: 'https://santamarta.gov.co', desc: 'impuestos distritales y predial' },
+                    { name: 'Gobernación del Magdalena', url: 'https://www.magdalena.gov.co', desc: 'impuesto vehicular del departamento' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Santa Marta', url: 'https://santamarta.gov.co', desc: 'portal distrital institucional' },
+                    { name: 'ESSMAR E.S.P.', url: 'https://www.essmar.gov.co', desc: 'servicios de acueducto y alcantarillado' },
+                    { name: 'Air-e', url: 'https://www.air-e.com', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Gases del Caribe', url: 'https://www.gascaribe.com', desc: 'pago de factura de gas domiciliario' }
+                ],
+                'movilidad': [
+                    { name: 'STTM Santa Marta', url: 'https://santamarta.gov.co/transito', desc: 'trámites de tránsito y movilidad' }
+                ]
             },
             'pasto': {
-                'impuestos': [{ name: 'Alcaldía de Pasto - Hacienda', url: 'https://pasto.gov.co', desc: 'impuesto predial municipal' }],
-                'hogar': [{ name: 'Alcaldía de Pasto', url: 'https://pasto.gov.co', desc: 'portal institucional' }],
-                'movilidad': [{ name: 'Subsecretaría de Tránsito de Pasto', url: 'https://pasto.gov.co/transito', desc: 'servicios de movilidad' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Pasto - Hacienda', url: 'https://pasto.gov.co', desc: 'impuesto predial municipal' },
+                    { name: 'Gobernación de Nariño', url: 'https://www.narino.gov.co', desc: 'impuesto vehicular de Nariño' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Pasto', url: 'https://pasto.gov.co', desc: 'portal institucional' },
+                    { name: 'EMPOPASTO', url: 'https://www.empopasto.com.co', desc: 'pago de factura de acueducto y alcantarillado' },
+                    { name: 'CEDENAR', url: 'https://www.cedenar.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Alcanos de Colombia', url: 'https://www.alcanos.com.co', desc: 'pago de servicio de gas domiciliario' }
+                ],
+                'movilidad': [
+                    { name: 'Subsecretaría de Tránsito de Pasto', url: 'https://pasto.gov.co/transito', desc: 'servicios de movilidad y comparendos' }
+                ]
             },
             'villavicencio': {
-                'impuestos': [{ name: 'Alcaldía de Villavicencio - Impuestos', url: 'https://villavicencio.gov.co', desc: 'impuesto predial unificado' }],
-                'hogar': [{ name: 'Alcaldía de Villavicencio', url: 'https://villavicencio.gov.co', desc: 'portal del municipio' }],
-                'movilidad': [{ name: 'Secretaría de Movilidad Villavicencio', url: 'https://villavicencio.gov.co/movilidad', desc: 'servicios de tránsito' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Villavicencio - Impuestos', url: 'https://villavicencio.gov.co', desc: 'impuesto predial unificado' },
+                    { name: 'Gobernación del Meta', url: 'https://www.meta.gov.co', desc: 'impuesto sobre vehículos automotores' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Villavicencio', url: 'https://villavicencio.gov.co', desc: 'portal del municipio' },
+                    { name: 'EAAV (Empresa de Acueducto de Villavicencio)', url: 'https://www.eaav.gov.co', desc: 'pago de factura de agua' },
+                    { name: 'EMSA (Electrificadora del Meta)', url: 'https://www.emsa.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Llanogas', url: 'https://www.llanogas.com', desc: 'pago y trámites de gas domiciliario' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Movilidad Villavicencio', url: 'https://villavicencio.gov.co/movilidad', desc: 'servicios de tránsito y pico y placa' }
+                ]
             },
             'valledupar': {
-                'impuestos': [{ name: 'Alcaldía de Valledupar - Impuestos', url: 'https://valledupar.gov.co', desc: 'pago de predial' }],
-                'hogar': [{ name: 'Alcaldía de Valledupar', url: 'https://valledupar.gov.co', desc: 'portal único de atención' }],
-                'movilidad': [{ name: 'Tránsito Valledupar', url: 'https://valledupar.gov.co/transito', desc: 'trámites y servicios' }]
+                'impuestos': [
+                    { name: 'Alcaldía de Valledupar - Impuestos', url: 'https://valledupar.gov.co', desc: 'pago de predial e ICA' },
+                    { name: 'Gobernación del Cesar', url: 'https://www.cesar.gov.co', desc: 'impuesto sobre vehículos automotores' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Valledupar', url: 'https://valledupar.gov.co', desc: 'portal único de atención' },
+                    { name: 'EMDUPAR', url: 'https://www.emdupar.gov.co', desc: 'pago de factura de acueducto y alcantarillado' },
+                    { name: 'Afinia (Grupo EPM)', url: 'https://www.afinia.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Gases del Caribe', url: 'https://www.gascaribe.com', desc: 'pago de factura de gas natural' }
+                ],
+                'movilidad': [
+                    { name: 'Tránsito Valledupar', url: 'https://valledupar.gov.co/transito', desc: 'trámites, comparendos y movilidad' }
+                ]
             }
         };
 
         // Asignación de textos y títulos
-        document.getElementById('cityName').textContent = cityNames[cityParam] || cityParam;
+        const readableCityName = cityNames[cityParam] || cityParam;
+        document.getElementById('cityName').textContent = readableCityName;
         document.getElementById('categoryName').textContent = catNames[catParam] || 'Trámites locales';
 
         // Configuración de la imagen de la ciudad
@@ -380,12 +485,12 @@
         const imgPath = cityImages[cityParam] || `img/${cityParam}.jpg`;
         
         imgElement.src = imgPath;
-        imgElement.alt = `Fotografía de ${cityNames[cityParam] || cityParam}`;
+        imgElement.alt = `Fotografía de ${readableCityName}`;
         
-        // Asignar el texto de crédito (si no hay crédito explícito, muestra texto genérico)
+        // Asignar crédito dinámico
         creditElement.innerHTML = cityCredits[cityParam] || 'Foto: Archivo público / Fuente municipal';
 
-        // Si la imagen no carga/no existe localmente, oculta todo el contenedor junto con el crédito
+        // Si la imagen falla al cargar, oculta el bloque completo
         imgElement.onerror = function() {
             document.getElementById('cityBannerWrapper').style.display = 'none';
         };
@@ -404,6 +509,17 @@
                 container.appendChild(li);
             });
         }
+
+        // Lógica para enviar la búsqueda personalizada a Google filtrando por la ciudad activa
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            const userInput = document.getElementById('searchInput').value.trim();
+            if (!userInput) {
+                e.preventDefault();
+                return;
+            }
+            // Agrega el nombre de la ciudad a la consulta de búsqueda
+            document.getElementById('hiddenQuery').value = `${userInput} ${readableCityName}`;
+        });
     </script>
 
 </body>
