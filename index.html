@@ -97,15 +97,15 @@
     line-height: 1;
     margin-bottom: 10px;
     
-    /* Transición suave para el texto y parpadeo progresivo para el cursor */
+    /* El parpadeo dura lo mismo que el tipeo (1.2s) y usa 'forwards' para quedarse transparente al final */
     animation: 
         typing 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards, 
-        blink 0.8s ease-in-out infinite alternate;
+        blink 0.3s ease-in-out 4 alternate forwards;
 }
 
 @keyframes typing {
     from { width: 0; }
-    to { width: 150px; } /* Ajustado al ancho final */
+    to { width: 150px; }
 }
 
 @keyframes blink {
