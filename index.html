@@ -262,16 +262,31 @@
             box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
         }
 
-        /* Envoltorio del botón de reporte en el sidebar */
-        .report-btn-wrapper {
-            margin-top: 10px;
+        /* Envoltorio de botones del sidebar */
+        .sidebar-links-wrapper {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             text-align: center;
         }
 
         @media (min-width: 768px) {
-            .report-btn-wrapper {
+            .sidebar-links-wrapper {
                 text-align: left;
             }
+        }
+
+        .sidebar-btn {
+            background: none;
+            border: none;
+            color: #0000ee;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            padding: 0;
+            text-align: inherit;
         }
 
         /* Mensaje cuando la búsqueda no coincide */
@@ -284,9 +299,23 @@
             font-style: italic;
         }
 
-        /* Estilos del Modal de Reporte (<dialog>) */
+        /* Estilos de Modales (<dialog>) */
         dialog::backdrop {
             background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Ajustes visuales para el modal de bienvenida */
+        .welcome-list {
+            text-align: left;
+            padding-left: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+            margin: 15px 0;
+        }
+
+        .welcome-list li {
+            margin-bottom: 10px;
         }
 
         footer {
@@ -301,7 +330,7 @@
 
     <div class="container">
         
-        <!-- Sidebar: Identidad, Buscador y Reporte -->
+        <!-- Sidebar: Identidad, Buscador y Accesos Directos -->
         <aside class="sidebar">
             <div class="logo-container">
                 <div class="typewriter-text">24col</div>
@@ -315,9 +344,12 @@
                 </form>
             </div>
 
-            <!-- Botón para abrir el modal de reporte ubicado debajo del buscador -->
-            <div class="report-btn-wrapper">
-                <button id="openReportModal" style="background: none; border: none; color: #0000ee; text-decoration: underline; cursor: pointer; font-size: 12px; font-family: inherit; padding: 0; text-align: inherit;">
+            <!-- Botones del sidebar -->
+            <div class="sidebar-links-wrapper">
+                <button id="openWelcomeModal" class="sidebar-btn">
+                    ℹ️ ¿Cómo funciona 24col?
+                </button>
+                <button id="openReportModal" class="sidebar-btn">
                     💬 ¿Enlace caído o sugerencia? Repórtalo aquí
                 </button>
             </div>
@@ -373,7 +405,27 @@
 
     </div>
 
-    <!-- Modal Formulario de Reporte (<dialog>) -->
+    <!-- Modal 1: Bienvenida e Información del sitio -->
+    <dialog id="welcomeModal" style="border: 1px solid #000; border-radius: 6px; padding: 20px; max-width: 440px; width: 90%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <h3 style="margin: 0; font-size: 19px; color: #000;">¡Bienvenido a 24col! 🇨🇴</h3>
+            <button id="closeWelcomeModalCross" style="background: none; border: none; font-size: 18px; cursor: pointer; font-weight: bold; line-height: 1;">&times;</button>
+        </div>
+
+        <p style="text-align: left; font-size: 13px; line-height: 1.5; color: #333; margin-top: 15px;">
+            <strong>24col</strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta
+        </p>
+
+        <ul class="welcome-list">
+            <li><strong>🟢 Verificación en Vivo:</strong> Cada enlace cuenta con un indicador de estado en tiempo real. Sabrás si la plataforma gubernamental está activa antes de hacer clic.</li>
+            <li><strong>🔒 Enlaces Oficiales y Directos:</strong> Todos los portales listados pertenecen directamente a entes territoriales y nacionales (.gov.co).</li>
+            <li><strong>⚡ Sin Colas ni Enredos:</strong> Accede a tu alcaldía, Gobernación, RUNT o DIAN filtrando por nombre o tu ciudad.</li>
+        </ul>
+
+        <button id="closeWelcomeModalBtn" style="width: 100%; background-color: #000; color: #fff; border: none; padding: 10px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 13px; margin-top: 5px;">Entendido, comenzar</button>
+    </dialog>
+
+    <!-- Modal 2: Formulario de Reporte (<dialog>) -->
     <dialog id="reportModal" style="border: 1px solid #000; border-radius: 6px; padding: 20px; max-width: 400px; width: 90%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
             <h3 style="margin: 0; font-size: 15px; color: #000;">Reportar o Sugerir</h3>
@@ -415,11 +467,59 @@
 
     <!-- Pie de página -->
     <footer>
-        &copy; 2026 (24col) | Navega por los servicios del país de forma clara, rápida y sin tanta vuelta | RECHACE IMITACIONES | Por: jahp
+        &copy; 2026 (24col) | versión 1.0 | RECHACE IMITACIONES | Por: jahp
     </footer>
 
     <script src="report-modal.js"></script>
     <script src="script.js"></script>
+
+    <!-- Lógica del Modal de Bienvenida -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeModal = document.getElementById('welcomeModal');
+            const openWelcomeBtn = document.getElementById('openWelcomeModal');
+            const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
+            const closeWelcomeCross = document.getElementById('closeWelcomeModalCross');
+
+            // 1. Mostrar automáticamente si es la primera visita
+            if (!localStorage.getItem('welcomeShown')) {
+                setTimeout(() => {
+                    if (welcomeModal && typeof welcomeModal.showModal === 'function') {
+                        welcomeModal.showModal();
+                    }
+                }, 400);
+            }
+
+            // 2. Función para cerrar y recordar en localStorage
+            function closeWelcome() {
+                welcomeModal.close();
+                localStorage.setItem('welcomeShown', 'true');
+            }
+
+            if (closeWelcomeBtn) closeWelcomeBtn.addEventListener('click', closeWelcome);
+            if (closeWelcomeCross) closeWelcomeCross.addEventListener('click', closeWelcome);
+
+            // 3. Abrir de manera manual mediante el botón del sidebar
+            if (openWelcomeBtn) {
+                openWelcomeBtn.addEventListener('click', () => {
+                    welcomeModal.showModal();
+                });
+            }
+
+            // 4. Cerrar haciendo clic por fuera del diálogo
+            welcomeModal.addEventListener('click', (e) => {
+                const rect = welcomeModal.getBoundingClientRect();
+                if (
+                    e.clientX < rect.left ||
+                    e.clientX > rect.right ||
+                    e.clientY < rect.top ||
+                    e.clientY > rect.bottom
+                ) {
+                    closeWelcome();
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
