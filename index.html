@@ -206,6 +206,7 @@
             background-color: #f9f9f9;
             border: 1px solid #eeeeee;
             font-size: 14px;
+            line-height: 1.7;
             animation: fadeInDown 0.3s ease-out;
         }
 
@@ -324,42 +325,21 @@
                 <div class="category-item searchable-category">
                     <details>
                         <summary>Impuestos Regionales <span class="category-desc">- Vehículos, Predial, Licorera</span></summary>
-                        <div class="cities-menu">
-                            Selecciona tu ubicación: <br>
-                            <a href="ciudad.html?cat=impuestos&amp;city=bogota">Bogotá D.C.</a> | 
-                            <a href="ciudad.html?cat=impuestos&amp;city=medellin">Medellín / Ant.</a> | 
-                            <a href="ciudad.html?cat=impuestos&amp;city=cali">Cali / Valle</a> | 
-                            <a href="ciudad.html?cat=impuestos&amp;city=barranquilla">Barranquilla / Atl.</a> | 
-                            <a href="ciudad.html?cat=impuestos&amp;city=monteria">Montería / Cór.</a>
-                        </div>
+                        <div class="cities-menu" data-category="impuestos" data-show-dept="true"></div>
                     </details>
                 </div>
 
                 <div class="category-item searchable-category">
                     <details>
                         <summary>Servicios Públicos <span class="category-desc">- Agua, Luz, Gas y Alcaldías</span></summary>
-                        <div class="cities-menu">
-                            Selecciona tu ubicación: <br>
-                            <a href="ciudad.html?cat=hogar&amp;city=bogota">Bogotá D.C.</a> | 
-                            <a href="ciudad.html?cat=hogar&amp;city=medellin">Medellín</a> | 
-                            <a href="ciudad.html?cat=hogar&amp;city=cali">Cali</a> | 
-                            <a href="ciudad.html?cat=hogar&amp;city=barranquilla">Barranquilla</a> | 
-                            <a href="ciudad.html?cat=hogar&amp;city=monteria">Montería</a>
-                        </div>
+                        <div class="cities-menu" data-category="hogar"></div>
                     </details>
                 </div>
 
                 <div class="category-item searchable-category">
                     <details>
                         <summary>Movilidad y Tránsito Local <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span></summary>
-                        <div class="cities-menu">
-                            Selecciona tu ubicación: <br>
-                            <a href="ciudad.html?cat=movilidad&amp;city=bogota">Bogotá D.C.</a> | 
-                            <a href="ciudad.html?cat=movilidad&amp;city=medellin">Medellín</a> | 
-                            <a href="ciudad.html?cat=movilidad&amp;city=cali">Cali</a> | 
-                            <a href="ciudad.html?cat=movilidad&amp;city=barranquilla">Barranquilla</a> | 
-                            <a href="ciudad.html?cat=movilidad&amp;city=monteria">Montería</a>
-                        </div>
+                        <div class="cities-menu" data-category="movilidad"></div>
                     </details>
                 </div>
 
@@ -371,7 +351,7 @@
 
     <!-- Pie de página -->
     <footer>
-        &copy; 2026 (24col) - Iniciativa independiente para el pueblo colombiano · Por: jahp
+        &copy; 2026 (24col) | Iniciativa independiente para el pueblo colombiano | RECHACE IMITACIONES | Por: jahp
     </footer>
 
     <script src="script.js"></script>
