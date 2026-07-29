@@ -192,16 +192,26 @@
     <script>
         // Lectura de parámetros URL (?cat=...&city=...)
         const urlParams = new URLSearchParams(window.location.search);
-        const cityParam = urlParams.get('city') || 'monteria';
+        const cityParam = urlParams.get('city') || 'bogota';
         const catParam = urlParams.get('cat') || 'impuestos';
 
-        // Mapeo de nombres legibles para la cabecera
+        // Mapeo de nombres legibles para la cabecera (15 Ciudades)
         const cityNames = {
             'bogota': 'Bogotá D.C.',
             'medellin': 'Medellín / Antioquia',
             'cali': 'Cali / Valle del Cauca',
             'barranquilla': 'Barranquilla / Atlántico',
-            'monteria': 'Montería / Córdoba'
+            'cartagena': 'Cartagena / Bolívar',
+            'bucaramanga': 'Bucaramanga / Santander',
+            'pereira': 'Pereira / Risaralda',
+            'manizales': 'Manizales / Caldas',
+            'cucuta': 'Cúcuta / Norte de Santander',
+            'ibague': 'Ibagué / Tolima',
+            'santamarta': 'Santa Marta / Magdalena',
+            'monteria': 'Montería / Córdoba',
+            'pasto': 'Pasto / Nariño',
+            'villavicencio': 'Villavicencio / Meta',
+            'valledupar': 'Valledupar / Cesar'
         };
 
         // Mapeo de imágenes por ciudad
@@ -210,10 +220,20 @@
             'medellin': 'img/MEDELLIN.jpeg',
             'cali': 'img/CALIVALLE.jpeg',
             'barranquilla': 'img/BARRANQUILLA.jpeg',
-            'monteria': 'img/MONTERIA.jpeg'
+            'cartagena': 'img/CARTAGENA.jpg',
+            'bucaramanga': 'img/BUCARAMANGA.jpg',
+            'pereira': 'img/PEREIRA.jpg',
+            'manizales': 'img/MANIZALES.jpg',
+            'cucuta': 'img/CUCUTA.jpg',
+            'ibague': 'img/IBAGUE.jpg',
+            'santamarta': 'img/SANTAMARTA.jpg',
+            'monteria': 'img/MONTERIA.jpeg',
+            'pasto': 'img/PASTO.jpg',
+            'villavicencio': 'img/VILLAVICENCIO.jpg',
+            'valledupar': 'img/VALLEDUPAR.jpg'
         };
 
-        // Créditos de las imágenes por ciudad (Puedes ingresar texto o HTML ligero como enlaces)
+        // Créditos de las imágenes por ciudad
         const cityCredits = {
             'bogota': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:BOGOTA_CITY.jpg">KEVIN CASTAÑEDA VILLAMIL</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons',
             'medellin': '<a href="https://commons.wikimedia.org/wiki/File:Medell%C3%ADn-1.jpg">Michu2709</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons',
@@ -230,21 +250,6 @@
 
         // Base de datos de portales organizada por [ciudad][categoría]
         const linksData = {
-            'monteria': {
-                'impuestos': [
-                    { name: 'Alcaldía de Montería - Impuesto Predial', url: 'https://www.monteria.gov.co', desc: 'descarga y pago de factura predial unificada' },
-                    { name: 'Gobernación de Córdoba - Impuesto Vehicular', url: 'https://www.cordoba.gov.co', desc: 'liquidación y pago de impuesto de vehículos' }
-                ],
-                'hogar': [
-                    { name: 'Alcaldía de Montería (Portal Oficial)', url: 'https://www.monteria.gov.co', desc: 'trámites, ventanilla única y boletines' },
-                    { name: 'Veolia Montería', url: 'https://www.veolia.com.co/monteria', desc: 'pago de factura de acueducto y alcantarillado' },
-                    { name: 'Afinia (Grupo EPM)', url: 'https://www.afinia.com.co', desc: 'pago de factura de energía eléctrica' },
-                    { name: 'Surtigas', url: 'https://www.surtigas.com.co', desc: 'pago y gestión de servicio de gas natural' }
-                ],
-                'movilidad': [
-                    { name: 'Secretaría de Tránsito de Montería', url: 'https://www.monteria.gov.co/transito', desc: 'consulta de pico y placa, trámites y acuerdos de pago' }
-                ]
-            },
             'bogota': {
                 'impuestos': [
                     { name: 'Secretaría de Hacienda (DIB)', url: 'https://www.haciendabogota.gov.co', desc: 'pago de impuesto predial y vehículos Bogotá' }
@@ -297,6 +302,71 @@
                 'movilidad': [
                     { name: 'Secretaría de Tránsito de Barranquilla', url: 'https://www.barranquilla.gov.co/transito', desc: 'trámites y consultas de movilidad' }
                 ]
+            },
+            'monteria': {
+                'impuestos': [
+                    { name: 'Alcaldía de Montería - Impuesto Predial', url: 'https://www.monteria.gov.co', desc: 'descarga y pago de factura predial unificada' },
+                    { name: 'Gobernación de Córdoba - Impuesto Vehicular', url: 'https://www.cordoba.gov.co', desc: 'liquidación y pago de impuesto de vehículos' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Montería (Portal Oficial)', url: 'https://www.monteria.gov.co', desc: 'trámites, ventanilla única y boletines' },
+                    { name: 'Veolia Montería', url: 'https://www.veolia.com.co/monteria', desc: 'pago de factura de acueducto y alcantarillado' },
+                    { name: 'Afinia (Grupo EPM)', url: 'https://www.afinia.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Surtigas', url: 'https://www.surtigas.com.co', desc: 'pago y gestión de servicio de gas natural' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Tránsito de Montería', url: 'https://www.monteria.gov.co/transito', desc: 'consulta de pico y placa, trámites y acuerdos de pago' }
+                ]
+            },
+            'cartagena': {
+                'impuestos': [{ name: 'Alcaldía de Cartagena - Hacienda', url: 'https://www.cartagena.gov.co', desc: 'impuesto predial e ICA' }],
+                'hogar': [{ name: 'Alcaldía de Cartagena', url: 'https://www.cartagena.gov.co', desc: 'portal oficial distrital' }],
+                'movilidad': [{ name: 'DATT Cartagena', url: 'https://www.transitocartagena.gov.co', desc: 'trámites y comparendos' }]
+            },
+            'bucaramanga': {
+                'impuestos': [{ name: 'Alcaldía de Bucaramanga - Impuestos', url: 'https://www.bucaramanga.gov.co', desc: 'pago predial e impuestos locales' }],
+                'hogar': [{ name: 'Alcaldía de Bucaramanga', url: 'https://www.bucaramanga.gov.co', desc: 'portal oficial del municipio' }],
+                'movilidad': [{ name: 'Tránsito Bucaramanga', url: 'https://www.transitobucaramanga.gov.co', desc: 'trámites y servicios de movilidad' }]
+            },
+            'pereira': {
+                'impuestos': [{ name: 'Alcaldía de Pereira - Hacienda', url: 'https://www.pereira.gov.co', desc: 'impuesto predial y tributos' }],
+                'hogar': [{ name: 'Alcaldía de Pereira', url: 'https://www.pereira.gov.co', desc: 'portal oficial municipal' }],
+                'movilidad': [{ name: 'Instituto de Tránsito de Pereira', url: 'https://www.pereira.gov.co/transito', desc: 'trámites de movilidad' }]
+            },
+            'manizales': {
+                'impuestos': [{ name: 'Alcaldía de Manizales - Hacienda', url: 'https://manizales.gov.co', desc: 'impuesto predial y consulta tributaria' }],
+                'hogar': [{ name: 'Alcaldía de Manizales', url: 'https://manizales.gov.co', desc: 'portal institucional' }],
+                'movilidad': [{ name: 'STT Manizales', url: 'https://manizales.gov.co/transito', desc: 'servicios de tránsito' }]
+            },
+            'cucuta': {
+                'impuestos': [{ name: 'Alcaldía de Cúcuta - Impuestos', url: 'https://cucuta.gov.co', desc: 'impuesto predial' }],
+                'hogar': [{ name: 'Alcaldía de Cúcuta', url: 'https://cucuta.gov.co', desc: 'portal municipal de atención' }],
+                'movilidad': [{ name: 'Secretaría de Tránsito de Cúcuta', url: 'https://cucuta.gov.co/transito', desc: 'consultas y trámites' }]
+            },
+            'ibague': {
+                'impuestos': [{ name: 'Alcaldía de Ibagué - Predial', url: 'https://ibague.gov.co', desc: 'pago de impuesto predial' }],
+                'hogar': [{ name: 'Alcaldía de Ibagué', url: 'https://ibague.gov.co', desc: 'portal único de servicios' }],
+                'movilidad': [{ name: 'Secretaría de Movilidad de Ibagué', url: 'https://ibague.gov.co/movilidad', desc: 'trámites y pico y placa' }]
+            },
+            'santamarta': {
+                'impuestos': [{ name: 'Alcaldía de Santa Marta - Hacienda', url: 'https://santamarta.gov.co', desc: 'impuestos distritales' }],
+                'hogar': [{ name: 'Alcaldía de Santa Marta', url: 'https://santamarta.gov.co', desc: 'portal distrital' }],
+                'movilidad': [{ name: 'STTM Santa Marta', url: 'https://santamarta.gov.co/transito', desc: 'trámites de tránsito' }]
+            },
+            'pasto': {
+                'impuestos': [{ name: 'Alcaldía de Pasto - Hacienda', url: 'https://pasto.gov.co', desc: 'impuesto predial municipal' }],
+                'hogar': [{ name: 'Alcaldía de Pasto', url: 'https://pasto.gov.co', desc: 'portal institucional' }],
+                'movilidad': [{ name: 'Subsecretaría de Tránsito de Pasto', url: 'https://pasto.gov.co/transito', desc: 'servicios de movilidad' }]
+            },
+            'villavicencio': {
+                'impuestos': [{ name: 'Alcaldía de Villavicencio - Impuestos', url: 'https://villavicencio.gov.co', desc: 'impuesto predial unificado' }],
+                'hogar': [{ name: 'Alcaldía de Villavicencio', url: 'https://villavicencio.gov.co', desc: 'portal del municipio' }],
+                'movilidad': [{ name: 'Secretaría de Movilidad Villavicencio', url: 'https://villavicencio.gov.co/movilidad', desc: 'servicios de tránsito' }]
+            },
+            'valledupar': {
+                'impuestos': [{ name: 'Alcaldía de Valledupar - Impuestos', url: 'https://valledupar.gov.co', desc: 'pago de predial' }],
+                'hogar': [{ name: 'Alcaldía de Valledupar', url: 'https://valledupar.gov.co', desc: 'portal único de atención' }],
+                'movilidad': [{ name: 'Tránsito Valledupar', url: 'https://valledupar.gov.co/transito', desc: 'trámites y servicios' }]
             }
         };
 
@@ -312,17 +382,17 @@
         imgElement.src = imgPath;
         imgElement.alt = `Fotografía de ${cityNames[cityParam] || cityParam}`;
         
-        // Asignar el texto de crédito
-        creditElement.innerHTML = cityCredits[cityParam] || 'Foto: Crédito de la imagen';
+        // Asignar el texto de crédito (si no hay crédito explícito, muestra texto genérico)
+        creditElement.innerHTML = cityCredits[cityParam] || 'Foto: Archivo público / Fuente municipal';
 
-        // Si la imagen no carga/no existe, oculta todo el contenedor junto con el crédito
+        // Si la imagen no carga/no existe localmente, oculta todo el contenedor junto con el crédito
         imgElement.onerror = function() {
             document.getElementById('cityBannerWrapper').style.display = 'none';
         };
 
         // Renderizado del listado de enlaces
         const container = document.getElementById('linksContainer');
-        const cityObj = linksData[cityParam] || linksData['monteria'];
+        const cityObj = linksData[cityParam] || linksData['bogota'];
         const list = cityObj[catParam] || cityObj['impuestos'] || [];
 
         if (list.length === 0) {
