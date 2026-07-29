@@ -28,6 +28,8 @@
             --modal-bg: #ffffff;
             --footer-color: #555555;
             --shadow-color: rgba(0, 0, 0, 0.15);
+            --ok-color: #22c55e;
+            --svg-filter: none;
         }
 
         [data-theme="dark"] {
@@ -42,6 +44,8 @@
             --modal-bg: #1e1e1e;
             --footer-color: #888888;
             --shadow-color: rgba(0, 0, 0, 0.6);
+            --ok-color: #4ade80; /* Tono verde ligeramente más suave y equilibrado para fondos oscuros */
+            --svg-filter: invert(1) hue-rotate(180deg); /* Invierte los colores de la imagen SVG manteniendo matices coherentes */
         }
 
         html, body {
@@ -65,7 +69,7 @@
         .container {
             max-width: 900px;
             margin: 0 auto;
-            flex: 1; /* Empuja el footer hacia abajo */
+            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 30px;
@@ -126,7 +130,6 @@
             line-height: 1;
             margin-bottom: 10px;
             
-            /* Animación fluida de escritura y parpadeo controlado por tiempo */
             animation: 
                 typing 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards, 
                 blink 0.3s ease-in-out 4 alternate,
@@ -135,7 +138,7 @@
 
         @keyframes typing {
             from { width: 0; }
-            to { width: 150px; } /* Ajustado para la anchura de Archivo Black */
+            to { width: 150px; }
         }
 
         @keyframes blink {
@@ -153,6 +156,8 @@
             opacity: 0;
             animation: fadeInImage 0.5s ease forwards;
             animation-delay: 1.3s;
+            filter: var(--svg-filter); /* Aplica la inversión de colores en modo oscuro */
+            transition: filter 0.2s ease;
         }
 
         @keyframes fadeInImage {
@@ -308,7 +313,6 @@
             }
         }
 
-        /* Estilo optimizado para botones del sidebar alineando iconos SVG */
         .sidebar-btn {
             background: none;
             border: none;
@@ -330,7 +334,6 @@
             fill: none;
         }
 
-        /* Mensaje cuando la búsqueda no coincide */
         .no-results {
             display: none;
             text-align: left;
@@ -340,7 +343,6 @@
             font-style: italic;
         }
 
-        /* Estilos de Modales (<dialog>) */
         dialog {
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -377,7 +379,6 @@
             color: var(--text-color);
         }
 
-        /* Ajustes visuales para el modal de bienvenida */
         .welcome-list {
             text-align: left;
             padding-left: 20px;
@@ -389,14 +390,6 @@
 
         .welcome-list li {
             margin-bottom: 10px;
-        }
-
-        .flag-icon {
-            display: inline-block;
-            vertical-align: middle;
-            margin-left: 3px;
-            border-radius: 1px;
-            box-shadow: 0 0 1px rgba(0,0,0,0.4);
         }
 
         .modal-action-btn {
@@ -435,7 +428,6 @@
 
     <div class="container">
         
-        <!-- Sidebar: Identidad, Buscador y Accesos Directos -->
         <aside class="sidebar">
             <div class="logo-container">
                 <div class="typewriter-text">24col</div>
@@ -449,7 +441,6 @@
                 </form>
             </div>
 
-            <!-- Botones del sidebar con SVG inline integrados -->
             <div class="sidebar-links-wrapper">
                 <button id="themeToggleBtn" class="sidebar-btn" type="button">
                     <svg id="themeIconSun" width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none;">
@@ -485,12 +476,10 @@
             </div>
         </aside>
 
-        <!-- Contenido Principal: Listado de Trámites -->
         <main class="main-content">
 
             <div id="noResultsMsg" class="no-results">No se encontraron trámites o ciudades que coincidan con la búsqueda.</div>
 
-            <!-- SECCIÓN 1: Portal Nacional (Acceso Directo) -->
             <div class="section-title" id="nationalSectionTitle">Trámites Nacionales (Toda Colombia)</div>
             
             <div class="national-links" id="nationalLinksBlock">
@@ -503,7 +492,6 @@
                 </ul>
             </div>
 
-            <!-- SECCIÓN 2: Portales Locales / Departamentales -->
             <div class="section-title" id="regionalSectionTitle">Trámites Específicos por Ciudad o Departamento</div>
 
             <div class="categories-list" id="regionalCategoriesBlock">
@@ -535,7 +523,6 @@
 
     </div>
 
-    <!-- Modal 1: Bienvenida e Información del sitio -->
     <dialog id="welcomeModal" style="max-width: 440px; width: 90%;">
         <div class="modal-header">
             <h3 style="font-size: 25px;">¡Bienvenido a 24col!</h3>
@@ -543,22 +530,19 @@
         </div>
 
         <p style="text-align: left; font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin-top: 15px;">
-            <strong>24col 
-            </strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta
+            <strong>24col</strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta.
         </p>
 
         <ul class="welcome-list">
             <li>
                 <strong>
-                    <!-- SVG Estado Activo (Punto verde) -->
                     <svg width="12" height="12" viewBox="0 0 12 12" style="display:inline-block; vertical-align:middle; margin-right:4px;" aria-hidden="true">
-                        <circle cx="6" cy="6" r="5" fill="#22c55e"/>
+                        <circle cx="6" cy="6" r="5" fill="var(--ok-color)"/>
                     </svg> Verificación en Vivo:
                 </strong> Cada enlace cuenta con un indicador de estado en tiempo real. Sabrás si la plataforma gubernamental está activa antes de hacer clic.
             </li>
             <li>
                 <strong>
-                    <!-- SVG Candado de Seguridad -->
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;" aria-hidden="true">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -567,7 +551,6 @@
             </li>
             <li>
                 <strong>
-                    <!-- SVG Rayo (Velocidad) -->
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;" aria-hidden="true">
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                     </svg> Sin Colas ni Enredos:
@@ -578,16 +561,13 @@
         <button id="closeWelcomeModalBtn" class="modal-action-btn">Entendido, comenzar</button>
     </dialog>
 
-    <!-- Modal 2: Formulario de Reporte (<dialog>) -->
     <dialog id="reportModal" style="max-width: 400px; width: 90%;">
         <div class="modal-header" style="margin-bottom: 15px;">
             <h3 style="font-size: 15px;">Reportar o Sugerir</h3>
             <button id="closeReportModal" class="modal-close-btn">&times;</button>
         </div>
         
-        <!-- Formulario configurado con FormSubmit -->
         <form id="reportForm" action="https://formsubmit.co/f1436e71ac9dbf4686af7cefd0c802fe" method="POST">
-            <!-- Campos de configuración ocultos -->
             <input type="hidden" name="_subject" value="Nuevo reporte en 24col">
             <input type="hidden" name="_captcha" value="false">
 
@@ -618,7 +598,6 @@
         </div>
     </dialog>
 
-    <!-- Pie de página -->
     <footer>
         &copy; 2026 (24col) | versión 1.0 | RECHACE IMITACIONES | Por: jahp
     </footer>
@@ -626,7 +605,6 @@
     <script src="report-modal.js"></script>
     <script src="script.js"></script>
 
-    <!-- Lógica del Modo Oscuro -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -648,14 +626,12 @@
                 }
             }
 
-            // Detectar preferencia guardada o del sistema operativo
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             
             const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
             updateThemeUI(currentTheme);
 
-            // Toggle al hacer clic
             if (themeToggleBtn) {
                 themeToggleBtn.addEventListener('click', () => {
                     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -667,7 +643,6 @@
         });
     </script>
 
-    <!-- Lógica del Modal de Bienvenida -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const welcomeModal = document.getElementById('welcomeModal');
@@ -675,7 +650,6 @@
             const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
             const closeWelcomeCross = document.getElementById('closeWelcomeModalCross');
 
-            // 1. Mostrar automáticamente si es la primera visita
             if (!localStorage.getItem('welcomeShown')) {
                 setTimeout(() => {
                     if (welcomeModal && typeof welcomeModal.showModal === 'function') {
@@ -684,7 +658,6 @@
                 }, 400);
             }
 
-            // 2. Función para cerrar y recordar en localStorage
             function closeWelcome() {
                 welcomeModal.close();
                 localStorage.setItem('welcomeShown', 'true');
@@ -693,14 +666,12 @@
             if (closeWelcomeBtn) closeWelcomeBtn.addEventListener('click', closeWelcome);
             if (closeWelcomeCross) closeWelcomeCross.addEventListener('click', closeWelcome);
 
-            // 3. Abrir de manera manual mediante el botón del sidebar
             if (openWelcomeBtn) {
                 openWelcomeBtn.addEventListener('click', () => {
                     welcomeModal.showModal();
                 });
             }
 
-            // 4. Cerrar haciendo clic por fuera del diálogo
             welcomeModal.addEventListener('click', (e) => {
                 const rect = welcomeModal.getBoundingClientRect();
                 if (
