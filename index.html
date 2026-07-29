@@ -44,8 +44,8 @@
             --modal-bg: #1e1e1e;
             --footer-color: #888888;
             --shadow-color: rgba(0, 0, 0, 0.6);
-            --ok-color: #4ade80; /* Tono verde ligeramente más suave y equilibrado para fondos oscuros */
-            --svg-filter: invert(1) hue-rotate(180deg); /* Invierte los colores de la imagen SVG manteniendo matices coherentes */
+            --ok-color: #4ade80;
+            --svg-filter: invert(1) hue-rotate(180deg);
         }
 
         html, body {
@@ -65,42 +65,13 @@
             transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        /* Contenedor Flex para layout de Sidebar + Contenido */
+        /* Contenedor Principal Centrado */
         .container {
-            max-width: 900px;
+            max-width: 600px;
             margin: 0 auto;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 30px;
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                flex-direction: row;
-                align-items: flex-start;
-                text-align: left;
-            }
-        }
-
-        /* Sidebar con el logo, buscador y reporte */
-        .sidebar {
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .sidebar {
-                width: 260px;
-                flex-shrink: 0;
-                position: sticky;
-                top: 20px;
-            }
-        }
-
-        /* Área principal de contenido */
-        .main-content {
-            flex: 1;
             width: 100%;
         }
 
@@ -112,12 +83,6 @@
             align-items: center;
             justify-content: center;
             min-height: 100px;
-        }
-
-        @media (min-width: 768px) {
-            .logo-container {
-                align-items: flex-start;
-            }
         }
 
         .typewriter-text {
@@ -156,13 +121,75 @@
             opacity: 0;
             animation: fadeInImage 0.5s ease forwards;
             animation-delay: 1.3s;
-            filter: var(--svg-filter); /* Aplica la inversión de colores en modo oscuro */
+            filter: var(--svg-filter);
             transition: filter 0.2s ease;
         }
 
         @keyframes fadeInImage {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Buscador */
+        .search-container {
+            margin: 20px 0 10px 0;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .search-container form {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .search-container input[type="text"] {
+            padding: 4px 8px;
+            font-size: 14px;
+            width: 180px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-container input[type="text"]:focus {
+            border-color: var(--border-color);
+            box-shadow: 0 0 3px var(--shadow-color);
+        }
+
+        /* Botones de acción centrado */
+        .action-links-wrapper {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--link-color);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn svg {
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
         }
 
         /* Secciones de Contenido */
@@ -175,11 +202,7 @@
             text-align: left;
         }
 
-        .main-content > .section-title:first-of-type {
-            margin-top: 0;
-        }
-
-        /* Enlaces Nacionales (Nivel General) */
+        /* Enlaces Nacionales */
         .national-links {
             text-align: left;
             margin-bottom: 25px;
@@ -204,7 +227,7 @@
             font-weight: normal;
         }
 
-        /* Categorías Regionales con Despliegue */
+        /* Categorías Regionales */
         .categories-list {
             text-align: left;
             margin: 15px 0;
@@ -262,78 +285,6 @@
             }
         }
 
-        /* Buscador */
-        .search-container {
-            margin: 20px 0 10px 0;
-            font-size: 15px;
-            text-align: center;
-        }
-
-        @media (min-width: 768px) {
-            .search-container {
-                text-align: left;
-            }
-        }
-
-        .search-container form {
-            display: inline-flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .search-container input[type="text"] {
-            padding: 4px 8px;
-            font-size: 14px;
-            width: 170px;
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--input-border);
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .search-container input[type="text"]:focus {
-            border-color: var(--border-color);
-            box-shadow: 0 0 3px var(--shadow-color);
-        }
-
-        /* Envoltorio de botones del sidebar */
-        .sidebar-links-wrapper {
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            text-align: center;
-        }
-
-        @media (min-width: 768px) {
-            .sidebar-links-wrapper {
-                text-align: left;
-            }
-        }
-
-        .sidebar-btn {
-            background: none;
-            border: none;
-            color: var(--link-color);
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 12px;
-            font-family: inherit;
-            padding: 0;
-            text-align: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .sidebar-btn svg {
-            flex-shrink: 0;
-            stroke: currentColor;
-            fill: none;
-        }
-
         .no-results {
             display: none;
             text-align: left;
@@ -343,6 +294,7 @@
             font-style: italic;
         }
 
+        /* Modales */
         dialog {
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -428,7 +380,8 @@
 
     <div class="container">
         
-        <aside class="sidebar">
+        <!-- Encabezado Centrado: Logo + Buscador + Botones -->
+        <header>
             <div class="logo-container">
                 <div class="typewriter-text">24col</div>
                 <img src="condor01.svg" alt="24col" class="logo-img">
@@ -441,8 +394,8 @@
                 </form>
             </div>
 
-            <div class="sidebar-links-wrapper">
-                <button id="themeToggleBtn" class="sidebar-btn" type="button">
+            <div class="action-links-wrapper">
+                <button id="themeToggleBtn" class="action-btn" type="button">
                     <svg id="themeIconSun" width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none;">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -459,7 +412,7 @@
                     </svg>
                     <span id="themeToggleText">Cambiar a modo oscuro</span>
                 </button>
-                <button id="openWelcomeModal" class="sidebar-btn">
+                <button id="openWelcomeModal" class="action-btn">
                     <svg width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -467,15 +420,16 @@
                     </svg>
                     ¿Cómo funciona 24col?
                 </button>
-                <button id="openReportModal" class="sidebar-btn">
+                <button id="openReportModal" class="action-btn">
                     <svg width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
                     ¿Enlace caído o sugerencia? Repórtalo aquí
                 </button>
             </div>
-        </aside>
+        </header>
 
+        <!-- Área Principal de Contenido -->
         <main class="main-content">
 
             <div id="noResultsMsg" class="no-results">No se encontraron trámites o ciudades que coincidan con la búsqueda.</div>
