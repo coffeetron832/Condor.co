@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { id: 'pasto', name: 'Pasto', dept: 'Nar.' },
         { id: 'pereira', name: 'Pereira', dept: 'Ris.' },
         { id: 'santamarta', name: 'Santa Marta', dept: 'Mag.' },
+        { id: 'sincelejo', name: 'Sincelejo', dept: 'Suc.' },
         { id: 'valledupar', name: 'Valledupar', dept: 'Ces.' },
         { id: 'villavicencio', name: 'Villavicencio', dept: 'Met.' }
     ];
