@@ -16,6 +16,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #000000;
+            --text-secondary: #333333;
+            --border-color: #000000;
+            --link-color: #0000ee;
+            --card-bg: #f9f9f9;
+            --card-border: #eeeeee;
+            --input-border: #7f7f7f;
+            --modal-bg: #ffffff;
+            --footer-color: #555555;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #ffffff;
+            --link-color: #63a4ff;
+            --card-bg: #1e1e1e;
+            --card-border: #333333;
+            --input-border: #555555;
+            --modal-bg: #1e1e1e;
+            --footer-color: #888888;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+        }
+
         html, body {
             height: 100%;
             margin: 0;
@@ -23,13 +51,14 @@
 
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #000000;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             text-align: center;
             display: flex;
             flex-direction: column;
             padding: 20px;
             box-sizing: border-box;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         /* Contenedor Flex para layout de Sidebar + Contenido */
@@ -92,7 +121,7 @@
             font-size: 42px;
             white-space: nowrap;
             overflow: hidden;
-            border-right: 3px solid #000000;
+            border-right: 3px solid var(--border-color);
             width: 0;
             line-height: 1;
             margin-bottom: 10px;
@@ -110,7 +139,7 @@
         }
 
         @keyframes blink {
-            from { border-color: #000000; }
+            from { border-color: var(--border-color); }
             to { border-color: transparent; }
         }
 
@@ -135,7 +164,7 @@
         .section-title {
             font-size: 14px;
             font-weight: bold;
-            border-bottom: 1px solid #000000;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 4px;
             margin: 25px 0 15px 0;
             text-align: left;
@@ -160,13 +189,13 @@
         }
 
         .national-links a {
-            color: #0000ee;
+            color: var(--link-color);
             font-weight: bold;
             text-decoration: underline;
         }
 
         .link-desc {
-            color: #333333;
+            color: var(--text-secondary);
             font-weight: normal;
         }
 
@@ -184,7 +213,7 @@
 
         details summary {
             cursor: pointer;
-            color: #0000ee;
+            color: var(--link-color);
             font-weight: bold;
             text-decoration: underline;
             list-style: none;
@@ -196,22 +225,22 @@
         }
 
         .category-desc {
-            color: #333333;
+            color: var(--text-secondary);
             font-weight: normal;
         }
 
         .cities-menu {
             margin-top: 6px;
             padding: 8px 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #eeeeee;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
             font-size: 14px;
             line-height: 1.7;
             animation: fadeInDown 0.3s ease-out;
         }
 
         .cities-menu a {
-            color: #0000ee;
+            color: var(--link-color);
             font-weight: normal;
             text-decoration: underline;
             margin: 0 4px;
@@ -252,14 +281,16 @@
             padding: 4px 8px;
             font-size: 14px;
             width: 170px;
-            border: 1px solid #7f7f7f;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
             outline: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .search-container input[type="text"]:focus {
-            border-color: #000000;
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+            border-color: var(--border-color);
+            box-shadow: 0 0 3px var(--shadow-color);
         }
 
         /* Envoltorio de botones del sidebar */
@@ -281,7 +312,7 @@
         .sidebar-btn {
             background: none;
             border: none;
-            color: #0000ee;
+            color: var(--link-color);
             text-decoration: underline;
             cursor: pointer;
             font-size: 12px;
@@ -304,14 +335,46 @@
             display: none;
             text-align: left;
             font-size: 14px;
-            color: #666666;
+            color: var(--text-secondary);
             margin-top: 15px;
             font-style: italic;
         }
 
         /* Estilos de Modales (<dialog>) */
+        dialog {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            background: var(--modal-bg);
+            color: var(--text-color);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
         dialog::backdrop {
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 8px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            color: var(--text-color);
         }
 
         /* Ajustes visuales para el modal de bienvenida */
@@ -320,7 +383,7 @@
             padding-left: 20px;
             font-size: 13px;
             line-height: 1.6;
-            color: #333;
+            color: var(--text-secondary);
             margin: 15px 0;
         }
 
@@ -336,11 +399,35 @@
             box-shadow: 0 0 1px rgba(0,0,0,0.4);
         }
 
+        .modal-action-btn {
+            width: 100%;
+            background-color: var(--border-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--input-border);
+            border-radius: 2px;
+            box-sizing: border-box;
+            font-size: 13px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
         footer {
             margin-top: auto;
             padding-top: 20px;
             font-size: 12px;
-            color: #555555;
+            color: var(--footer-color);
         }
     </style>
 </head>
@@ -364,6 +451,23 @@
 
             <!-- Botones del sidebar con SVG inline integrados -->
             <div class="sidebar-links-wrapper">
+                <button id="themeToggleBtn" class="sidebar-btn" type="button">
+                    <svg id="themeIconSun" width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none;">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg id="themeIconMoon" width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span id="themeToggleText">Cambiar a modo oscuro</span>
+                </button>
                 <button id="openWelcomeModal" class="sidebar-btn">
                     <svg width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -432,13 +536,13 @@
     </div>
 
     <!-- Modal 1: Bienvenida e Información del sitio -->
-    <dialog id="welcomeModal" style="border: 1px solid #000; border-radius: 6px; padding: 20px; max-width: 440px; width: 90%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px;">
-            <h3 style="margin: 0; font-size: 25px; color: #000;">¡Bienvenido a 24col!</h3>
-            <button id="closeWelcomeModalCross" style="background: none; border: none; font-size: 18px; cursor: pointer; font-weight: bold; line-height: 1;">&times;</button>
+    <dialog id="welcomeModal" style="max-width: 440px; width: 90%;">
+        <div class="modal-header">
+            <h3 style="font-size: 25px;">¡Bienvenido a 24col!</h3>
+            <button id="closeWelcomeModalCross" class="modal-close-btn">&times;</button>
         </div>
 
-        <p style="text-align: left; font-size: 13px; line-height: 1.5; color: #333; margin-top: 15px;">
+        <p style="text-align: left; font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin-top: 15px;">
             <strong>24col 
             </strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta
         </p>
@@ -471,14 +575,14 @@
             </li>
         </ul>
 
-        <button id="closeWelcomeModalBtn" style="width: 100%; background-color: #000; color: #fff; border: none; padding: 10px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 13px; margin-top: 5px;">Entendido, comenzar</button>
+        <button id="closeWelcomeModalBtn" class="modal-action-btn">Entendido, comenzar</button>
     </dialog>
 
     <!-- Modal 2: Formulario de Reporte (<dialog>) -->
-    <dialog id="reportModal" style="border: 1px solid #000; border-radius: 6px; padding: 20px; max-width: 400px; width: 90%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
-            <h3 style="margin: 0; font-size: 15px; color: #000;">Reportar o Sugerir</h3>
-            <button id="closeReportModal" style="background: none; border: none; font-size: 18px; cursor: pointer; font-weight: bold; line-height: 1;">&times;</button>
+    <dialog id="reportModal" style="max-width: 400px; width: 90%;">
+        <div class="modal-header" style="margin-bottom: 15px;">
+            <h3 style="font-size: 15px;">Reportar o Sugerir</h3>
+            <button id="closeReportModal" class="modal-close-btn">&times;</button>
         </div>
         
         <!-- Formulario configurado con FormSubmit -->
@@ -489,7 +593,7 @@
 
             <div style="margin-bottom: 12px; text-align: left;">
                 <label for="reportType" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">¿Qué deseas reportar?</label>
-                <select id="reportType" name="Tipo_de_Reporte" style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
+                <select id="reportType" name="Tipo_de_Reporte" class="form-select">
                     <option value="Enlace caído / roto">Enlace caído / roto</option>
                     <option value="Sugerir una página nueva">Sugerir una página nueva</option>
                     <option value="Otro comentario o sugerencia">Otro comentario o sugerencia</option>
@@ -498,15 +602,15 @@
 
             <div style="margin-bottom: 12px; text-align: left;">
                 <label for="reportTarget" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">URL o Nombre de la página:</label>
-                <input type="text" id="reportTarget" name="URL_o_Sitio" placeholder="Ej: https://..." required style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
+                <input type="text" id="reportTarget" name="URL_o_Sitio" placeholder="Ej: https://..." required class="form-input">
             </div>
 
             <div style="margin-bottom: 15px; text-align: left;">
                 <label for="reportDetails" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">Detalles (Opcional):</label>
-                <textarea id="reportDetails" name="Detalles" rows="3" placeholder="Cuéntanos brevemente qué sucede..." style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; resize: vertical; font-size: 13px; font-family: inherit;"></textarea>
+                <textarea id="reportDetails" name="Detalles" rows="3" placeholder="Cuéntanos brevemente qué sucede..." class="form-textarea" style="resize: vertical; font-family: inherit;"></textarea>
             </div>
 
-            <button type="submit" id="submitReportBtn" style="width: 100%; background-color: #000; color: #fff; border: none; padding: 8px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 13px;">Enviar reporte</button>
+            <button type="submit" id="submitReportBtn" class="modal-action-btn" style="padding: 8px;">Enviar reporte</button>
         </form>
         
         <div id="reportSuccessMsg" style="display: none; margin-top: 15px; color: #2e7d32; font-size: 13px; text-align: center; font-weight: bold;">
@@ -521,6 +625,47 @@
 
     <script src="report-modal.js"></script>
     <script src="script.js"></script>
+
+    <!-- Lógica del Modo Oscuro -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const themeToggleText = document.getElementById('themeToggleText');
+            const iconSun = document.getElementById('themeIconSun');
+            const iconMoon = document.getElementById('themeIconMoon');
+
+            function updateThemeUI(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggleText.textContent = 'Cambiar a modo claro';
+                    iconSun.style.display = 'inline-block';
+                    iconMoon.style.display = 'none';
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeToggleText.textContent = 'Cambiar a modo oscuro';
+                    iconSun.style.display = 'none';
+                    iconMoon.style.display = 'inline-block';
+                }
+            }
+
+            // Detectar preferencia guardada o del sistema operativo
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+            updateThemeUI(currentTheme);
+
+            // Toggle al hacer clic
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => {
+                    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                    const newTheme = isDark ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeUI(newTheme);
+                });
+            }
+        });
+    </script>
 
     <!-- Lógica del Modal de Bienvenida -->
     <script>
