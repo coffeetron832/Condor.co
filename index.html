@@ -51,7 +51,7 @@
             }
         }
 
-        /* Sidebar con el logo y el buscador */
+        /* Sidebar con el logo, buscador y reporte */
         .sidebar {
             width: 100%;
         }
@@ -230,7 +230,7 @@
 
         /* Buscador */
         .search-container {
-            margin: 20px 0 15px 0;
+            margin: 20px 0 10px 0;
             font-size: 15px;
             text-align: center;
         }
@@ -262,6 +262,18 @@
             box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
         }
 
+        /* Envoltorio del botón de reporte en el sidebar */
+        .report-btn-wrapper {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .report-btn-wrapper {
+                text-align: left;
+            }
+        }
+
         /* Mensaje cuando la búsqueda no coincide */
         .no-results {
             display: none;
@@ -270,6 +282,11 @@
             color: #666666;
             margin-top: 15px;
             font-style: italic;
+        }
+
+        /* Estilos del Modal de Reporte (<dialog>) */
+        dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         footer {
@@ -284,7 +301,7 @@
 
     <div class="container">
         
-        <!-- Sidebar: Identidad y Buscador -->
+        <!-- Sidebar: Identidad, Buscador y Reporte -->
         <aside class="sidebar">
             <div class="logo-container">
                 <div class="typewriter-text">24col</div>
@@ -296,6 +313,13 @@
                     <label for="searchInput"><strong>buscar -</strong> </label>
                     <input type="text" id="searchInput" name="q" placeholder="" autocomplete="off" maxlength="100">
                 </form>
+            </div>
+
+            <!-- Botón para abrir el modal de reporte ubicado debajo del buscador -->
+            <div class="report-btn-wrapper">
+                <button id="openReportModal" style="background: none; border: none; color: #0000ee; text-decoration: underline; cursor: pointer; font-size: 12px; font-family: inherit; padding: 0; text-align: inherit;">
+                    💬 ¿Enlace caído o sugerencia? Repórtalo aquí
+                </button>
             </div>
         </aside>
 
@@ -349,10 +373,96 @@
 
     </div>
 
+    <!-- Modal Formulario de Reporte (<dialog>) -->
+    <dialog id="reportModal" style="border: 1px solid #000; border-radius: 6px; padding: 20px; max-width: 400px; width: 90%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <h3 style="margin: 0; font-size: 15px; color: #000;">Reportar o Sugerir</h3>
+            <button id="closeReportModal" style="background: none; border: none; font-size: 18px; cursor: pointer; font-weight: bold; line-height: 1;">&times;</button>
+        </div>
+        
+        <form id="reportForm">
+            <div style="margin-bottom: 12px; text-align: left;">
+                <label for="reportType" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">¿Qué deseas reportar?</label>
+                <select id="reportType" style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
+                    <option value="enlace_roto">Enlace caído / roto</option>
+                    <option value="pagina_nueva">Sugerir una página nueva</option>
+                    <option value="otro">Otro comentario o sugerencia</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 12px; text-align: left;">
+                <label for="reportTarget" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">URL o Nombre de la página:</label>
+                <input type="text" id="reportTarget" placeholder="Ej: https://..." required style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
+            </div>
+
+            <div style="margin-bottom: 15px; text-align: left;">
+                <label for="reportDetails" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">Detalles (Opcional):</label>
+                <textarea id="reportDetails" rows="3" placeholder="Cuéntanos brevemente qué sucede..." style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; resize: vertical; font-size: 13px; font-family: inherit;"></textarea>
+            </div>
+
+            <button type="submit" style="width: 100%; background-color: #000; color: #fff; border: none; padding: 8px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 13px;">Enviar reporte</button>
+        </form>
+        
+        <div id="reportSuccessMsg" style="display: none; margin-top: 15px; color: #2e7d32; font-size: 13px; text-align: center; font-weight: bold;">
+            ¡Gracias! Tu reporte ha sido recibido con éxito.
+        </div>
+    </dialog>
+
     <!-- Pie de página -->
     <footer>
         &copy; 2026 (24col) | Navega por los servicios del país de forma clara, rápida y sin tanta vuelta | RECHACE IMITACIONES | Por: jahp
     </footer>
+
+    <!-- Lógica de control del modal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('reportModal');
+            const openBtn = document.getElementById('openReportModal');
+            const closeBtn = document.getElementById('closeReportModal');
+            const reportForm = document.getElementById('reportForm');
+            const successMsg = document.getElementById('reportSuccessMsg');
+
+            if (openBtn && modal) {
+                openBtn.addEventListener('click', () => {
+                    modal.showModal();
+                    if (successMsg) successMsg.style.display = 'none';
+                    if (reportForm) {
+                        reportForm.style.display = 'block';
+                        reportForm.reset();
+                    }
+                });
+            }
+
+            if (closeBtn && modal) {
+                closeBtn.addEventListener('click', () => {
+                    modal.close();
+                });
+            }
+
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    const rect = modal.getBoundingClientRect();
+                    if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+                        modal.close();
+                    }
+                });
+            }
+
+            if (reportForm) {
+                reportForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    
+                    // Mostrar mensaje de confirmación
+                    reportForm.style.display = 'none';
+                    if (successMsg) successMsg.style.display = 'block';
+
+                    setTimeout(() => {
+                        if (modal) modal.close();
+                    }, 2000);
+                });
+            }
+        });
+    </script>
 
     <script src="script.js"></script>
 
