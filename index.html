@@ -277,6 +277,7 @@
             }
         }
 
+        /* Estilo optimizado para botones del sidebar alineando iconos SVG */
         .sidebar-btn {
             background: none;
             border: none;
@@ -287,6 +288,15 @@
             font-family: inherit;
             padding: 0;
             text-align: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sidebar-btn svg {
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
         }
 
         /* Mensaje cuando la búsqueda no coincide */
@@ -318,6 +328,14 @@
             margin-bottom: 10px;
         }
 
+        .flag-icon {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 3px;
+            border-radius: 1px;
+            box-shadow: 0 0 1px rgba(0,0,0,0.4);
+        }
+
         footer {
             margin-top: auto;
             padding-top: 20px;
@@ -344,13 +362,21 @@
                 </form>
             </div>
 
-            <!-- Botones del sidebar -->
+            <!-- Botones del sidebar con SVG inline integrados -->
             <div class="sidebar-links-wrapper">
                 <button id="openWelcomeModal" class="sidebar-btn">
-                    ℹ️ ¿Cómo funciona 24col?
+                    <svg width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    ¿Cómo funciona 24col?
                 </button>
                 <button id="openReportModal" class="sidebar-btn">
-                    💬 ¿Enlace caído o sugerencia? Repórtalo aquí
+                    <svg width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    ¿Enlace caído o sugerencia? Repórtalo aquí
                 </button>
             </div>
         </aside>
@@ -413,13 +439,36 @@
         </div>
 
         <p style="text-align: left; font-size: 13px; line-height: 1.5; color: #333; margin-top: 15px;">
-            <strong>24col 🇨🇴</strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta
+            <strong>24col 
+            </strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta
         </p>
 
         <ul class="welcome-list">
-            <li><strong>🟢 Verificación en Vivo:</strong> Cada enlace cuenta con un indicador de estado en tiempo real. Sabrás si la plataforma gubernamental está activa antes de hacer clic.</li>
-            <li><strong>🔒 Enlaces Oficiales y Directos:</strong> Todos los portales listados pertenecen directamente a entes territoriales y nacionales (.gov.co).</li>
-            <li><strong>⚡ Sin Colas ni Enredos:</strong> Accede a tu alcaldía, Gobernación, RUNT o DIAN filtrando por nombre o tu ciudad.</li>
+            <li>
+                <strong>
+                    <!-- SVG Estado Activo (Punto verde) -->
+                    <svg width="12" height="12" viewBox="0 0 12 12" style="display:inline-block; vertical-align:middle; margin-right:4px;" aria-hidden="true">
+                        <circle cx="6" cy="6" r="5" fill="#22c55e"/>
+                    </svg> Verificación en Vivo:
+                </strong> Cada enlace cuenta con un indicador de estado en tiempo real. Sabrás si la plataforma gubernamental está activa antes de hacer clic.
+            </li>
+            <li>
+                <strong>
+                    <!-- SVG Candado de Seguridad -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;" aria-hidden="true">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg> Enlaces Oficiales y Directos:
+                </strong> Todos los portales listados pertenecen directamente a entes territoriales y nacionales (.gov.co).
+            </li>
+            <li>
+                <strong>
+                    <!-- SVG Rayo (Velocidad) -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;" aria-hidden="true">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg> Sin Colas ni Enredos:
+                </strong> Accede a tu alcaldía, Gobernación, RUNT o DIAN filtrando por nombre o tu ciudad.
+            </li>
         </ul>
 
         <button id="closeWelcomeModalBtn" style="width: 100%; background-color: #000; color: #fff; border: none; padding: 10px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 13px; margin-top: 5px;">Entendido, comenzar</button>
@@ -467,7 +516,7 @@
 
     <!-- Pie de página -->
     <footer>
-        &copy; 2026 (24col) | versión 1.0 | RECHACE IMITACIONES | Por: jahp
+        &copy; 2026 (24col) | versión 1.0 |  |RECHACE IMITACIONES | Por: jahp
     </footer>
 
     <script src="report-modal.js"></script>
