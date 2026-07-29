@@ -4,31 +4,36 @@ document.addEventListener('DOMContentLoaded', function () {
     // 1. BASE DE DATOS Y RENDERIZADO DE CIUDADES
     // ==========================================
     const CITIES_DATA = [
-        { id: 'bogota', name: 'Bogotá D.C.', dept: 'Bogotá D.C.' },
-        { id: 'medellin', name: 'Medellín', dept: 'Ant.' },
-        { id: 'cali', name: 'Cali', dept: 'Valle' },
         { id: 'barranquilla', name: 'Barranquilla', dept: 'Atl.' },
-        { id: 'cartagena', name: 'Cartagena', dept: 'Bol.' },
+        { id: 'bogota', name: 'Bogotá D.C.', dept: 'Bogotá D.C.' },
         { id: 'bucaramanga', name: 'Bucaramanga', dept: 'Sant.' },
-        { id: 'pereira', name: 'Pereira', dept: 'Ris.' },
-        { id: 'manizales', name: 'Manizales', dept: 'Cal.' },
+        { id: 'cali', name: 'Cali', dept: 'Valle' },
+        { id: 'cartagena', name: 'Cartagena', dept: 'Bol.' },
         { id: 'cucuta', name: 'Cúcuta', dept: 'N.S.' },
         { id: 'ibague', name: 'Ibagué', dept: 'Tol.' },
-        { id: 'santamarta', name: 'Santa Marta', dept: 'Mag.' },
+        { id: 'manizales', name: 'Manizales', dept: 'Cal.' },
+        { id: 'medellin', name: 'Medellín', dept: 'Ant.' },
         { id: 'monteria', name: 'Montería', dept: 'Cór.' },
         { id: 'pasto', name: 'Pasto', dept: 'Nar.' },
-        { id: 'villavicencio', name: 'Villavicencio', dept: 'Met.' },
-        { id: 'valledupar', name: 'Valledupar', dept: 'Ces.' }
+        { id: 'pereira', name: 'Pereira', dept: 'Ris.' },
+        { id: 'santamarta', name: 'Santa Marta', dept: 'Mag.' },
+        { id: 'valledupar', name: 'Valledupar', dept: 'Ces.' },
+        { id: 'villavicencio', name: 'Villavicencio', dept: 'Met.' }
     ];
 
     function renderCitiesMenu() {
         const menus = document.querySelectorAll('.cities-menu');
 
+        // Garantizar el ordenamiento alfabético considerando tildes
+        const sortedCities = [...CITIES_DATA].sort((a, b) => 
+            a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+        );
+
         menus.forEach(menu => {
             const category = menu.dataset.category;
             const showDept = menu.dataset.showDept === 'true';
 
-            const linksHTML = CITIES_DATA.map(city => {
+            const linksHTML = sortedCities.map(city => {
                 const label = showDept && city.dept !== 'Bogotá D.C.' 
                     ? `${city.name} / ${city.dept}` 
                     : city.name;
