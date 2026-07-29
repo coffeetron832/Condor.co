@@ -28,9 +28,6 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            /* Nuevas líneas para centrado vertical y horizontal */
-            justify-content: center;
-            align-items: center;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -39,8 +36,7 @@
         .container {
             max-width: 900px;
             margin: 0 auto;
-            /* Cambiado: Ya no expande verticalmente para no empujar hacia arriba */
-            flex: initial;
+            flex: 1; /* Empuja el footer hacia abajo */
             display: flex;
             flex-direction: column;
             gap: 30px;
@@ -294,7 +290,7 @@
         }
 
         footer {
-            /* Removido margin-top: auto para que permanezca junto al contenedor */
+            margin-top: auto;
             padding-top: 20px;
             font-size: 12px;
             color: #555555;
