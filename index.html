@@ -32,20 +32,59 @@
             box-sizing: border-box;
         }
 
+        /* Contenedor Flex para layout de Sidebar + Contenido */
         .container {
-            max-width: 620px;
+            max-width: 900px;
             margin: 0 auto;
             flex: 1; /* Empuja el footer hacia abajo */
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                align-items: flex-start;
+                text-align: left;
+            }
+        }
+
+        /* Sidebar con el logo y el buscador */
+        .sidebar {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar {
+                width: 260px;
+                flex-shrink: 0;
+                position: sticky;
+                top: 20px;
+            }
+        }
+
+        /* Área principal de contenido */
+        .main-content {
+            flex: 1;
+            width: 100%;
         }
 
         /* Logo y animación inicial */
         .logo-container {
-            margin: 20px auto 10px auto;
+            margin: 0 auto 10px auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100px;
+        }
+
+        @media (min-width: 768px) {
+            .logo-container {
+                align-items: flex-start;
+            }
         }
 
         .typewriter-text {
@@ -55,7 +94,8 @@
             overflow: hidden;
             border-right: 3px solid #000000;
             width: 0;
-            animation: typing 1.2s steps(5, end) forwards, blink 0.75s step-end infinite;
+            /* Se ajusta blink a 1.2s sin bucle infinito (infinite) para que finalice junto a la escritura */
+            animation: typing 1.2s steps(5, end) forwards, blink 1.2s step-end forwards;
             margin-bottom: 10px;
             line-height: 1;
         }
@@ -66,12 +106,12 @@
         }
 
         @keyframes blink {
-            from, to { border-color: transparent; }
-            50% { border-color: #000000; }
+            0%, 100% { border-color: transparent; }
+            25%, 75% { border-color: #000000; }
         }
 
         .logo-img {
-            width: 280px;
+            width: 220px;
             height: auto;
             opacity: 0;
             animation: fadeInImage 0.5s ease forwards;
@@ -91,6 +131,10 @@
             padding-bottom: 4px;
             margin: 25px 0 15px 0;
             text-align: left;
+        }
+
+        .main-content > .section-title:first-of-type {
+            margin-top: 0;
         }
 
         /* Enlaces Nacionales (Nivel General) */
@@ -177,12 +221,20 @@
 
         /* Buscador */
         .search-container {
-            margin: 30px 0 15px 0;
+            margin: 20px 0 15px 0;
             font-size: 15px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .search-container {
+                text-align: left;
+            }
         }
 
         .search-container form {
             display: inline-flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 5px;
         }
@@ -190,7 +242,7 @@
         .search-container input[type="text"] {
             padding: 4px 8px;
             font-size: 14px;
-            width: 220px;
+            width: 170px;
             border: 1px solid #7f7f7f;
             outline: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -199,12 +251,6 @@
         .search-container input[type="text"]:focus {
             border-color: #000000;
             box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .search-container input[type="submit"] {
-            padding: 4px 10px;
-            font-size: 14px;
-            cursor: pointer;
         }
 
         /* Mensaje cuando la búsqueda no coincide */
@@ -229,84 +275,89 @@
 
     <div class="container">
         
-        <!-- Identidad y Logo -->
-        <div class="logo-container">
-            <div class="typewriter-text">24col</div>
-            <img src="condor01.png" alt="24col" class="logo-img">
-        </div>
+        <!-- Sidebar: Identidad y Buscador -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="typewriter-text">24col</div>
+                <img src="condor01.png" alt="24col" class="logo-img">
+            </div>
 
-        <!-- Buscador -->
-        <div class="search-container">
-            <form id="searchForm">
-                <label for="searchInput"><strong>buscar -</strong> </label>
-                <input type="text" id="searchInput" name="q" placeholder="" autocomplete="off" maxlength="100">
-                <input type="submit" value="Ir">
-            </form>
-        </div>
+            <div class="search-container">
+                <form id="searchForm">
+                    <label for="searchInput"><strong>buscar -</strong> </label>
+                    <input type="text" id="searchInput" name="q" placeholder="" autocomplete="off" maxlength="100">
+                </form>
+            </div>
+        </aside>
 
-        <div id="noResultsMsg" class="no-results">No se encontraron trámites o ciudades que coincidan con la búsqueda.</div>
+        <!-- Contenido Principal: Listado de Trámites -->
+        <main class="main-content">
 
-        <!-- SECCIÓN 1: Portal Nacional (Acceso Directo) -->
-        <div class="section-title" id="nationalSectionTitle">Trámites Nacionales (Toda Colombia)</div>
-        
-        <div class="national-links" id="nationalLinksBlock">
-            <ul>
-                <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
-                <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
-                <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
-                <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
-                <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS (Fosyga)</span></li>
-            </ul>
-        </div>
+            <div id="noResultsMsg" class="no-results">No se encontraron trámites o ciudades que coincidan con la búsqueda.</div>
 
-        <!-- SECCIÓN 2: Portales Locales / Departamentales -->
-        <div class="section-title" id="regionalSectionTitle">Trámites Específicos por Ciudad o Departamento</div>
-
-        <div class="categories-list" id="regionalCategoriesBlock">
+            <!-- SECCIÓN 1: Portal Nacional (Acceso Directo) -->
+            <div class="section-title" id="nationalSectionTitle">Trámites Nacionales (Toda Colombia)</div>
             
-            <div class="category-item searchable-category">
-                <details>
-                    <summary>Impuestos Regionales <span class="category-desc">- Vehículos, Predial, Licorera</span></summary>
-                    <div class="cities-menu">
-                        Selecciona tu ubicación: <br>
-                        <a href="ciudad.html?cat=impuestos&amp;city=bogota">Bogotá D.C.</a> | 
-                        <a href="ciudad.html?cat=impuestos&amp;city=medellin">Medellín / Ant.</a> | 
-                        <a href="ciudad.html?cat=impuestos&amp;city=cali">Cali / Valle</a> | 
-                        <a href="ciudad.html?cat=impuestos&amp;city=barranquilla">Barranquilla / Atl.</a> | 
-                        <a href="ciudad.html?cat=impuestos&amp;city=monteria">Montería / Cór.</a>
-                    </div>
-                </details>
+            <div class="national-links" id="nationalLinksBlock">
+                <ul>
+                    <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
+                    <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
+                    <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
+                    <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
+                    <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de legalización o afiliación a EPS (Fosyga)</span></li>
+                </ul>
             </div>
 
-            <div class="category-item searchable-category">
-                <details>
-                    <summary>Servicios Públicos <span class="category-desc">- Agua, Luz, Gas y Alcaldías</span></summary>
-                    <div class="cities-menu">
-                        Selecciona tu ubicación: <br>
-                        <a href="ciudad.html?cat=hogar&amp;city=bogota">Bogotá D.C.</a> | 
-                        <a href="ciudad.html?cat=hogar&amp;city=medellin">Medellín</a> | 
-                        <a href="ciudad.html?cat=hogar&amp;city=cali">Cali</a> | 
-                        <a href="ciudad.html?cat=hogar&amp;city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=hogar&amp;city=monteria">Montería</a>
-                    </div>
-                </details>
+            <!-- SECCIÓN 2: Portales Locales / Departamentales -->
+            <div class="section-title" id="regionalSectionTitle">Trámites Específicos por Ciudad o Departamento</div>
+
+            <div class="categories-list" id="regionalCategoriesBlock">
+                
+                <div class="category-item searchable-category">
+                    <details>
+                        <summary>Impuestos Regionales <span class="category-desc">- Vehículos, Predial, Licorera</span></summary>
+                        <div class="cities-menu">
+                            Selecciona tu ubicación: <br>
+                            <a href="ciudad.html?cat=impuestos&amp;city=bogota">Bogotá D.C.</a> | 
+                            <a href="ciudad.html?cat=impuestos&amp;city=medellin">Medellín / Ant.</a> | 
+                            <a href="ciudad.html?cat=impuestos&amp;city=cali">Cali / Valle</a> | 
+                            <a href="ciudad.html?cat=impuestos&amp;city=barranquilla">Barranquilla / Atl.</a> | 
+                            <a href="ciudad.html?cat=impuestos&amp;city=monteria">Montería / Cór.</a>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="category-item searchable-category">
+                    <details>
+                        <summary>Servicios Públicos <span class="category-desc">- Agua, Luz, Gas y Alcaldías</span></summary>
+                        <div class="cities-menu">
+                            Selecciona tu ubicación: <br>
+                            <a href="ciudad.html?cat=hogar&amp;city=bogota">Bogotá D.C.</a> | 
+                            <a href="ciudad.html?cat=hogar&amp;city=medellin">Medellín</a> | 
+                            <a href="ciudad.html?cat=hogar&amp;city=cali">Cali</a> | 
+                            <a href="ciudad.html?cat=hogar&amp;city=barranquilla">Barranquilla</a> | 
+                            <a href="ciudad.html?cat=hogar&amp;city=monteria">Montería</a>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="category-item searchable-category">
+                    <details>
+                        <summary>Movilidad y Tránsito Local <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span></summary>
+                        <div class="cities-menu">
+                            Selecciona tu ubicación: <br>
+                            <a href="ciudad.html?cat=movilidad&amp;city=bogota">Bogotá D.C.</a> | 
+                            <a href="ciudad.html?cat=movilidad&amp;city=medellin">Medellín</a> | 
+                            <a href="ciudad.html?cat=movilidad&amp;city=cali">Cali</a> | 
+                            <a href="ciudad.html?cat=movilidad&amp;city=barranquilla">Barranquilla</a> | 
+                            <a href="ciudad.html?cat=movilidad&amp;city=monteria">Montería</a>
+                        </div>
+                    </details>
+                </div>
+
             </div>
 
-            <div class="category-item searchable-category">
-                <details>
-                    <summary>Movilidad y Tránsito Local <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span></summary>
-                    <div class="cities-menu">
-                        Selecciona tu ubicación: <br>
-                        <a href="ciudad.html?cat=movilidad&amp;city=bogota">Bogotá D.C.</a> | 
-                        <a href="ciudad.html?cat=movilidad&amp;city=medellin">Medellín</a> | 
-                        <a href="ciudad.html?cat=movilidad&amp;city=cali">Cali</a> | 
-                        <a href="ciudad.html?cat=movilidad&amp;city=barranquilla">Barranquilla</a> | 
-                        <a href="ciudad.html?cat=movilidad&amp;city=monteria">Montería</a>
-                    </div>
-                </details>
-            </div>
-
-        </div>
+        </main>
 
     </div>
 
