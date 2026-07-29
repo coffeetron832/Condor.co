@@ -1,4 +1,51 @@
 document.addEventListener('DOMContentLoaded', function () {
+
+    // ==========================================
+    // 1. BASE DE DATOS Y RENDERIZADO DE CIUDADES
+    // ==========================================
+    const CITIES_DATA = [
+        { id: 'bogota', name: 'Bogotá D.C.', dept: 'Bogotá D.C.' },
+        { id: 'medellin', name: 'Medellín', dept: 'Ant.' },
+        { id: 'cali', name: 'Cali', dept: 'Valle' },
+        { id: 'barranquilla', name: 'Barranquilla', dept: 'Atl.' },
+        { id: 'cartagena', name: 'Cartagena', dept: 'Bol.' },
+        { id: 'bucaramanga', name: 'Bucaramanga', dept: 'Sant.' },
+        { id: 'pereira', name: 'Pereira', dept: 'Ris.' },
+        { id: 'manizales', name: 'Manizales', dept: 'Cal.' },
+        { id: 'cucuta', name: 'Cúcuta', dept: 'N.S.' },
+        { id: 'ibague', name: 'Ibagué', dept: 'Tol.' },
+        { id: 'santamarta', name: 'Santa Marta', dept: 'Mag.' },
+        { id: 'monteria', name: 'Montería', dept: 'Cór.' },
+        { id: 'pasto', name: 'Pasto', dept: 'Nar.' },
+        { id: 'villavicencio', name: 'Villavicencio', dept: 'Met.' },
+        { id: 'valledupar', name: 'Valledupar', dept: 'Ces.' }
+    ];
+
+    function renderCitiesMenu() {
+        const menus = document.querySelectorAll('.cities-menu');
+
+        menus.forEach(menu => {
+            const category = menu.dataset.category;
+            const showDept = menu.dataset.showDept === 'true';
+
+            const linksHTML = CITIES_DATA.map(city => {
+                const label = showDept && city.dept !== 'Bogotá D.C.' 
+                    ? `${city.name} / ${city.dept}` 
+                    : city.name;
+                return `<a href="ciudad.html?cat=${category}&city=${city.id}">${label}</a>`;
+            }).join(' | ');
+
+            menu.innerHTML = `Selecciona tu ubicación: <br>${linksHTML}`;
+        });
+    }
+
+    // Generar dinámicamente los enlaces antes de ejecutar la lógica de búsqueda y verificación
+    renderCitiesMenu();
+
+
+    // ==========================================
+    // 2. ELEMENTOS Y CONFIGURACIÓN INICIAL
+    // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
     const nationalItems = document.querySelectorAll('.searchable-item');
@@ -29,8 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
         'cedula': ['registraduria', 'duplicado', 'identificacion']
     };
 
+
     // ==========================================
-    // VERIFICADOR DE ESTADO Y SEGURIDAD DE ENLACES
+    // 3. VERIFICADOR DE ESTADO Y SEGURIDAD DE ENLACES
     // ==========================================
     function checkLinksHealthAndSecurity() {
         const allLinks = document.querySelectorAll('.national-links a, .cities-menu a');
@@ -39,10 +87,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const url = link.getAttribute('href');
             if (!url || url.startsWith('ciudad.html')) return; // Omitir enlaces internos simulados
 
-            // 1. Verificación de Seguridad (HTTPS)
+            // Verificación de Seguridad (HTTPS)
             const isSecure = url.startsWith('https://');
             
-            // Crear o ubicar contenedor de estado si no existe
             let statusSpan = link.parentNode.querySelector('.link-status-badge');
             if (!statusSpan) {
                 statusSpan = document.createElement('span');
@@ -54,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 link.parentNode.insertBefore(statusSpan, link.nextSibling);
             }
 
-            // Indicador preliminar de seguridad
             if (!isSecure) {
                 statusSpan.innerHTML = '⚠️ <span title="Conexión no segura (HTTP)">Inseguro</span>';
                 statusSpan.style.backgroundColor = '#ffebee';
@@ -62,14 +108,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // 2. Verificación de Estado (Activo / Caído) mediante imagen/favicon invisible o caché
-            // Usamos una petición de imagen al favicon del dominio para tantear conectividad real evadiendo CORS estricto
+            // Verificación de Estado (Activo / Caído)
             try {
                 const domain = new URL(url).origin;
                 const img = new Image();
                 let finished = false;
 
-                // Timeout de seguridad de 4 segundos por si el servidor gubernamental está lento
                 const timer = setTimeout(() => {
                     if (!finished) {
                         finished = true;
@@ -86,8 +130,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 img.onerror = function() {
-                    // CORS suele disparar onerror, lo que indica que el servidor respondió pero bloqueó la imagen. 
-                    // Esto significa técnicamente que el servidor ESTÁ ACTIVO y respondiendo.
                     if (!finished) {
                         finished = true;
                         clearTimeout(timer);
@@ -95,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 };
 
-                // Intentar cargar el favicon del portal institucional
                 img.src = `${domain}/favicon.ico?t=${new Date().getTime()}`;
 
             } catch (e) {
@@ -121,101 +162,96 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // SISTEMA DE BÚSQUEDA Y FILTRADO LIMPIO
+    // 4. SISTEMA DE BÚSQUEDA Y FILTRADO LIMPIO
     // ==========================================
-    searchInput.addEventListener('input', function () {
-        const query = normalizeText(this.value.trim());
-        let nationalVisibleCount = 0;
-        let regionalVisibleCount = 0;
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const query = normalizeText(this.value.trim());
+            let nationalVisibleCount = 0;
+            let regionalVisibleCount = 0;
 
-        let searchTerms = [query];
-        if (query !== '') {
-            Object.keys(keywordSynonyms).forEach(key => {
-                if (key.includes(query) || query.includes(key)) {
-                    searchTerms = searchTerms.concat(keywordSynonyms[key]);
-                }
-            });
-        }
-
-        const isMatch = (textToTest) => {
-            if (query === '') return true;
-            const normalizedTarget = normalizeText(textToTest);
-            return searchTerms.some(term => normalizedTarget.includes(term));
-        };
-
-        // 1. Filtrado de trámites nacionales
-        nationalItems.forEach(item => {
-            const text = item.textContent;
-            if (query === '' || isMatch(text)) {
-                item.style.display = '';
-                nationalVisibleCount++;
-            } else {
-                item.style.display = 'none';
+            let searchTerms = [query];
+            if (query !== '') {
+                Object.keys(keywordSynonyms).forEach(key => {
+                    if (key.includes(query) || query.includes(key)) {
+                        searchTerms = searchTerms.concat(keywordSynonyms[key]);
+                    }
+                });
             }
-        });
 
-        // 2. Filtrado exacto de categorías y enlaces regionales
-        categoryItems.forEach(item => {
-            const details = item.querySelector('details');
-            const summary = item.querySelector('summary');
-            const cityLinks = item.querySelectorAll('.cities-menu a');
+            const isMatch = (textToTest) => {
+                if (query === '') return true;
+                const normalizedTarget = normalizeText(textToTest);
+                return searchTerms.some(term => normalizedTarget.includes(term));
+            };
 
-            const summaryText = summary ? summary.textContent : '';
-            const isCategoryMatch = isMatch(summaryText);
-
-            if (query === '') {
-                item.style.display = '';
-                if (details) details.open = false;
-                cityLinks.forEach(link => {
-                    link.style.display = '';
-                    if (link.nextSibling && link.nextSibling.nodeType === Node.TEXT_NODE && !link.nextSibling.classList?.contains('link-status-badge')) {
-                        link.nextSibling.textContent = ' | ';
-                    }
-                });
-                regionalVisibleCount++;
-            } else {
-                let matchingLinksInCategory = 0;
-
-                cityLinks.forEach(link => {
-                    const linkText = link.textContent;
-                    const linkUrl = link.getAttribute('href') || '';
-                    
-                    const isDirectLinkMatch = isMatch(linkText) || isMatch(linkUrl);
-
-                    if (isDirectLinkMatch || isCategoryMatch) {
-                        if (!isCategoryMatch && !isDirectLinkMatch) {
-                            link.style.display = 'none';
-                        } else {
-                            link.style.display = '';
-                            matchingLinksInCategory++;
-                        }
-                    } else {
-                        link.style.display = 'none';
-                    }
-                });
-
-                if (matchingLinksInCategory > 0 || isCategoryMatch) {
+            // 1. Filtrado de trámites nacionales
+            nationalItems.forEach(item => {
+                const text = item.textContent;
+                if (query === '' || isMatch(text)) {
                     item.style.display = '';
-                    if (details) details.open = true;
-                    regionalVisibleCount++;
+                    nationalVisibleCount++;
                 } else {
                     item.style.display = 'none';
-                    if (details) details.open = false;
                 }
+            });
+
+            // 2. Filtrado de categorías y enlaces regionales
+            categoryItems.forEach(item => {
+                const details = item.querySelector('details');
+                const summary = item.querySelector('summary');
+                const cityLinks = item.querySelectorAll('.cities-menu a');
+
+                const summaryText = summary ? summary.textContent : '';
+                const isCategoryMatch = isMatch(summaryText);
+
+                if (query === '') {
+                    item.style.display = '';
+                    if (details) details.open = false;
+                    cityLinks.forEach(link => {
+                        link.style.display = '';
+                    });
+                    regionalVisibleCount++;
+                } else {
+                    let matchingLinksInCategory = 0;
+
+                    cityLinks.forEach(link => {
+                        const linkText = link.textContent;
+                        const linkUrl = link.getAttribute('href') || '';
+                        
+                        const isDirectLinkMatch = isMatch(linkText) || isMatch(linkUrl);
+
+                        if (isDirectLinkMatch || isCategoryMatch) {
+                            link.style.display = '';
+                            matchingLinksInCategory++;
+                        } else {
+                            link.style.display = 'none';
+                        }
+                    });
+
+                    if (matchingLinksInCategory > 0 || isCategoryMatch) {
+                        item.style.display = '';
+                        if (details) details.open = true;
+                        regionalVisibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                        if (details) details.open = false;
+                    }
+                }
+            });
+
+            // 3. Manejo de títulos
+            if (query !== '') {
+                if (nationalTitle) nationalTitle.style.display = 'none';
+                if (regionalTitle) regionalTitle.style.display = 'none';
+            } else {
+                if (nationalTitle) nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
+                if (regionalTitle) regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
+            }
+
+            if (noResultsMsg) {
+                noResultsMsg.style.display = (nationalVisibleCount === 0 && regionalVisibleCount === 0) ? 'block' : 'none';
             }
         });
-
-        // 3. Manejo de títulos para mantener la limpieza visual
-        if (query !== '') {
-            if (nationalTitle) nationalTitle.style.display = 'none';
-            if (regionalTitle) regionalTitle.style.display = 'none';
-        } else {
-            if (nationalTitle) nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
-            if (regionalTitle) regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
-        }
-
-        if (noResultsMsg) {
-            noResultsMsg.style.display = (nationalVisibleCount === 0 && regionalVisibleCount === 0) ? 'block' : 'none';
-        }
-    });
+    }
 });
