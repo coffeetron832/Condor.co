@@ -160,7 +160,7 @@
         const cityParam = urlParams.get('city') || 'bogota';
         const catParam = urlParams.get('cat') || 'impuestos';
 
-        // Mapeo de nombres legibles para la cabecera (15 Ciudades)
+        // Mapeo de nombres legibles para la cabecera (16 Ciudades)
         const cityNames = {
             'bogota': 'Bogotá D.C.',
             'medellin': 'Medellín / Antioquia',
@@ -175,6 +175,7 @@
             'santamarta': 'Santa Marta / Magdalena',
             'monteria': 'Montería / Córdoba',
             'pasto': 'Pasto / Nariño',
+            'sincelejo': 'Sincelejo / Sucre',
             'villavicencio': 'Villavicencio / Meta',
             'valledupar': 'Valledupar / Cesar'
         };
@@ -194,6 +195,7 @@
             'santamarta': 'img/SMARTA.jpeg',
             'monteria': 'img/MONTERIA.jpeg',
             'pasto': 'img/PASTO.jpeg',
+            'sincelejo': 'img/SINCELEJO.jpeg',
             'villavicencio': 'img/VILLAVICENCIO.jpeg',
             'valledupar': 'img/VALLEDUPAR.jpeg'
         };
@@ -213,6 +215,7 @@
             'santamarta': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:El_Rodadero,_Santa_Marta,_Colombia.jpg">Julieth Gómez Durán</a>, <a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>, via Wikimedia Commons ',
             'monteria': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:Ronda_del_Sin%C3%BA.jpg" target="_blank">Vgallego66</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>, vía Wikimedia Commons',
             'pasto': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:San_Juan_de_Pasto_de_noche.jpg">Jorgelrm</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons',
+            'sincelejo': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:Catedral_San_Francisco_de_Asis_de_Sincelejo.JPG" target="_blank">Camilo.Sosa</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank">CC BY-SA 3.0</a>, vía Wikimedia Commons',
             'villavicencio': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:C8v_iSQXoAAEqwr.jpg">Alejandro Vega</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons',
             'valledupar': 'Foto: <a href="https://commons.wikimedia.org/wiki/File:Plaza_Valledupar.jpg">Sr Lotus</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons'
         };
@@ -414,6 +417,21 @@
                 ],
                 'movilidad': [
                     { name: 'Subsecretaría de Tránsito de Pasto', url: 'https://pasto.gov.co/transito', desc: 'servicios de movilidad y comparendos' }
+                ]
+            },
+            'sincelejo': {
+                'impuestos': [
+                    { name: 'Alcaldía de Sincelejo - Hacienda', url: 'https://www.sincelejo.gov.co', desc: 'impuesto predial unificado e ICA' },
+                    { name: 'Gobernación de Sucre', url: 'https://www.sucre.gov.co', desc: 'impuesto sobre vehículos automotores de Sucre' }
+                ],
+                'hogar': [
+                    { name: 'Alcaldía de Sincelejo (Portal Oficial)', url: 'https://www.sincelejo.gov.co', desc: 'trámites del municipio y atención al ciudadano' },
+                    { name: 'VeaA (Aqualectra / Veolia)', url: 'https://www.veolia.com.co/sincelejo', desc: 'pago de factura de acueducto y alcantarillado' },
+                    { name: 'Afinia (Grupo EPM)', url: 'https://www.afinia.com.co', desc: 'pago de factura de energía eléctrica' },
+                    { name: 'Surtigas', url: 'https://www.surtigas.com.co', desc: 'pago y servicios de gas natural' }
+                ],
+                'movilidad': [
+                    { name: 'Secretaría de Tránsito y Transporte de Sincelejo', url: 'https://www.sincelejo.gov.co/transito', desc: 'trámites de vehículos, licencias y comparendos' }
                 ]
             },
             'villavicencio': {
