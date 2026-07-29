@@ -416,52 +416,52 @@
     <!-- Lógica de control del modal -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('reportModal');
-            const openBtn = document.getElementById('openReportModal');
-            const closeBtn = document.getElementById('closeReportModal');
-            const reportForm = document.getElementById('reportForm');
-            const successMsg = document.getElementById('reportSuccessMsg');
+    const modal = document.getElementById('reportModal');
+    const openBtn = document.getElementById('openReportModal');
+    const closeBtn = document.getElementById('closeReportModal');
+    const reportForm = document.getElementById('reportForm');
+    const successMsg = document.getElementById('reportSuccessMsg');
 
-            if (openBtn && modal) {
-                openBtn.addEventListener('click', () => {
-                    modal.showModal();
-                    if (successMsg) successMsg.style.display = 'none';
-                    if (reportForm) {
-                        reportForm.style.display = 'block';
-                        reportForm.reset();
-                    }
-                });
-            }
-
-            if (closeBtn && modal) {
-                closeBtn.addEventListener('click', () => {
-                    modal.close();
-                });
-            }
-
-            if (modal) {
-                modal.addEventListener('click', (e) => {
-                    const rect = modal.getBoundingClientRect();
-                    if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
-                        modal.close();
-                    }
-                });
-            }
-
+    if (openBtn && modal) {
+        openBtn.addEventListener('click', () => {
+            modal.showModal();
+            if (successMsg) successMsg.style.display = 'none';
             if (reportForm) {
-                reportForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    
-                    // Mostrar mensaje de confirmación
-                    reportForm.style.display = 'none';
-                    if (successMsg) successMsg.style.display = 'block';
-
-                    setTimeout(() => {
-                        if (modal) modal.close();
-                    }, 2000);
-                });
+                reportForm.style.display = 'block';
+                reportForm.reset();
             }
         });
+    }
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+            modal.close();
+        });
+    }
+
+    if (modal) {
+        // Cerrar únicamente cuando se hace clic exactamente sobre el fondo (backdrop)
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.close();
+            }
+        });
+    }
+
+    if (reportForm) {
+        reportForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            
+            // Mostrar mensaje de confirmación
+            reportForm.style.display = 'none';
+            if (successMsg) successMsg.style.display = 'block';
+
+            setTimeout(() => {
+                if (modal) modal.close();
+            }, 2000);
+        });
+    }
+});
     </script>
 
     <script src="script.js"></script>
