@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderCitiesMenu() {
         const menus = document.querySelectorAll('.cities-menu');
 
-        // Garantizar el ordenamiento alfabético considerando tildes
         const sortedCities = [...CITIES_DATA].sort((a, b) => 
             a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
         );
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Generar dinámicamente los enlaces antes de ejecutar la lógica de búsqueda y verificación
     renderCitiesMenu();
 
 
@@ -71,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
-    // Mapa de palabras clave para trámites comunes
     const keywordSynonyms = {
         'hacienda': ['impuestos', 'predial', 'vehiculos', 'retencion', 'ica', 'dian'],
         'predial': ['impuestos', 'hacienda'],
@@ -84,29 +81,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. VERIFICADOR DE ESTADO Y SEGURIDAD DE ENLACES
+    // 3. VERIFICADOR DE ESTADO, FAVICONS Y SEGURIDAD DE ENLACES
     // ==========================================
     function checkLinksHealthAndSecurity() {
         const allLinks = document.querySelectorAll('.national-links a, .cities-menu a');
 
         allLinks.forEach(async (link) => {
             const url = link.getAttribute('href');
-            if (!url || url.startsWith('ciudad.html')) return; // Omitir enlaces internos simulados
+            if (!url || url.startsWith('ciudad.html')) return; // Omitir enlaces internos
 
-            // 1. Verificación de Seguridad (HTTPS)
-            const isSecure = url.startsWith('https://');
-            
-            let statusSpan = link.parentNode.querySelector('.link-status-badge');
+            // --- A. INSERTAR FAVICON ---
+            try {
+                const domain = new URL(url).hostname;
+                if (!link.querySelector('.link-favicon')) {
+                    const faviconImg = document.createElement('img');
+                    faviconImg.className = 'link-favicon';
+                    faviconImg.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+                    faviconImg.alt = '';
+                    faviconImg.style.width = '16px';
+                    faviconImg.style.height = '16px';
+                    faviconImg.style.verticalAlign = 'middle';
+                    faviconImg.style.marginRight = '5px';
+                    faviconImg.style.display = 'inline-block';
+
+                    // Insertar al inicio del enlace
+                    link.insertBefore(faviconImg, link.firstChild);
+                }
+            } catch (e) {
+                // Si la URL no es válida, continuar
+            }
+
+            // --- B. PREPARAR BADGE DE ESTADO ---
+            let statusSpan = link.parentNode.querySelector(`.link-status-badge[data-for="${encodeURIComponent(url)}"]`);
             if (!statusSpan) {
                 statusSpan = document.createElement('span');
                 statusSpan.className = 'link-status-badge';
+                statusSpan.setAttribute('data-for', encodeURIComponent(url));
                 statusSpan.style.fontSize = '11px';
                 statusSpan.style.marginLeft = '6px';
                 statusSpan.style.padding = '1px 5px';
                 statusSpan.style.borderRadius = '4px';
-                link.parentNode.insertBefore(statusSpan, link.nextSibling);
+                statusSpan.style.display = 'inline-block';
+                
+                // Insertar justo después del enlace
+                link.after(statusSpan);
             }
 
+            // 1. Verificación de HTTPS
+            const isSecure = url.startsWith('https://');
             if (!isSecure) {
                 statusSpan.innerHTML = '⚠️ <span title="Conexión no segura (HTTP)">Inseguro</span>';
                 statusSpan.style.backgroundColor = '#ffebee';
@@ -114,13 +136,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Marcador visual inicial mientras valida
+            // Estado de carga inicial
             statusSpan.innerHTML = '⏳ <span title="Verificando disponibilidad...">...</span>';
             statusSpan.style.backgroundColor = '#f5f5f5';
             statusSpan.style.color = '#616161';
 
-            // 2. Verificación de disponibilidad usando Fetch + AbortController
-            const isAlive = await checkSiteAvailability(url);
+            // 2. Verificación de disponibilidad del sitio
+            const isAlive = await checkGovSiteStatus(url);
 
             if (isAlive) {
                 setStatusOnline(statusSpan);
@@ -130,62 +152,53 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    async function checkSiteAvailability(targetUrl) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos de timeout
+    async function checkGovSiteStatus(targetUrl) {
+        return new Promise((resolve) => {
+            let resolved = false;
 
-        try {
-            // Intento 1: Petición fetch en modo no-cors a la URL real
-            // Esto valida si el servidor resuelve la conexión TLS/HTTP
-            await fetch(targetUrl, {
-                method: 'HEAD',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            return true;
-        } catch (error) {
-            clearTimeout(timeoutId);
-
-            // Intento 2 (Fallback): Si fetch directo falla (p.ej., por políticas de red), 
-            // intentamos verificar la disponibilidad mediante el proxy de Favicon de Google
-            return new Promise((resolve) => {
-                try {
-                    const domain = new URL(targetUrl).hostname;
-                    const img = new Image();
-                    let finished = false;
-
-                    const timer = setTimeout(() => {
-                        if (!finished) {
-                            finished = true;
-                            resolve(false);
-                        }
-                    }, 4000);
-
-                    img.onload = function () {
-                        if (!finished) {
-                            finished = true;
-                            clearTimeout(timer);
-                            resolve(true);
-                        }
-                    };
-
-                    img.onerror = function () {
-                        if (!finished) {
-                            finished = true;
-                            clearTimeout(timer);
-                            resolve(false);
-                        }
-                    };
-
-                    // Usa el CDN de favicons de Google como validador alternativo
-                    img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32&_=${Date.now()}`;
-                } catch (e) {
+            // Timeout preventivo de 4.5 segundos
+            const timer = setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
                     resolve(false);
                 }
-            });
-        }
+            }, 4500);
+
+            try {
+                const domain = new URL(targetUrl).hostname;
+                const testImg = new Image();
+
+                testImg.onload = function () {
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timer);
+                        resolve(true);
+                    }
+                };
+
+                testImg.onerror = function () {
+                    // Si el CDN de favicons carga la imagen por defecto, el sitio existe y respondió
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timer);
+                        
+                        // Respaldo con fetch no-cors si la imagen falla
+                        fetch(targetUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-cache' })
+                            .then(() => resolve(true))
+                            .catch(() => resolve(false));
+                    }
+                };
+
+                // Petición al proxy de Favicons para validar resolución DNS / Estado del servidor
+                testImg.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32&t=${Date.now()}`;
+            } catch (e) {
+                if (!resolved) {
+                    resolved = true;
+                    clearTimeout(timer);
+                    resolve(false);
+                }
+            }
+        });
     }
 
     function setStatusOnline(element) {
@@ -199,6 +212,10 @@ document.addEventListener('DOMContentLoaded', function () {
         element.style.backgroundColor = '#ffebee';
         element.style.color = '#c62828';
     }
+
+    // Ejecutar la verificación al cargar
+    checkLinksHealthAndSecurity();
+
 
     // ==========================================
     // 4. SISTEMA DE BÚSQUEDA Y FILTRADO LIMPIO
