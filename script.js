@@ -89,11 +89,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkLinksHealthAndSecurity() {
         const allLinks = document.querySelectorAll('.national-links a, .cities-menu a');
 
-        allLinks.forEach(link => {
+        allLinks.forEach(async (link) => {
             const url = link.getAttribute('href');
             if (!url || url.startsWith('ciudad.html')) return; // Omitir enlaces internos simulados
 
-            // Verificación de Seguridad (HTTPS)
+            // 1. Verificación de Seguridad (HTTPS)
             const isSecure = url.startsWith('https://');
             
             let statusSpan = link.parentNode.querySelector('.link-status-badge');
@@ -114,41 +114,78 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Verificación de Estado (Activo / Caído)
-            try {
-                const domain = new URL(url).origin;
-                const img = new Image();
-                let finished = false;
+            // Marcador visual inicial mientras valida
+            statusSpan.innerHTML = '⏳ <span title="Verificando disponibilidad...">...</span>';
+            statusSpan.style.backgroundColor = '#f5f5f5';
+            statusSpan.style.color = '#616161';
 
-                const timer = setTimeout(() => {
-                    if (!finished) {
-                        finished = true;
-                        setStatusOffline(statusSpan);
-                    }
-                }, 4000);
+            // 2. Verificación de disponibilidad usando Fetch + AbortController
+            const isAlive = await checkSiteAvailability(url);
 
-                img.onload = function() {
-                    if (!finished) {
-                        finished = true;
-                        clearTimeout(timer);
-                        setStatusOnline(statusSpan);
-                    }
-                };
-
-                img.onerror = function() {
-                    if (!finished) {
-                        finished = true;
-                        clearTimeout(timer);
-                        setStatusOnline(statusSpan);
-                    }
-                };
-
-                img.src = `${domain}/favicon.ico?t=${new Date().getTime()}`;
-
-            } catch (e) {
+            if (isAlive) {
+                setStatusOnline(statusSpan);
+            } else {
                 setStatusOffline(statusSpan);
             }
         });
+    }
+
+    async function checkSiteAvailability(targetUrl) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos de timeout
+
+        try {
+            // Intento 1: Petición fetch en modo no-cors a la URL real
+            // Esto valida si el servidor resuelve la conexión TLS/HTTP
+            await fetch(targetUrl, {
+                method: 'HEAD',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            return true;
+        } catch (error) {
+            clearTimeout(timeoutId);
+
+            // Intento 2 (Fallback): Si fetch directo falla (p.ej., por políticas de red), 
+            // intentamos verificar la disponibilidad mediante el proxy de Favicon de Google
+            return new Promise((resolve) => {
+                try {
+                    const domain = new URL(targetUrl).hostname;
+                    const img = new Image();
+                    let finished = false;
+
+                    const timer = setTimeout(() => {
+                        if (!finished) {
+                            finished = true;
+                            resolve(false);
+                        }
+                    }, 4000);
+
+                    img.onload = function () {
+                        if (!finished) {
+                            finished = true;
+                            clearTimeout(timer);
+                            resolve(true);
+                        }
+                    };
+
+                    img.onerror = function () {
+                        if (!finished) {
+                            finished = true;
+                            clearTimeout(timer);
+                            resolve(false);
+                        }
+                    };
+
+                    // Usa el CDN de favicons de Google como validador alternativo
+                    img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32&_=${Date.now()}`;
+                } catch (e) {
+                    resolve(false);
+                }
+            });
+        }
     }
 
     function setStatusOnline(element) {
@@ -162,10 +199,6 @@ document.addEventListener('DOMContentLoaded', function () {
         element.style.backgroundColor = '#ffebee';
         element.style.color = '#c62828';
     }
-
-    // Ejecutar verificación al cargar la página
-    checkLinksHealthAndSecurity();
-
 
     // ==========================================
     // 4. SISTEMA DE BÚSQUEDA Y FILTRADO LIMPIO
