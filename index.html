@@ -6,7 +6,7 @@
     <title>24col - Tu guía de confianza</title>
     
     <!-- Políticas de Seguridad e Inserción de Cabeceras HTTP desde el Meta Tag -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Frame-Options" content="DENY">
     
@@ -380,31 +380,36 @@
             <button id="closeReportModal" style="background: none; border: none; font-size: 18px; cursor: pointer; font-weight: bold; line-height: 1;">&times;</button>
         </div>
         
-        <form id="reportForm">
+        <!-- Formulario configurado con FormSubmit -->
+        <form id="reportForm" action="https://formsubmit.co/TU_CORREO@DOMINIO.COM" method="POST">
+            <!-- Campos de configuración ocultos -->
+            <input type="hidden" name="_subject" value="Nuevo reporte en 24col">
+            <input type="hidden" name="_captcha" value="false">
+
             <div style="margin-bottom: 12px; text-align: left;">
                 <label for="reportType" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">¿Qué deseas reportar?</label>
-                <select id="reportType" style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
-                    <option value="enlace_roto">Enlace caído / roto</option>
-                    <option value="pagina_nueva">Sugerir una página nueva</option>
-                    <option value="otro">Otro comentario o sugerencia</option>
+                <select id="reportType" name="Tipo_de_Reporte" style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
+                    <option value="Enlace caído / roto">Enlace caído / roto</option>
+                    <option value="Sugerir una página nueva">Sugerir una página nueva</option>
+                    <option value="Otro comentario o sugerencia">Otro comentario o sugerencia</option>
                 </select>
             </div>
 
             <div style="margin-bottom: 12px; text-align: left;">
                 <label for="reportTarget" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">URL o Nombre de la página:</label>
-                <input type="text" id="reportTarget" placeholder="Ej: https://..." required style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
+                <input type="text" id="reportTarget" name="URL_o_Sitio" placeholder="Ej: https://..." required style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; font-size: 13px;">
             </div>
 
             <div style="margin-bottom: 15px; text-align: left;">
                 <label for="reportDetails" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">Detalles (Opcional):</label>
-                <textarea id="reportDetails" rows="3" placeholder="Cuéntanos brevemente qué sucede..." style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; resize: vertical; font-size: 13px; font-family: inherit;"></textarea>
+                <textarea id="reportDetails" name="Detalles" rows="3" placeholder="Cuéntanos brevemente qué sucede..." style="width: 100%; padding: 6px; border: 1px solid #7f7f7f; border-radius: 2px; box-sizing: border-box; resize: vertical; font-size: 13px; font-family: inherit;"></textarea>
             </div>
 
-            <button type="submit" style="width: 100%; background-color: #000; color: #fff; border: none; padding: 8px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 13px;">Enviar reporte</button>
+            <button type="submit" id="submitReportBtn" style="width: 100%; background-color: #000; color: #fff; border: none; padding: 8px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 13px;">Enviar reporte</button>
         </form>
         
         <div id="reportSuccessMsg" style="display: none; margin-top: 15px; color: #2e7d32; font-size: 13px; text-align: center; font-weight: bold;">
-            ¡Gracias! Tu reporte ha sido recibido con éxito.
+            ¡Gracias! Tu reporte ha sido enviado con éxito.
         </div>
     </dialog>
 
@@ -412,57 +417,6 @@
     <footer>
         &copy; 2026 (24col) | Navega por los servicios del país de forma clara, rápida y sin tanta vuelta | RECHACE IMITACIONES | Por: jahp
     </footer>
-
-    <!-- Lógica de control del modal -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    const modal = document.getElementById('reportModal');
-    const openBtn = document.getElementById('openReportModal');
-    const closeBtn = document.getElementById('closeReportModal');
-    const reportForm = document.getElementById('reportForm');
-    const successMsg = document.getElementById('reportSuccessMsg');
-
-    if (openBtn && modal) {
-        openBtn.addEventListener('click', () => {
-            modal.showModal();
-            if (successMsg) successMsg.style.display = 'none';
-            if (reportForm) {
-                reportForm.style.display = 'block';
-                reportForm.reset();
-            }
-        });
-    }
-
-    if (closeBtn && modal) {
-        closeBtn.addEventListener('click', () => {
-            modal.close();
-        });
-    }
-
-    if (modal) {
-        // Cerrar únicamente cuando se hace clic exactamente sobre el fondo (backdrop)
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.close();
-            }
-        });
-    }
-
-    if (reportForm) {
-        reportForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            
-            // Mostrar mensaje de confirmación
-            reportForm.style.display = 'none';
-            if (successMsg) successMsg.style.display = 'block';
-
-            setTimeout(() => {
-                if (modal) modal.close();
-            }, 2000);
-        });
-    }
-});
-    </script>
 
     <script src="script.js"></script>
 
