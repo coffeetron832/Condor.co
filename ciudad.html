@@ -4,120 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>24col - Trámites por Ciudad</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
+        :root {
+            --bg-color: #f8fafc;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #0f172a;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --link-color: #2563eb;
+            --card-bg: #ffffff;
+            --card-border: #cbd5e1;
+            --shadow-color: rgba(15, 23, 42, 0.05);
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            color: #000000;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --header-bg: rgba(18, 18, 18, 0.95);
+            --text-color: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --border-color: #27272a;
+            --link-color: #60a5fa;
+            --card-bg: #1e1e20;
+            --card-border: #27272a;
+            --shadow-color: rgba(0, 0, 0, 0.6);
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            flex: 1;
-        }
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; min-height: 100vh; transition: background-color 0.2s ease, color 0.2s ease; }
 
-        /* Encabezado compacto */
-        .header-nav {
-            margin: 10px 0 20px 0;
-            font-size: 14px;
-        }
+        .container { max-width: 680px; margin: 0 auto; flex: 1; width: 100%; padding: 20px; }
+        
+        .header-nav { margin: 10px 0 20px 0; font-size: 14px; }
+        .header-nav a { color: var(--link-color); font-weight: 600; text-decoration: underline; }
 
-        .header-nav a {
-            color: #0000ee;
-            font-weight: bold;
-            text-decoration: underline;
-        }
+        .city-title { font-family: 'Archivo Black', sans-serif; font-size: 32px; margin-bottom: 5px; text-transform: capitalize; color: var(--text-color); }
+        .category-subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
 
-        .city-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            text-transform: capitalize;
-        }
+        .city-banner-container { width: 100%; background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 4px; }
+        .city-banner-img { width: 100%; height: auto; max-height: 390px; object-fit: contain; display: block; }
+        .image-credit { font-size: 11px; color: var(--text-secondary); text-align: right; margin-bottom: 20px; font-style: italic; }
+        .image-credit a { color: var(--text-secondary); text-decoration: underline; }
 
-        .category-subtitle {
-            font-size: 15px;
-            color: #555555;
-            margin-bottom: 20px;
-        }
+        .links-list { text-align: left; margin: 20px 0; font-size: 15px; line-height: 1.8; }
+        .links-list ul { list-style-type: none; padding-left: 0; }
+        .links-list li { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--border-color); }
+        .links-list a { color: var(--link-color); font-weight: 600; text-decoration: underline; }
+        .link-desc { display: block; color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
 
-        /* Espacio para la imagen de la ciudad y sus créditos */
-        .city-banner-wrapper {
-            margin: 0 0 20px 0;
-        }
-
-        .city-banner-container {
-            width: 100%;
-            background-color: #f9f9f9;
-            border: 1px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .city-banner-img {
-            width: 100%;
-            height: auto; /* Clave para respetar la proporción original */
-            max-height: 390px; /* Tamaño máximo un poco más grande que el original (200px) pero controlado */
-            object-fit: contain; /* Muestra la imagen completa sin recortarla */
-            display: block;
-        }
-
-        .image-credit {
-            font-size: 11px;
-            color: #777777;
-            text-align: right;
-            margin-top: 4px;
-            font-style: italic;
-        }
-
-        .image-credit a {
-            color: #555555;
-            text-decoration: underline;
-        }
-
-        /* Lista de portales y trámites */
-        .links-list {
-            text-align: left;
-            margin: 20px 0;
-            font-size: 15px;
-            line-height: 2;
-        }
-
-        .links-list ul {
-            list-style-type: square;
-            padding-left: 20px;
-        }
-
-        .links-list a {
-            color: #0000ee;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        .link-desc {
-            color: #333333;
-            font-weight: normal;
-        }
-
-        footer {
-            margin-top: auto;
-            padding-top: 20px;
-            font-size: 12px;
-            color: #555555;
-        }
+        footer { margin-top: auto; padding: 30px 20px; font-size: 12px; color: var(--text-secondary); text-align: center; border-top: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
