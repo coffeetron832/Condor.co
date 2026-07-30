@@ -477,6 +477,162 @@
             flex-direction: column;
             gap: 4px;
         }
+
+        /* ==========================================
+           RESPONSIVE & MEDIA QUERIES PARA MÓVILES
+           ========================================== */
+
+        /* Teléfonos en general (Smartphones portrait y landscape pequeños) */
+        @media screen and (max-width: 640px) {
+            
+            /* Header */
+            .site-header {
+                padding: 10px 14px;
+            }
+
+            .header-container {
+                gap: 8px;
+            }
+
+            .header-brand {
+                font-size: 18px;
+            }
+
+            .header-btn {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            /* Ocultar texto secundario de botones en móviles para ahorrar espacio */
+            .header-btn span.btn-text {
+                display: none;
+            }
+
+            /* Hero / Encabezado principal */
+            .hero-section {
+                padding: 20px 14px 6px 14px;
+            }
+
+            .hero-title-text {
+                font-size: 32px;
+            }
+
+            .logo-img {
+                width: 150px; /* Reducción de logo para pantallas móviles */
+            }
+
+            .hero-subtitle {
+                font-size: 13px;
+                margin-bottom: 12px;
+            }
+
+            /* Buscador */
+            .search-container {
+                max-width: 100%;
+            }
+
+            .search-input {
+                font-size: 16px; /* Evita que iOS / Android hagan zoom automático al enfocar */
+                padding: 10px 12px 10px 36px;
+            }
+
+            /* Contenedor principal */
+            .container {
+                padding: 12px 14px 24px 14px;
+            }
+
+            .section-title {
+                font-size: 13px;
+                margin: 18px 0 10px 0;
+            }
+
+            /* Lista de enlaces nacionales */
+            .national-links {
+                font-size: 13.5px;
+            }
+
+            .national-links li {
+                padding: 10px 0; /* Mayor área táctil (tap target) para dedos */
+            }
+
+            .national-links a {
+                display: inline-block;
+                word-break: break-word; /* Previene desbordamiento con textos o URLs largas */
+            }
+
+            /* Badges e íconos dentro de enlaces */
+            .link-favicon {
+                margin-right: 6px !important;
+            }
+
+            .link-status-badge {
+                display: inline-block !important;
+                margin-top: 4px;
+                margin-left: 0 !important;
+            }
+
+            /* Categorías y Acordeones */
+            .category-item {
+                padding: 12px 12px;
+            }
+
+            details summary {
+                font-size: 14px;
+                min-height: 24px;
+            }
+
+            .cities-menu {
+                padding: 8px;
+                font-size: 12.5px;
+            }
+
+            .cities-menu a {
+                display: inline-block;
+                padding: 4px 6px; /* Facilita tocar cada ciudad */
+                margin: 2px 2px;
+            }
+
+            /* Modales / Dialogs */
+            dialog {
+                width: 92vw;
+                max-width: 92vw;
+                padding: 16px;
+                margin: auto;
+            }
+
+            .modal-header h3 {
+                font-size: 15px;
+            }
+
+            .form-input, .form-select, .form-textarea {
+                font-size: 16px; /* Evita zoom automático en móviles */
+            }
+
+            /* Footer */
+            .site-footer {
+                padding: 16px 14px;
+                font-size: 11.5px;
+            }
+        }
+
+        /* Ajustes específicos para móviles pequeños (iPhone SE, Galaxy A-series pequeños, etc.) */
+        @media screen and (max-width: 380px) {
+            .header-brand {
+                font-size: 16px;
+            }
+
+            .hero-title-text {
+                font-size: 26px;
+            }
+
+            .logo-img {
+                width: 130px;
+            }
+
+            .header-btn {
+                padding: 5px 6px;
+            }
+        }
     </style>
 </head>
 <body>
