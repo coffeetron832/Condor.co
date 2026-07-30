@@ -57,6 +57,53 @@
         .link-desc { display: block; color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
 
         footer { margin-top: auto; padding: 30px 20px; font-size: 12px; color: var(--text-secondary); text-align: center; border-top: 1px solid var(--border-color); }
+
+        /* ==========================================
+           MEDIA QUERY PARA TELÉFONOS (MÓVILES)
+           ========================================== */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px 12px;
+            }
+
+            .city-title {
+                font-size: 24px;
+                line-height: 1.2;
+            }
+
+            .category-subtitle {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+
+            .city-banner-img {
+                max-height: 180px;
+            }
+
+            .links-list {
+                font-size: 14px;
+            }
+
+            .links-list li {
+                margin-bottom: 14px;
+                padding-bottom: 14px;
+            }
+
+            .links-list a {
+                display: inline-block;
+                padding: 2px 0;
+            }
+
+            .link-desc {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+
+            .link-status-badge {
+                margin-top: 4px;
+                display: inline-block;
+            }
+        }
     </style>
 </head>
 <body>
