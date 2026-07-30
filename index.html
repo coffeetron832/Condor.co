@@ -10,216 +10,301 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Frame-Options" content="DENY">
     
-    <!-- Importación de Google Fonts: Archivo Black -->
+    <!-- Importación de Google Fonts: Archivo Black e Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-color: #f0f0f0;
-            --text-color: #000000;
-            --text-secondary: #333333;
-            --border-color: #000000;
-            --link-color: #0000ee;
-            --card-bg: #f9f9f9;
-            --card-border: #eeeeee;
-            --input-border: #7f7f7f;
+            --bg-color: #f8fafc;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #0f172a;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --link-color: #2563eb;
+            --link-hover: #1d4ed8;
+            --card-bg: #ffffff;
+            --card-border: #cbd5e1;
+            --input-bg: #ffffff;
+            --input-border: #94a3b8;
             --modal-bg: #ffffff;
-            --footer-color: #555555;
-            --shadow-color: rgba(0, 0, 0, 0.15);
+            --footer-bg: #0f172a;
+            --footer-text: #94a3b8;
+            --footer-link: #38bdf8;
+            --shadow-color: rgba(15, 23, 42, 0.05);
             --ok-color: #22c55e;
+            --hero-bg: #ffffff;
+            --chip-bg: #f1f5f9;
+            --chip-text: #334155;
             --svg-filter: none;
         }
 
         [data-theme="dark"] {
             --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --border-color: #ffffff;
-            --link-color: #63a4ff;
-            --card-bg: #1e1e1e;
-            --card-border: #333333;
-            --input-border: #555555;
-            --modal-bg: #1e1e1e;
-            --footer-color: #888888;
+            --header-bg: rgba(18, 18, 18, 0.95);
+            --text-color: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --border-color: #27272a;
+            --link-color: #60a5fa;
+            --link-hover: #93c5fd;
+            --card-bg: #1e1e20;
+            --card-border: #27272a;
+            --input-bg: #27272a;
+            --input-border: #3f3f46;
+            --modal-bg: #1e1e20;
+            --footer-bg: #0a0a0a;
+            --footer-text: #71717a;
+            --footer-link: #38bdf8;
             --shadow-color: rgba(0, 0, 0, 0.6);
             --ok-color: #4ade80;
+            --hero-bg: #18181b;
+            --chip-bg: #27272a;
+            --chip-text: #e4e4e7;
             --svg-filter: invert(1) hue-rotate(180deg);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         html, body {
             height: 100%;
             margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            text-align: center;
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
+            min-height: 100vh;
             transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        /* Contenedor Principal Centrado */
-        .container {
-            max-width: 600px;
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--header-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+        }
+
+        .header-container {
+            max-width: 680px;
             margin: 0 auto;
-            flex: 1;
             display: flex;
-            flex-direction: column;
-            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
         }
 
-        /* Logo y animación inicial */
-        .logo-container {
-            margin: 0 auto 10px auto;
+        .header-brand {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px;
-        }
-
-        .typewriter-text {
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 42px;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 3px solid var(--border-color);
-            width: 0;
-            line-height: 1;
-            margin-bottom: 10px;
-            
-            animation: 
-                typing 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards, 
-                blink 0.3s ease-in-out 4 alternate,
-                hide-border 0.01s linear 1.2s forwards;
-        }
-
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 150px; }
-        }
-
-        @keyframes blink {
-            from { border-color: var(--border-color); }
-            to { border-color: transparent; }
-        }
-
-        @keyframes hide-border {
-            to { border-right-color: transparent; }
-        }
-
-        .logo-img {
-            width: 220px;
-            height: auto;
-            opacity: 0;
-            animation: fadeInImage 0.5s ease forwards;
-            animation-delay: 1.3s;
-            filter: var(--svg-filter);
-            transition: filter 0.2s ease;
-        }
-
-        @keyframes fadeInImage {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Buscador */
-        .search-container {
-            margin: 20px 0 10px 0;
-            font-size: 15px;
-            text-align: center;
-        }
-
-        .search-container form {
-            display: inline-flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .search-container input[type="text"] {
-            padding: 4px 8px;
-            font-size: 14px;
-            width: 180px;
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--input-border);
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .search-container input[type="text"]:focus {
-            border-color: var(--border-color);
-            box-shadow: 0 0 3px var(--shadow-color);
-        }
-
-        /* Botones de acción centrado */
-        .action-links-wrapper {
-            margin-top: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            text-align: center;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--link-color);
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 12px;
-            font-family: inherit;
-            padding: 0;
-            display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 22px;
+            letter-spacing: -0.5px;
         }
 
-        .action-btn svg {
+        .header-brand-badge {
+            background-color: #fcd116;
+            color: #000000;
+            font-size: 10px;
+            font-family: sans-serif;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: inherit;
+            padding: 6px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s ease;
+        }
+
+        .header-btn:hover {
+            background-color: var(--card-bg);
+            border-color: var(--link-color);
+            color: var(--link-color);
+        }
+
+        .header-btn svg {
             flex-shrink: 0;
             stroke: currentColor;
             fill: none;
         }
 
-        /* Secciones de Contenido */
-        .section-title {
-            font-size: 14px;
-            font-weight: bold;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 4px;
-            margin: 25px 0 15px 0;
-            text-align: left;
+        .hero-section {
+            background-color: transparent;
+            padding: 28px 20px 8px 20px;
+            text-align: center;
         }
 
-        /* Enlaces Nacionales */
+        .hero-container {
+            max-width: 580px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-brand-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .hero-title-text {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 42px;
+            color: var(--text-color);
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .logo-img {
+            width: 38px;
+            height: auto;
+            filter: var(--svg-filter);
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0 0 16px 0;
+            max-width: 500px;
+            line-height: 1.5;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 11px 14px 11px 38px;
+            font-size: 14px;
+            font-family: inherit;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            outline: none;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--link-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 16px 20px 32px 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin: 22px 0 14px 0;
+            text-align: left;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
         .national-links {
             text-align: left;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
             line-height: 1.8;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .national-links ul {
-            list-style-type: square;
-            padding-left: 20px;
+            list-style-type: none;
+            padding-left: 0;
             margin: 0;
+        }
+
+        .national-links li {
+            padding: 7px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .national-links li:last-child {
+            border-bottom: none;
         }
 
         .national-links a {
             color: var(--link-color);
-            font-weight: bold;
+            font-weight: 600;
             text-decoration: underline;
+        }
+
+        .national-links a:hover {
+            color: var(--link-hover);
         }
 
         .link-desc {
@@ -227,25 +312,29 @@
             font-weight: normal;
         }
 
-        /* Categorías Regionales */
         .categories-list {
             text-align: left;
-            margin: 15px 0;
-            font-size: 15px;
-            line-height: 1.8;
+            margin: 12px 0;
+            font-size: 14px;
         }
 
         .category-item {
             margin-bottom: 10px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            padding: 10px 14px;
         }
 
         details summary {
             cursor: pointer;
             color: var(--link-color);
-            font-weight: bold;
+            font-weight: 600;
             text-decoration: underline;
             list-style: none;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         details summary::-webkit-details-marker {
@@ -255,76 +344,70 @@
         .category-desc {
             color: var(--text-secondary);
             font-weight: normal;
+            font-size: 13px;
         }
 
         .cities-menu {
-            margin-top: 6px;
+            margin-top: 8px;
             padding: 8px 10px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            font-size: 14px;
-            line-height: 1.7;
-            animation: fadeInDown 0.3s ease-out;
+            background-color: var(--bg-color);
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+            line-height: 1.6;
         }
 
         .cities-menu a {
             color: var(--link-color);
             font-weight: normal;
             text-decoration: underline;
-            margin: 0 4px;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin: 0 5px;
+            display: inline-block;
         }
 
         .no-results {
             display: none;
-            text-align: left;
+            text-align: center;
+            padding: 24px 16px;
+            background-color: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
             font-size: 14px;
             color: var(--text-secondary);
-            margin-top: 15px;
-            font-style: italic;
+            margin: 15px 0;
         }
 
-        /* Modales */
         dialog {
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 5px;
             padding: 20px;
             background: var(--modal-bg);
             color: var(--text-color);
-            box-shadow: 0 4px 12px var(--shadow-color);
+            box-shadow: 0 10px 25px var(--shadow-color);
         }
 
         dialog::backdrop {
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
         }
 
         .modal-header h3 {
             margin: 0;
             color: var(--text-color);
+            font-size: 16px;
         }
 
         .modal-close-btn {
             background: none;
             border: none;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
             font-weight: bold;
             line-height: 1;
@@ -333,70 +416,82 @@
 
         .welcome-list {
             text-align: left;
-            padding-left: 20px;
+            padding-left: 18px;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.5;
             color: var(--text-secondary);
-            margin: 15px 0;
+            margin: 12px 0;
         }
 
         .welcome-list li {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .modal-action-btn {
             width: 100%;
-            background-color: var(--border-color);
+            background-color: var(--text-color);
             color: var(--bg-color);
             border: none;
-            padding: 10px;
-            border-radius: 2px;
+            padding: 8px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             font-size: 13px;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         .form-input, .form-select, .form-textarea {
             width: 100%;
-            padding: 6px;
+            padding: 8px;
             border: 1px solid var(--input-border);
-            border-radius: 2px;
+            border-radius: 3px;
             box-sizing: border-box;
             font-size: 13px;
-            background-color: var(--card-bg);
+            background-color: var(--input-bg);
             color: var(--text-color);
+            margin-top: 4px;
         }
 
-        footer {
-            margin-top: auto;
-            padding-top: 20px;
+        .flag-icon {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 3px;
+            border-radius: 1px;
+        }
+
+        .site-footer {
+            background-color: transparent;
+            color: var(--text-secondary);
+            padding: 20px;
             font-size: 12px;
-            color: var(--footer-color);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <!-- Encabezado Centrado: Logo + Buscador + Botones -->
-        <header>
-            <div class="logo-container">
-                <div class="typewriter-text">24col</div>
-                <img src="condor01.svg" alt="24col" class="logo-img">
-            </div>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="#" class="header-brand">
+                <span>24col</span>
+            </a>
 
-            <div class="search-container">
-                <form id="searchForm">
-                    <label for="searchInput"><strong>buscar -</strong> </label>
-                    <input type="text" id="searchInput" name="q" placeholder="" autocomplete="off" maxlength="100">
-                </form>
-            </div>
-
-            <div class="action-links-wrapper">
-                <button id="themeToggleBtn" class="action-btn" type="button">
-                    <svg id="themeIconSun" width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none;">
+            <nav class="header-nav">
+                <!-- Botón Modo Oscuro -->
+                <button id="themeToggleBtn" class="header-btn" type="button" aria-label="Cambiar tema">
+                    <svg id="themeIconSun" width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none;">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -407,66 +502,120 @@
                         <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
-                    <svg id="themeIconMoon" width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg id="themeIconMoon" width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <span id="themeToggleText">Cambiar a modo oscuro</span>
+                    <span id="themeToggleText">Modo Oscuro</span>
                 </button>
-                <button id="openWelcomeModal" class="action-btn">
-                    <svg width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
+                <!-- Botón ¿Cómo funciona? -->
+                <button id="openWelcomeModal" class="header-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="16" x2="12" y2="12"></line>
                         <line x1="12" y1="8" x2="12.01" y2="8"></line>
                     </svg>
-                    ¿Cómo funciona 24col?
+                    ¿Cómo funciona?
                 </button>
-                <button id="openReportModal" class="action-btn">
-                    <svg width="15" height="15" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
+                <!-- Botón Reportar -->
+                <button id="openReportModal" class="header-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
-                    ¿Enlace caído o sugerencia? Repórtalo aquí
+                    Reportar
                 </button>
-            </div>
-        </header>
+            </nav>
+        </div>
+    </header>
 
-        <!-- Área Principal de Contenido -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-brand-title">
+                <img src="condor01.svg" alt="Cóndor" class="logo-img">
+            </div>
+
+            <p class="hero-subtitle">El portal web de los colombianos.</p>
+
+            <!-- Buscador Integrado -->
+            <div class="search-container">
+                <form id="searchForm" onsubmit="event.preventDefault();">
+                    <div class="search-box">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Busca por trámite, ciudad o entidad (ej. RUT, Medellín, Pasaporte)..." autocomplete="off" maxlength="100">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
         <main class="main-content">
 
-            <div id="noResultsMsg" class="no-results">No se encontraron trámites o ciudades que coincidan con la búsqueda.</div>
+            <div id="noResultsMsg" class="no-results">
+                No se encontraron trámites o ciudades que coincidan con tu búsqueda.
+            </div>
 
-            <div class="section-title" id="nationalSectionTitle">Trámites Nacionales (Toda Colombia)</div>
+            <!-- SECCIÓN 1: Portal Nacional -->
+            <div class="section-title" id="nationalSectionTitle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                Trámites Nacionales
+            </div>
             
             <div class="national-links" id="nationalLinksBlock">
                 <ul>
-                    <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración</span></li>
-                    <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula, registro civil, citas</span></li>
-                    <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento y trámite de pasaporte</span></li>
-                    <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias y comparendos</span></li>
-                    <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de legalización o afiliación a EPS (Fosyga)</span></li>
+                    <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración de renta</span></li>
+                    <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula digital, registro civil, citas</span></li>
+                    <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento de citas y trámite de pasaporte</span></li>
+                    <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias de conducción y comparendos</span></li>
+                    <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS y fosyga</span></li>
                 </ul>
             </div>
 
-            <div class="section-title" id="regionalSectionTitle">Trámites Específicos por Ciudad o Departamento</div>
+            <!-- SECCIÓN 2: Portales Locales / Departamentales -->
+            <div class="section-title" id="regionalSectionTitle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Trámites por Ciudad o Departamento
+            </div>
 
             <div class="categories-list" id="regionalCategoriesBlock">
                 
                 <div class="category-item searchable-category">
                     <details>
-                        <summary>Impuestos Regionales <span class="category-desc">- Vehículos, Predial, Licorera</span></summary>
+                        <summary>
+                            <span>Impuestos Regionales</span>
+                            <span class="category-desc">- Vehículos, Predial, Licorera</span>
+                        </summary>
                         <div class="cities-menu" data-category="impuestos" data-show-dept="true"></div>
                     </details>
                 </div>
 
                 <div class="category-item searchable-category">
                     <details>
-                        <summary>Servicios Públicos <span class="category-desc">- Agua, Luz, Gas y Alcaldías</span></summary>
+                        <summary>
+                            <span>Servicios Públicos y Alcaldías</span>
+                            <span class="category-desc">- Agua, Luz, Gas y Pagos Municipales</span>
+                        </summary>
                         <div class="cities-menu" data-category="hogar"></div>
                     </details>
                 </div>
 
                 <div class="category-item searchable-category">
                     <details>
-                        <summary>Movilidad y Tránsito Local <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span></summary>
+                        <summary>
+                            <span>Movilidad y Tránsito Local</span>
+                            <span class="category-desc">- Pico y Placa, Zonas Azules, Patios</span>
+                        </summary>
                         <div class="cities-menu" data-category="movilidad"></div>
                     </details>
                 </div>
@@ -474,17 +623,30 @@
             </div>
 
         </main>
-
     </div>
 
-    <dialog id="welcomeModal" style="max-width: 440px; width: 90%;">
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div>&copy; 2026 (24col) | versión 1.0 | RECHACE IMITACIONES</div>
+            <div>Por: jahp | 🇨🇴 Hecho para Colombia</div>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: Bienvenida -->
+    <dialog id="welcomeModal" style="max-width: 460px; width: 90%;">
         <div class="modal-header">
             <h3 style="font-size: 25px;">¡Bienvenido a 24col!</h3>
             <button id="closeWelcomeModalCross" class="modal-close-btn">&times;</button>
         </div>
 
         <p style="text-align: left; font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin-top: 15px;">
-            <strong>24col</strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta.
+            <strong>24col
+                <svg class="flag-icon" width="18" height="12" viewBox="0 0 3 2" aria-label="Colombia">
+                    <rect width="3" height="1" fill="#FCD116"/>
+                    <rect y="1" width="3" height="0.5" fill="#003893"/>
+                    <rect y="1.5" width="3" height="0.5" fill="#CE1126"/>
+                </svg>
+            </strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta.
         </p>
 
         <ul class="welcome-list">
@@ -492,41 +654,42 @@
                 <strong>
                     <svg width="12" height="12" viewBox="0 0 12 12" style="display:inline-block; vertical-align:middle; margin-right:4px;" aria-hidden="true">
                         <circle cx="6" cy="6" r="5" fill="var(--ok-color)"/>
-                    </svg> Verificación en Vivo:
-                </strong> Cada enlace cuenta con un indicador de estado en tiempo real. Sabrás si la plataforma gubernamental está activa antes de hacer clic.
+                    </svg> Verificación Directa:
+                </strong> Acceso sin desvíos a las sedes electrónicas públicas.
             </li>
             <li>
                 <strong>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;" aria-hidden="true">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg> Enlaces Oficiales y Directos:
-                </strong> Todos los portales listados pertenecen directamente a entes territoriales y nacionales (.gov.co).
+                    </svg> Enlaces Oficiales:
+                </strong> Todos los portales listados pertenecen directamente a entes gubernamentales (.gov.co).
             </li>
             <li>
                 <strong>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;" aria-hidden="true">
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                     </svg> Sin Colas ni Enredos:
-                </strong> Accede a tu alcaldía, Gobernación, RUNT o DIAN filtrando por nombre o tu ciudad.
+                </strong> Encuentra tu municipio, gobernación, o trámite nacional usando el buscador.
             </li>
         </ul>
 
-        <button id="closeWelcomeModalBtn" class="modal-action-btn">Entendido, comenzar</button>
+        <button id="closeWelcomeModalBtn" class="modal-action-btn">Entendido, vamos p'alante</button>
     </dialog>
 
-    <dialog id="reportModal" style="max-width: 400px; width: 90%;">
-        <div class="modal-header" style="margin-bottom: 15px;">
-            <h3 style="font-size: 15px;">Reportar o Sugerir</h3>
+    <!-- MODAL 2: Reporte -->
+    <dialog id="reportModal" style="max-width: 420px; width: 90%;">
+        <div class="modal-header">
+            <h3 style="font-size: 16px;">Reportar o Sugerir</h3>
             <button id="closeReportModal" class="modal-close-btn">&times;</button>
         </div>
         
-        <form id="reportForm" action="https://formsubmit.co/f1436e71ac9dbf4686af7cefd0c802fe" method="POST">
+        <form id="reportForm" action="https://formsubmit.co/f1436e71ac9dbf4686af7cefd0c802fe" method="POST" style="margin-top: 15px;">
             <input type="hidden" name="_subject" value="Nuevo reporte en 24col">
             <input type="hidden" name="_captcha" value="false">
 
             <div style="margin-bottom: 12px; text-align: left;">
-                <label for="reportType" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">¿Qué deseas reportar?</label>
+                <label for="reportType" style="display: block; font-size: 12px; font-weight: bold;">¿Qué deseas reportar?</label>
                 <select id="reportType" name="Tipo_de_Reporte" class="form-select">
                     <option value="Enlace caído / roto">Enlace caído / roto</option>
                     <option value="Sugerir una página nueva">Sugerir una página nueva</option>
@@ -535,32 +698,29 @@
             </div>
 
             <div style="margin-bottom: 12px; text-align: left;">
-                <label for="reportTarget" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">URL o Nombre de la página:</label>
+                <label for="reportTarget" style="display: block; font-size: 12px; font-weight: bold;">URL o Nombre de la página:</label>
                 <input type="text" id="reportTarget" name="URL_o_Sitio" placeholder="Ej: https://..." required class="form-input">
             </div>
 
             <div style="margin-bottom: 15px; text-align: left;">
-                <label for="reportDetails" style="display: block; font-size: 12px; margin-bottom: 4px; font-weight: bold;">Detalles (Opcional):</label>
+                <label for="reportDetails" style="display: block; font-size: 12px; font-weight: bold;">Detalles (Opcional):</label>
                 <textarea id="reportDetails" name="Detalles" rows="3" placeholder="Cuéntanos brevemente qué sucede..." class="form-textarea" style="resize: vertical; font-family: inherit;"></textarea>
             </div>
 
-            <button type="submit" id="submitReportBtn" class="modal-action-btn" style="padding: 8px;">Enviar reporte</button>
+            <button type="submit" id="submitReportBtn" class="modal-action-btn" style="padding: 10px;">Enviar reporte</button>
         </form>
         
-        <div id="reportSuccessMsg" style="display: none; margin-top: 15px; color: #2e7d32; font-size: 13px; text-align: center; font-weight: bold;">
+        <div id="reportSuccessMsg" style="display: none; margin-top: 15px; color: var(--ok-color); font-size: 13px; text-align: center; font-weight: bold;">
             ¡Gracias! Tu reporte ha sido enviado con éxito.
         </div>
     </dialog>
-
-    <footer>
-        &copy; 2026 (24col) | versión 1.0 | RECHACE IMITACIONES | Por: jahp
-    </footer>
 
     <script src="report-modal.js"></script>
     <script src="script.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Theme Switcher ---
             const themeToggleBtn = document.getElementById('themeToggleBtn');
             const themeToggleText = document.getElementById('themeToggleText');
             const iconSun = document.getElementById('themeIconSun');
@@ -569,20 +729,19 @@
             function updateThemeUI(theme) {
                 if (theme === 'dark') {
                     document.documentElement.setAttribute('data-theme', 'dark');
-                    themeToggleText.textContent = 'Cambiar a modo claro';
-                    iconSun.style.display = 'inline-block';
-                    iconMoon.style.display = 'none';
+                    if (themeToggleText) themeToggleText.textContent = 'Modo Claro';
+                    if (iconSun) iconSun.style.display = 'inline-block';
+                    if (iconMoon) iconMoon.style.display = 'none';
                 } else {
                     document.documentElement.removeAttribute('data-theme');
-                    themeToggleText.textContent = 'Cambiar a modo oscuro';
-                    iconSun.style.display = 'none';
-                    iconMoon.style.display = 'inline-block';
+                    if (themeToggleText) themeToggleText.textContent = 'Modo Oscuro';
+                    if (iconSun) iconSun.style.display = 'none';
+                    if (iconMoon) iconMoon.style.display = 'inline-block';
                 }
             }
 
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
             const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
             updateThemeUI(currentTheme);
 
@@ -594,15 +753,17 @@
                     updateThemeUI(newTheme);
                 });
             }
-        });
-    </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+            // --- Modal Behaviors ---
             const welcomeModal = document.getElementById('welcomeModal');
             const openWelcomeBtn = document.getElementById('openWelcomeModal');
             const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
             const closeWelcomeCross = document.getElementById('closeWelcomeModalCross');
+            const footerWelcomeBtn = document.getElementById('footerWelcomeBtn');
+            const footerReportBtn = document.getElementById('footerReportBtn');
+            const reportModal = document.getElementById('reportModal');
+            const openReportBtn = document.getElementById('openReportModal');
+            const closeReportBtn = document.getElementById('closeReportModal');
 
             if (!localStorage.getItem('welcomeShown')) {
                 setTimeout(() => {
@@ -613,8 +774,10 @@
             }
 
             function closeWelcome() {
-                welcomeModal.close();
-                localStorage.setItem('welcomeShown', 'true');
+                if (welcomeModal) {
+                    welcomeModal.close();
+                    localStorage.setItem('welcomeShown', 'true');
+                }
             }
 
             if (closeWelcomeBtn) closeWelcomeBtn.addEventListener('click', closeWelcome);
@@ -622,23 +785,64 @@
 
             if (openWelcomeBtn) {
                 openWelcomeBtn.addEventListener('click', () => {
-                    welcomeModal.showModal();
+                    if (welcomeModal) welcomeModal.showModal();
                 });
             }
 
-            welcomeModal.addEventListener('click', (e) => {
-                const rect = welcomeModal.getBoundingClientRect();
-                if (
-                    e.clientX < rect.left ||
-                    e.clientX > rect.right ||
-                    e.clientY < rect.top ||
-                    e.clientY > rect.bottom
-                ) {
-                    closeWelcome();
-                }
-            });
+            if (footerWelcomeBtn) {
+                footerWelcomeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (welcomeModal) welcomeModal.showModal();
+                });
+            }
+
+            if (footerReportBtn) {
+                footerReportBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (reportModal) reportModal.showModal();
+                });
+            }
+
+            if (openReportBtn) {
+                openReportBtn.addEventListener('click', () => {
+                    if (reportModal) reportModal.showModal();
+                });
+            }
+
+            if (closeReportBtn) {
+                closeReportBtn.addEventListener('click', () => {
+                    if (reportModal) reportModal.close();
+                });
+            }
+
+            if (welcomeModal) {
+                welcomeModal.addEventListener('click', (e) => {
+                    const rect = welcomeModal.getBoundingClientRect();
+                    if (
+                        e.clientX < rect.left ||
+                        e.clientX > rect.right ||
+                        e.clientY < rect.top ||
+                        e.clientY > rect.bottom
+                    ) {
+                        closeWelcome();
+                    }
+                });
+            }
+
+            if (reportModal) {
+                reportModal.addEventListener('click', (e) => {
+                    const rect = reportModal.getBoundingClientRect();
+                    if (
+                        e.clientX < rect.left ||
+                        e.clientX > rect.right ||
+                        e.clientY < rect.top ||
+                        e.clientY > rect.bottom
+                    ) {
+                        reportModal.close();
+                    }
+                });
+            }
         });
     </script>
-
 </body>
 </html>
