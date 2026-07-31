@@ -241,6 +241,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 return searchTerms.some(term => normalizedTarget.includes(term));
             };
 
+            // Helper para obtener datos de la ciudad desde la URL del enlace (ciudad.html?cat=...&city=ID)
+            const getCityDataByUrl = (href) => {
+                if (!href) return null;
+                const match = href.match(/city=([^&]+)/);
+                if (!match) return null;
+                const cityId = match[1];
+                return CITIES_DATA.find(c => c.id === cityId);
+            };
+
             // 1. Filtrado de trámites nacionales
             nationalItems.forEach(item => {
                 const text = item.textContent;
@@ -252,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // 2. Filtrado de categorías y enlaces regionales
+            // 2. Filtrado de categorías y enlaces regionales/ciudades
             categoryItems.forEach(item => {
                 const details = item.querySelector('details');
                 const summary = item.querySelector('summary');
@@ -275,7 +284,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         const linkText = link.textContent;
                         const linkUrl = link.getAttribute('href') || '';
                         
-                        const isDirectLinkMatch = isMatch(linkText) || isMatch(linkUrl);
+                        // Coincidencia por texto visible o URL
+                        let isDirectLinkMatch = isMatch(linkText) || isMatch(linkUrl);
+
+                        // Coincidencia extendida buscando en la base de datos de CITIES_DATA
+                        if (!isDirectLinkMatch) {
+                            const cityObj = getCityDataByUrl(linkUrl);
+                            if (cityObj) {
+                                if (isMatch(cityObj.name) || isMatch(cityObj.dept) || isMatch(cityObj.id)) {
+                                    isDirectLinkMatch = true;
+                                }
+                            }
+                        }
 
                         if (isDirectLinkMatch || isCategoryMatch) {
                             link.style.display = '';
