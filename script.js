@@ -33,14 +33,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const category = menu.dataset.category;
             const showDept = menu.dataset.showDept === 'true';
 
-            const linksHTML = sortedCities.map(city => {
+            // Envolver cada enlace en un span envoltorio con la barra separadora
+            const linksHTML = sortedCities.map((city, index) => {
                 const label = showDept && city.dept !== 'Bogotá D.C.' 
                     ? `${city.name} / ${city.dept}` 
                     : city.name;
-                return `<a href="ciudad.html?cat=${category}&city=${city.id}">${label}</a>`;
-            }).join(' | ');
+                const separator = index < sortedCities.length - 1 ? '<span class="city-sep"> | </span>' : '';
+                return `<span class="city-link-wrapper" data-city-id="${city.id}"><a href="ciudad.html?cat=${category}&city=${city.id}">${label}</a>${separator}</span>`;
+            }).join('');
 
-            menu.innerHTML = `Selecciona tu ubicación: <br>${linksHTML}`;
+            menu.innerHTML = `<span class="cities-label">Selecciona tu ubicación:</span><br><div class="cities-list">${linksHTML}</div>`;
         });
     }
 
@@ -177,19 +179,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 testImg.onerror = function () {
-                    // Si el CDN de favicons carga la imagen por defecto, el sitio existe y respondió
                     if (!resolved) {
                         resolved = true;
                         clearTimeout(timer);
                         
-                        // Respaldo con fetch no-cors si la imagen falla
                         fetch(targetUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-cache' })
                             .then(() => resolve(true))
                             .catch(() => resolve(false));
                     }
                 };
 
-                // Petición al proxy de Favicons para validar resolución DNS / Estado del servidor
                 testImg.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32&t=${Date.now()}`;
             } catch (e) {
                 if (!resolved) {
@@ -213,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
         element.style.color = '#c62828';
     }
 
-    // Ejecutar la verificación al cargar
     checkLinksHealthAndSecurity();
 
 
@@ -241,15 +239,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return searchTerms.some(term => normalizedTarget.includes(term));
             };
 
-            // Helper para obtener datos de la ciudad desde la URL del enlace (ciudad.html?cat=...&city=ID)
-            const getCityDataByUrl = (href) => {
-                if (!href) return null;
-                const match = href.match(/city=([^&]+)/);
-                if (!match) return null;
-                const cityId = match[1];
-                return CITIES_DATA.find(c => c.id === cityId);
-            };
-
             // 1. Filtrado de trámites nacionales
             nationalItems.forEach(item => {
                 const text = item.textContent;
@@ -261,11 +250,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // 2. Filtrado de categorías y enlaces regionales/ciudades
+            // 2. Filtrado de categorías y enlaces regionales
             categoryItems.forEach(item => {
                 const details = item.querySelector('details');
                 const summary = item.querySelector('summary');
-                const cityLinks = item.querySelectorAll('.cities-menu a');
+                const cityWrappers = item.querySelectorAll('.city-link-wrapper');
 
                 const summaryText = summary ? summary.textContent : '';
                 const isCategoryMatch = isMatch(summaryText);
@@ -273,39 +262,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (query === '') {
                     item.style.display = '';
                     if (details) details.open = false;
-                    cityLinks.forEach(link => {
-                        link.style.display = '';
+                    
+                    // Restaurar visibilidad de envoltorios y separadores
+                    cityWrappers.forEach(wrapper => {
+                        wrapper.style.display = '';
+                        const sep = wrapper.querySelector('.city-sep');
+                        if (sep) sep.style.display = '';
                     });
                     regionalVisibleCount++;
                 } else {
-                    let matchingLinksInCategory = 0;
+                    let visibleWrappers = [];
 
-                    cityLinks.forEach(link => {
-                        const linkText = link.textContent;
-                        const linkUrl = link.getAttribute('href') || '';
-                        
-                        // Coincidencia por texto visible o URL
-                        let isDirectLinkMatch = isMatch(linkText) || isMatch(linkUrl);
+                    cityWrappers.forEach(wrapper => {
+                        const link = wrapper.querySelector('a');
+                        const linkText = link ? link.textContent : '';
+                        const linkUrl = link ? link.getAttribute('href') : '';
+                        const cityId = wrapper.dataset.cityId;
+                        const cityObj = CITIES_DATA.find(c => c.id === cityId);
 
-                        // Coincidencia extendida buscando en la base de datos de CITIES_DATA
-                        if (!isDirectLinkMatch) {
-                            const cityObj = getCityDataByUrl(linkUrl);
-                            if (cityObj) {
-                                if (isMatch(cityObj.name) || isMatch(cityObj.dept) || isMatch(cityObj.id)) {
-                                    isDirectLinkMatch = true;
-                                }
+                        let isDirectMatch = isMatch(linkText) || isMatch(linkUrl);
+
+                        if (!isDirectMatch && cityObj) {
+                            if (isMatch(cityObj.name) || isMatch(cityObj.dept) || isMatch(cityObj.id)) {
+                                isDirectMatch = true;
                             }
                         }
 
-                        if (isDirectLinkMatch || isCategoryMatch) {
-                            link.style.display = '';
-                            matchingLinksInCategory++;
+                        if (isDirectMatch || isCategoryMatch) {
+                            wrapper.style.display = '';
+                            visibleWrappers.push(wrapper);
                         } else {
-                            link.style.display = 'none';
+                            wrapper.style.display = 'none';
                         }
                     });
 
-                    if (matchingLinksInCategory > 0 || isCategoryMatch) {
+                    // Limpieza dinámica de separadores (|) entre resultados visibles
+                    visibleWrappers.forEach((wrapper, idx) => {
+                        const sep = wrapper.querySelector('.city-sep');
+                        if (sep) {
+                            // Ocultar la barra en el último elemento visible de la lista
+                            sep.style.display = (idx === visibleWrappers.length - 1) ? 'none' : '';
+                        }
+                    });
+
+                    if (visibleWrappers.length > 0 || isCategoryMatch) {
                         item.style.display = '';
                         if (details) details.open = true;
                         regionalVisibleCount++;
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // 3. Manejo de títulos
+            // 3. Manejo de títulos y mensaje sin resultados
             if (query !== '') {
                 if (nationalTitle) nationalTitle.style.display = 'none';
                 if (regionalTitle) regionalTitle.style.display = 'none';
