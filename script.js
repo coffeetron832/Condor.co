@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
         { id: 'villavicencio', name: 'Villavicencio', dept: 'Met.' }
     ];
 
-    // Mapeo interoperable de servicios locales para el buscador principal
     const LOCAL_SERVICES_INDEX = {
         'bogota': {
             'impuestos': ['Secretaría de Hacienda (DIB)', 'impuesto predial y vehículos'],
@@ -123,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 const separator = index < sortedCities.length - 1 ? '<span class="city-sep"> | </span>' : '';
                 
-                // Extraer servicios para indexación contextual en el HTML
                 const cityServices = (LOCAL_SERVICES_INDEX[city.id] && LOCAL_SERVICES_INDEX[city.id][category]) 
                     ? LOCAL_SERVICES_INDEX[city.id][category].join(', ') 
                     : '';
@@ -144,7 +142,138 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 2. CONFIGURACIÓN DEL BUSCADOR Y SINÓNIMOS
+    // 2. VERIFICADOR DE ESTADO, FAVICONS Y SEGURIDAD DE ENLACES
+    // ==========================================
+    function checkLinksHealthAndSecurity() {
+        // Selecciona los enlaces nacionales y excluye los internos (ciudad.html)
+        const allLinks = document.querySelectorAll('.searchable-item a, .national-links a, .cities-menu a');
+
+        allLinks.forEach(async (link) => {
+            const url = link.getAttribute('href');
+            if (!url || url.startsWith('ciudad.html')) return;
+
+            // --- A. INSERTAR FAVICON ---
+            try {
+                const domain = new URL(url).hostname;
+                if (!link.querySelector('.link-favicon')) {
+                    const faviconImg = document.createElement('img');
+                    faviconImg.className = 'link-favicon';
+                    faviconImg.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+                    faviconImg.alt = '';
+                    faviconImg.style.width = '16px';
+                    faviconImg.style.height = '16px';
+                    faviconImg.style.verticalAlign = 'middle';
+                    faviconImg.style.marginRight = '5px';
+                    faviconImg.style.display = 'inline-block';
+
+                    link.insertBefore(faviconImg, link.firstChild);
+                }
+            } catch (e) {
+                // Continuar si la URL no es válida
+            }
+
+            // --- B. PREPARAR BADGE DE ESTADO ---
+            let statusSpan = link.parentNode.querySelector(`.link-status-badge[data-for="${encodeURIComponent(url)}"]`);
+            if (!statusSpan) {
+                statusSpan = document.createElement('span');
+                statusSpan.className = 'link-status-badge';
+                statusSpan.setAttribute('data-for', encodeURIComponent(url));
+                statusSpan.style.fontSize = '11px';
+                statusSpan.style.marginLeft = '6px';
+                statusSpan.style.padding = '1px 5px';
+                statusSpan.style.borderRadius = '4px';
+                statusSpan.style.display = 'inline-block';
+                
+                link.after(statusSpan);
+            }
+
+            // 1. Verificación HTTPS
+            const isSecure = url.startsWith('https://');
+            if (!isSecure) {
+                statusSpan.innerHTML = '⚠️ <span title="Conexión no segura (HTTP)">Inseguro</span>';
+                statusSpan.style.backgroundColor = '#ffebee';
+                statusSpan.style.color = '#c62828';
+                return;
+            }
+
+            statusSpan.innerHTML = '⏳ <span title="Verificando disponibilidad...">...</span>';
+            statusSpan.style.backgroundColor = '#f5f5f5';
+            statusSpan.style.color = '#616161';
+
+            // 2. Verificación de disponibilidad
+            const isAlive = await checkGovSiteStatus(url);
+
+            if (isAlive) {
+                setStatusOnline(statusSpan);
+            } else {
+                setStatusOffline(statusSpan);
+            }
+        });
+    }
+
+    async function checkGovSiteStatus(targetUrl) {
+        return new Promise((resolve) => {
+            let resolved = false;
+
+            const timer = setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(false);
+                }
+            }, 4500);
+
+            try {
+                const domain = new URL(targetUrl).hostname;
+                const testImg = new Image();
+
+                testImg.onload = function () {
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timer);
+                        resolve(true);
+                    }
+                };
+
+                testImg.onerror = function () {
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timer);
+                        
+                        fetch(targetUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-cache' })
+                            .then(() => resolve(true))
+                            .catch(() => resolve(false));
+                    }
+                };
+
+                testImg.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32&t=${Date.now()}`;
+            } catch (e) {
+                if (!resolved) {
+                    resolved = true;
+                    clearTimeout(timer);
+                    resolve(false);
+                }
+            }
+        });
+    }
+
+    function setStatusOnline(element) {
+        element.innerHTML = '🟢 <span title="Enlace activo y seguro HTTPS">OK</span>';
+        element.style.backgroundColor = '#e8f5e9';
+        element.style.color = '#2e7d32';
+    }
+
+    function setStatusOffline(element) {
+        element.innerHTML = '🔴 <span title="El servidor no responde o podría estar caído">Caído</span>';
+        element.style.backgroundColor = '#ffebee';
+        element.style.color = '#c62828';
+    }
+
+    // Ejecutar la verificación al cargar la página
+    checkLinksHealthAndSecurity();
+
+
+    // ==========================================
+    // 3. CONFIGURACIÓN DEL BUSCADOR Y SINÓNIMOS
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -172,12 +301,13 @@ document.addEventListener('DOMContentLoaded', function () {
         'gas': ['surtigas', 'vanti', 'gases', 'efigas', 'alcanos', 'llanogas', 'gasoriente'],
         'soat': ['runt', 'simit', 'movilidad', 'tránsito', 'transito'],
         'fotomulta': ['simit', 'runt', 'movilidad', 'tránsito', 'transito', 'datt'],
+        'fosyga': ['adres', 'bdua', 'eps', 'salud'],
         'cedula': ['registraduria', 'duplicado', 'identificacion']
     };
 
 
     // ==========================================
-    // 3. BUSCADOR INTEROPERABLE DE ALTA PRECISIÓN
+    // 4. BUSCADOR INTEROPERABLE DE ALTA PRECISIÓN
     // ==========================================
     if (searchInput) {
         searchInput.addEventListener('input', function () {
@@ -244,10 +374,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         let matchedServiceName = '';
 
-                        // 1. Coincidencia por nombre de ciudad o departamento
                         let isCityMatch = isMatch(linkText) || (cityObj && (isMatch(cityObj.name) || isMatch(cityObj.dept)));
 
-                        // 2. Coincidencia por trámite específico (ej: "Veolia", "Surtigas", "Afinia")
                         if (cityServices) {
                             const servicesList = cityServices.split(', ');
                             const found = servicesList.find(service => isMatch(service));
@@ -260,7 +388,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             wrapper.style.display = '';
                             visibleWrappers.push(wrapper);
 
-                            // Mostrar etiqueta contextual si coincide con una empresa o trámite
                             if (tag && matchedServiceName !== '') {
                                 tag.textContent = `(${matchedServiceName})`;
                                 tag.style.display = 'inline';
@@ -273,7 +400,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
 
-                    // Limpieza dinámica de separadores (|) entre resultados visibles
                     visibleWrappers.forEach((wrapper, idx) => {
                         const sep = wrapper.querySelector('.city-sep');
                         if (sep) {
@@ -283,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (visibleWrappers.length > 0) {
                         item.style.display = '';
-                        if (details) details.open = true; // Abre automáticamente la categoría
+                        if (details) details.open = true;
                         regionalVisibleCount++;
                     } else {
                         item.style.display = 'none';
