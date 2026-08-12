@@ -1,6 +1,6 @@
 # 24col 
 
-> Directorio ciudadano, ágil y privado de portales de trámites y servicios públicos en Colombia.
+> Directorio ciudadano público de portales de trámites y servicios públicos en Colombia.
 
 <p align="center">
   <img src="condor01.svg" alt="Cóndor 24col Logo" width="370" />
