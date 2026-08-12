@@ -1,110 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
-    // 1. BASE DE DATOS UNIFICADA (INTEROPERABLE)
+    // 1. RENDERIZADO DEL MENÚ DE CIUDADES
     // ==========================================
-    const CITIES_DATA = [
-        { id: 'barranquilla', name: 'Barranquilla', dept: 'Atl.' },
-        { id: 'bogota', name: 'Bogotá D.C.', dept: 'Bogotá D.C.' },
-        { id: 'bucaramanga', name: 'Bucaramanga', dept: 'Sant.' },
-        { id: 'cali', name: 'Cali', dept: 'Valle' },
-        { id: 'cartagena', name: 'Cartagena', dept: 'Bol.' },
-        { id: 'cucuta', name: 'Cúcuta', dept: 'N.S.' },
-        { id: 'ibague', name: 'Ibagué', dept: 'Tol.' },
-        { id: 'manizales', name: 'Manizales', dept: 'Cal.' },
-        { id: 'medellin', name: 'Medellín', dept: 'Ant.' },
-        { id: 'monteria', name: 'Montería', dept: 'Cór.' },
-        { id: 'pasto', name: 'Pasto', dept: 'Nar.' },
-        { id: 'pereira', name: 'Pereira', dept: 'Ris.' },
-        { id: 'santamarta', name: 'Santa Marta', dept: 'Mag.' },
-        { id: 'sincelejo', name: 'Sincelejo', dept: 'Suc.' },
-        { id: 'valledupar', name: 'Valledupar', dept: 'Ces.' },
-        { id: 'villavicencio', name: 'Villavicencio', dept: 'Met.' }
-    ];
-
-    const LOCAL_SERVICES_INDEX = {
-        'bogota': {
-            'impuestos': ['Secretaría de Hacienda (DIB)', 'impuesto predial y vehículos'],
-            'hogar': ['Alcaldía Mayor de Bogotá', 'EAAB - Acueducto de Bogotá', 'Enel Colombia', 'Vanti (Gas Natural)'],
-            'movilidad': ['Secretaría de Movilidad de Bogotá', 'pico y placa', 'comparendos']
-        },
-        'medellin': {
-            'impuestos': ['Hacienda Medellín', 'Gobernación de Antioquia', 'impuesto vehicular'],
-            'hogar': ['Alcaldía de Medellín', 'EPM - Empresas Públicas de Medellín', 'agua', 'luz', 'gas'],
-            'movilidad': ['Secretaría de Movilidad de Medellín', 'pico y placa']
-        },
-        'cali': {
-            'impuestos': ['Hacienda Municipal de Cali', 'Gobernación del Valle del Cauca'],
-            'hogar': ['Alcaldía de Santiago de Cali', 'EMCALI', 'Gases del Occidente'],
-            'movilidad': ['Secretaría de Movilidad de Cali', 'pico y placa']
-        },
-        'barranquilla': {
-            'impuestos': ['Gerencia de Ingresos - Barranquilla', 'Gobernación del Atlántico', 'predial'],
-            'hogar': ['Alcaldía de Barranquilla', 'Triple A', 'Air-e', 'Gases del Caribe'],
-            'movilidad': ['Secretaría de Tránsito de Barranquilla']
-        },
-        'monteria': {
-            'impuestos': ['Alcaldía de Montería - Impuesto Predial', 'Gobernación de Córdoba - Impuesto Vehicular'],
-            'hogar': ['Alcaldía de Montería', 'Veolia Montería', 'Afinia (Grupo EPM)', 'Surtigas'],
-            'movilidad': ['Secretaría de Tránsito de Montería', 'pico y placa', 'acuerdos de pago']
-        },
-        'cartagena': {
-            'impuestos': ['Alcaldía de Cartagena - Hacienda', 'Gobernación de Bolívar'],
-            'hogar': ['Alcaldía de Cartagena', 'Acuacar (Aguas de Cartagena)', 'Afinia', 'Surtigas'],
-            'movilidad': ['DATT Cartagena', 'transitocartagena']
-        },
-        'bucaramanga': {
-            'impuestos': ['Alcaldía de Bucaramanga', 'Gobernación de Santander'],
-            'hogar': ['amb (Acueducto)', 'ESSA', 'Gasoriente'],
-            'movilidad': ['Tránsito Bucaramanga', 'fotomultas']
-        },
-        'pereira': {
-            'impuestos': ['Alcaldía de Pereira', 'Gobernación de Risaralda'],
-            'hogar': ['Aguas y Aguas de Pereira', 'Energía de Pereira', 'Efigas'],
-            'movilidad': ['Instituto de Tránsito de Pereira']
-        },
-        'manizales': {
-            'impuestos': ['Alcaldía de Manizales', 'Gobernación de Caldas'],
-            'hogar': ['Aguas de Manizales', 'CHEC', 'Efigas'],
-            'movilidad': ['STT Manizales']
-        },
-        'cucuta': {
-            'impuestos': ['Alcaldía de Cúcuta', 'Gobernación de Norte de Santander'],
-            'hogar': ['EIS Cúcuta / Veolia', 'CENS', 'Gases del Oriente'],
-            'movilidad': ['Secretaría de Tránsito de Cúcuta']
-        },
-        'ibague': {
-            'impuestos': ['Alcaldía de Ibagué', 'Gobernación del Tolima'],
-            'hogar': ['IBAL', 'CELSIA', 'Alcanos de Colombia'],
-            'movilidad': ['Secretaría de Movilidad de Ibagué']
-        },
-        'santamarta': {
-            'impuestos': ['Alcaldía de Santa Marta', 'Gobernación del Magdalena'],
-            'hogar': ['ESSMAR E.S.P.', 'Air-e', 'Gases del Caribe'],
-            'movilidad': ['STTM Santa Marta']
-        },
-        'pasto': {
-            'impuestos': ['Alcaldía de Pasto', 'Gobernación de Nariño'],
-            'hogar': ['EMPOPASTO', 'CEDENAR', 'Alcanos de Colombia'],
-            'movilidad': ['Subsecretaría de Tránsito de Pasto']
-        },
-        'sincelejo': {
-            'impuestos': ['Alcaldía de Sincelejo', 'Gobernación de Sucre'],
-            'hogar': ['VeaA (Veolia)', 'Afinia', 'Surtigas'],
-            'movilidad': ['Secretaría de Tránsito y Transporte de Sincelejo']
-        },
-        'villavicencio': {
-            'impuestos': ['Alcaldía de Villavicencio', 'Gobernación del Meta'],
-            'hogar': ['EAAV', 'EMSA', 'Llanogas'],
-            'movilidad': ['Secretaría de Movilidad Villavicencio']
-        },
-        'valledupar': {
-            'impuestos': ['Alcaldía de Valledupar', 'Gobernación del Cesar'],
-            'hogar': ['EMDUPAR', 'Afinia', 'Gases del Caribe'],
-            'movilidad': ['Tránsito Valledupar']
-        }
-    };
-
     function renderCitiesMenu() {
         const menus = document.querySelectorAll('.cities-menu');
         const sortedCities = [...CITIES_DATA].sort((a, b) => 
@@ -142,10 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 2. VERIFICADOR DE ESTADO, FAVICONS Y SEGURIDAD DE ENLACES
+    // 2. VERIFICADOR DE ESTADO, FAVICONS Y SEGURIDAD
     // ==========================================
     function checkLinksHealthAndSecurity() {
-        // Selecciona los enlaces nacionales y excluye los internos (ciudad.html)
         const allLinks = document.querySelectorAll('.searchable-item a, .national-links a, .cities-menu a');
 
         allLinks.forEach(async (link) => {
@@ -268,12 +165,11 @@ document.addEventListener('DOMContentLoaded', function () {
         element.style.color = '#c62828';
     }
 
-    // Ejecutar la verificación al cargar la página
     checkLinksHealthAndSecurity();
 
 
     // ==========================================
-    // 3. CONFIGURACIÓN DEL BUSCADOR Y SINÓNIMOS
+    // 3. BUSCADOR CON SINÓNIMOS
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -305,10 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
         'cedula': ['registraduria', 'duplicado', 'identificacion']
     };
 
-
-    // ==========================================
-    // 4. BUSCADOR INTEROPERABLE DE ALTA PRECISIÓN
-    // ==========================================
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const query = normalizeText(this.value.trim());
