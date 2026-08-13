@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR CON SINÓNIMOS
+    // 3. BUSCADOR INTEROPERABLE CON SINÓNIMOS BIDIRECCIONALES
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -276,6 +276,30 @@ document.addEventListener('DOMContentLoaded', function () {
         'cedula': ['registraduria', 'duplicado', 'identificacion']
     };
 
+    // Función de expansión bidireccional de la consulta
+    function getExpandedSearchTerms(query) {
+        const normQuery = normalizeText(query);
+        if (!normQuery) return [];
+
+        const terms = new Set([normQuery]);
+
+        Object.entries(keywordSynonyms).forEach(([key, synonyms]) => {
+            const normKey = normalizeText(key);
+            const normSynonyms = synonyms.map(s => normalizeText(s));
+
+            // Si la consulta coincide con la clave O con alguno de los sinónimos del arreglo
+            const matchesKey = normKey.includes(normQuery) || normQuery.includes(normKey);
+            const matchesSynonym = normSynonyms.some(s => s.includes(normQuery) || normQuery.includes(s));
+
+            if (matchesKey || matchesSynonym) {
+                terms.add(normKey);
+                normSynonyms.forEach(s => terms.add(s));
+            }
+        });
+
+        return Array.from(terms);
+    }
+
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const rawQuery = this.value.trim();
@@ -285,18 +309,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let nationalVisibleCount = 0;
             let regionalVisibleCount = 0;
 
-            // Construcción del conjunto de términos a buscar (palabra clave + sinónimos)
-            let searchTerms = query !== '' ? [query] : [];
-            if (query !== '') {
-                Object.keys(keywordSynonyms).forEach(key => {
-                    const normKey = normalizeText(key);
-                    if (normKey.includes(query) || query.includes(normKey)) {
-                        keywordSynonyms[key].forEach(syn => searchTerms.push(normalizeText(syn)));
-                    }
-                });
-            }
+            const searchTerms = getExpandedSearchTerms(query);
 
-            // Función de comprobación flexible
             const isMatch = (textToTest) => {
                 if (!textToTest || searchTerms.length === 0) return false;
                 const normalizedTarget = normalizeText(textToTest);
@@ -356,19 +370,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         let matchedServiceName = '';
 
-                        // 1. ¿Coincide el nombre de la ciudad o departamento?
-                        let isCityMatch = isMatch(linkText) || (cityObj && (isMatch(cityObj.name) || isMatch(cityObj.dept)));
+                        // 1. Coincidencia por nombre de la ciudad o departamento
+                        const isCityMatch = isMatch(linkText) || (cityObj && (isMatch(cityObj.name) || isMatch(cityObj.dept)));
 
-                        // 2. ¿Coincide algún servicio específico asignado a esta ciudad?
+                        // 2. Coincidencia dentro de la lista interoperable de servicios
                         if (cityServices) {
-                            const servicesList = cityServices.split(', ');
+                            const servicesList = cityServices.split(',').map(s => s.trim());
                             const found = servicesList.find(service => isMatch(service));
                             if (found) {
                                 matchedServiceName = found;
                             }
                         }
 
-                        // Si la categoría general coincide, o la ciudad/servicio coincide, mostramos este ítem
+                        // Si la categoría, la ciudad o un servicio interno coinciden, se muestra
                         if (isCityMatch || matchedServiceName !== '' || isCategoryMatch) {
                             wrapper.style.display = '';
                             visibleWrappersCount++;
@@ -385,7 +399,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
 
-                    // Si hay ciudades visibles o si la categoría entera coincide, desplegar y mostrar la tarjeta
                     if (visibleWrappersCount > 0) {
                         item.style.display = '';
                         if (details) details.open = true;
@@ -398,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // ------------------------------------------
-            // C. Control de visibilidad de títulos y mensaje de "no resultados"
+            // C. Control de visibilidad de títulos y mensaje
             // ------------------------------------------
             if (query !== '') {
                 if (nationalTitle) nationalTitle.style.display = 'none';
