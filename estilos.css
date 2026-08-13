@@ -371,7 +371,7 @@ details summary::-webkit-details-marker {
     margin: 8px 0;
 }
 
-/* Modales General */
+/* Modales */
 
 dialog {
     border: 1px solid var(--border-color);
@@ -384,27 +384,6 @@ dialog {
 
 dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* Estilos Específicos para el Modal de Bienvenida */
-
-#welcomeModal.modal-welcome {
-    width: 90vw;
-    max-width: 650px;
-    padding: 24px;
-}
-
-#welcomeModal .welcome-list {
-    text-align: left;
-    padding-left: 20px;
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--text-secondary);
-    margin: 12px 0;
-}
-
-#welcomeModal .welcome-list li {
-    margin-bottom: 6px;
 }
 
 .modal-header {
@@ -431,17 +410,30 @@ dialog::backdrop {
     color: var(--text-color);
 }
 
+.welcome-list {
+    text-align: left;
+    padding-left: 16px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    margin: 8px 0;
+}
+
+.welcome-list li {
+    margin-bottom: 5px;
+}
+
 .modal-action-btn {
     width: 100%;
     background-color: var(--text-color);
     color: var(--bg-color);
     border: none;
-    padding: 9px;
+    padding: 7px;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 13px;
-    margin-top: 10px;
+    font-size: 12px;
+    margin-top: 8px;
 }
 
 .form-input, .form-select, .form-textarea {
@@ -474,6 +466,52 @@ dialog::backdrop {
     display: flex;
     flex-direction: column;
     gap: 3px;
+}
+
+
+/* Modal de bienvenida extendido */
+#welcomeModal.modal-welcome {
+    width: 90%;
+    max-width: 720px; /* Mucho más ancho que el standard */
+    padding: 28px 32px;
+}
+
+#welcomeModal .modal-header {
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+}
+
+#welcomeModal .modal-header h3 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+#welcomeModal .modal-close-btn {
+    font-size: 24px;
+    padding: 4px 8px;
+}
+
+#welcomeModal p {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+#welcomeModal .welcome-list {
+    font-size: 14px;
+    line-height: 1.6;
+    padding-left: 20px;
+    margin: 16px 0 24px 0;
+}
+
+#welcomeModal .welcome-list li {
+    margin-bottom: 10px;
+}
+
+#welcomeModal .modal-action-btn {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 6px;
 }
 
 /* ==========================================
@@ -536,12 +574,6 @@ dialog::backdrop {
         width: 92vw;
         max-width: 92vw;
         padding: 14px;
-    }
-
-    #welcomeModal.modal-welcome {
-        width: 92vw;
-        max-width: 92vw;
-        padding: 16px;
     }
 
     .form-input, .form-select, .form-textarea {
