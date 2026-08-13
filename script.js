@@ -97,7 +97,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         allLinks.forEach(async (link) => {
             const url = link.getAttribute('href');
-            if (!url || url.startsWith('ciudad.html')) return;
+            
+            // Filtro para descartar rutas internas y esquemas especiales (tel:, mailto:, javascript:, etc.)
+            if (!url || url.startsWith('ciudad.html') || url.startsWith('#') || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+                return;
+            }
 
             // --- A. INSERTAR FAVICON ---
             try {
