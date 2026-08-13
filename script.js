@@ -448,26 +448,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function searchCitiesApi(query) {
+    // Búsqueda local sobre el catálogo interno de ciudades (previene bloqueos de CSP)
+    function searchCitiesLocal(query) {
         if (!query || query.trim().length < 2) return [];
-        try {
-            const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=es&format=json&country_code=CO`;
-            const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-            if (!response.ok) return [];
+        
+        const normQuery = normalizeText(query);
+        const citiesList = getCitiesList();
 
-            const data = await response.json();
-            if (data && data.results) {
-                return data.results.map(item => ({
-                    name: item.name,
-                    admin1: item.admin1 || '',
-                    lat: item.latitude,
-                    lon: item.longitude
-                }));
-            }
-        } catch (err) {
-            console.warn('24col: Error al buscar ciudad:', err);
-        }
-        return [];
+        return citiesList.filter(city => {
+            const normName = normalizeText(city.name);
+            const normDept = normalizeText(city.dept || '');
+            return normName.includes(normQuery) || normDept.includes(normQuery);
+        }).slice(0, 6); // Limitar a los 6 resultados más relevantes
     }
 
     async function updateWeatherUI(cityName, lat, lon) {
@@ -499,11 +491,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!searchInput || !resultsContainer) return;
 
-        let debounceTimer = null;
-
         searchInput.addEventListener('input', function () {
             const query = this.value.trim();
-            clearTimeout(debounceTimer);
 
             if (query.length < 2) {
                 resultsContainer.style.display = 'none';
@@ -511,42 +500,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            debounceTimer = setTimeout(async () => {
-                const cities = await searchCitiesApi(query);
-                resultsContainer.innerHTML = '';
+            const cities = searchCitiesLocal(query);
+            resultsContainer.innerHTML = '';
 
-                if (cities.length === 0) {
+            if (cities.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'No se encontró la ciudad';
+                li.style.padding = '6px 10px';
+                li.style.fontSize = '11px';
+                li.style.color = '#888';
+                resultsContainer.appendChild(li);
+            } else {
+                cities.forEach(city => {
                     const li = document.createElement('li');
-                    li.textContent = 'Sin resultados';
+                    const label = city.dept ? `${city.name} (${city.dept})` : city.name;
+                    
+                    li.textContent = label;
                     li.style.padding = '6px 10px';
-                    li.style.fontSize = '11px';
-                    li.style.color = '#888';
-                    resultsContainer.appendChild(li);
-                } else {
-                    cities.forEach(city => {
-                        const li = document.createElement('li');
-                        const label = city.admin1 ? `${city.name}, ${city.admin1}` : city.name;
-                        li.textContent = label;
-                        li.style.padding = '6px 10px';
-                        li.style.fontSize = '12px';
-                        li.style.cursor = 'pointer';
-                        li.style.borderBottom = '1px solid #eee';
-                        li.style.color = '#333';
+                    li.style.fontSize = '12px';
+                    li.style.cursor = 'pointer';
+                    li.style.borderBottom = '1px solid #eee';
+                    li.style.color = '#333';
 
-                        li.addEventListener('mouseenter', () => li.style.backgroundColor = '#f4f4f4');
-                        li.addEventListener('mouseleave', () => li.style.backgroundColor = '#fff');
+                    li.addEventListener('mouseenter', () => li.style.backgroundColor = '#f4f4f4');
+                    li.addEventListener('mouseleave', () => li.style.backgroundColor = '#fff');
 
-                        li.addEventListener('click', () => {
-                            searchInput.value = '';
-                            resultsContainer.style.display = 'none';
-                            updateWeatherUI(label, city.lat, city.lon);
-                        });
-
-                        resultsContainer.appendChild(li);
+                    li.addEventListener('click', () => {
+                        searchInput.value = '';
+                        resultsContainer.style.display = 'none';
+                        updateWeatherUI(city.name, city.lat, city.lon);
                     });
-                }
-                resultsContainer.style.display = 'block';
-            }, 300);
+
+                    resultsContainer.appendChild(li);
+                });
+            }
+            resultsContainer.style.display = 'block';
         });
 
         document.addEventListener('click', function (e) {
@@ -559,19 +547,23 @@ document.addEventListener('DOMContentLoaded', function () {
     async function initMainWeatherCard() {
         setupWeatherSearch();
 
-        const bogotaFallback = { name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
+        const tempEl = document.getElementById('weatherTemp');
+        const cityEl = document.getElementById('weatherCity');
+
         const urlParams = new URLSearchParams(window.location.search);
         const cityIdFromUrl = urlParams.get('city');
         const citiesList = getCitiesList();
 
+        // 1. Si viene una ciudad en la URL (?city=monteria)
         if (cityIdFromUrl) {
             const targetCity = citiesList.find(c => c.id === cityIdFromUrl);
-            if (targetCity) {
-                updateWeatherUI(targetCity.name, targetCity.lat || bogotaFallback.lat, targetCity.lon || bogotaFallback.lon);
+            if (targetCity && targetCity.lat && targetCity.lon) {
+                updateWeatherUI(targetCity.name, targetCity.lat, targetCity.lon);
                 return;
             }
         }
 
+        // 2. Si el usuario ya había seleccionado una ciudad previamente
         const savedCity = localStorage.getItem('24col_last_city');
         if (savedCity) {
             try {
@@ -583,8 +575,11 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (e) {}
         }
 
-        const defaultCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
-        updateWeatherUI(defaultCity.name, defaultCity.lat || bogotaFallback.lat, defaultCity.lon || bogotaFallback.lon);
+        // 3. Estado inicial neutro (Sin ciudad por defecto)
+        if (tempEl && cityEl) {
+            tempEl.textContent = '--°C';
+            cityEl.textContent = 'Selecciona una ciudad';
+        }
     }
 
     initMainWeatherCard();
