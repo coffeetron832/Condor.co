@@ -74,11 +74,11 @@ body {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border-color);
-    padding: 8px 16px;
+    padding: 8px 24px;
 }
 
 .header-container {
-    max-width: 1100px;
+    max-width: 1400px; /* Ampliado para mayor cobertura horizontal */
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -148,7 +148,7 @@ body {
 }
 
 .hero-container {
-    max-width: 580px;
+    max-width: 650px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -187,7 +187,7 @@ body {
 
 .search-container {
     width: 100%;
-    max-width: 440px;
+    max-width: 480px;
     margin: 0 auto;
 }
 
@@ -224,13 +224,13 @@ body {
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 1400px; /* Ampliado para permitir más columnas */
     margin: 0 auto;
     flex: 1;
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 10px 16px 20px 16px;
+    padding: 10px 24px 20px 24px;
 }
 
 .main-content {
@@ -243,7 +243,7 @@ body {
    ========================================== */
 
 .cards-grid {
-    column-width: 220px;
+    column-width: 200px; /* Ancho optimizado para encajar más columnas horizontalmente */
     column-gap: 12px;
     margin-top: 10px;
     width: 100%;
@@ -458,7 +458,7 @@ dialog::backdrop {
 }
 
 .footer-content {
-    max-width: 1100px;
+    max-width: 1400px; /* Alineado con el header y container principal */
     margin: 0 auto;
     line-height: 1.5;
     font-weight: 500;
