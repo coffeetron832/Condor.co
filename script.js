@@ -6,33 +6,21 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
     // AUXILIAR: Obtención unificada de ciudades
-    // Interoperable con window.CITIES_DATA y window.CITY_META_DATA
     // ==========================================
     function getCitiesList() {
         if (Array.isArray(window.CITIES_DATA)) {
             return window.CITIES_DATA;
         }
         
-        // Adaptador para el esquema CITY_META_DATA
         if (window.CITY_META_DATA && typeof window.CITY_META_DATA === 'object') {
             return Object.keys(window.CITY_META_DATA).map(key => {
                 const item = window.CITY_META_DATA[key];
-                
-                // Si fullName viene en formato "Ciudad / Departamento"
                 let name = item.name || item.fullName || key;
                 let dept = item.dept || item.department || '';
 
@@ -56,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 1. RENDERIZADO DEL MENÚ DE CIUDADES (VERTICAL)
+    // 1. RENDERIZADO DEL MENÚ DE CIUDADES
     // ==========================================
     function renderCitiesMenu() {
         const menus = document.querySelectorAll('.cities-menu');
@@ -86,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     ? localServices[city.id][category].join(', ') 
                     : '';
 
-                // Construcción de URL compatible con query params estándar
                 const href = category 
                     ? `ciudad.html?cat=${category}&city=${city.id}`
                     : `ciudad.html?city=${city.id}`;
@@ -118,12 +105,10 @@ document.addEventListener('DOMContentLoaded', function () {
         allLinks.forEach(async (link) => {
             const url = link.getAttribute('href');
             
-            // Filtro para descartar rutas internas y esquemas especiales
             if (!url || url.startsWith('ciudad.html') || url.startsWith('#') || (!url.startsWith('http://') && !url.startsWith('https://'))) {
                 return;
             }
 
-            // --- A. INSERTAR FAVICON ---
             try {
                 const domain = new URL(url).hostname;
                 if (!link.querySelector('.link-favicon')) {
@@ -139,11 +124,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     link.insertBefore(faviconImg, link.firstChild);
                 }
-            } catch (e) {
-                // Continuar si la URL no es válida
-            }
+            } catch (e) {}
 
-            // --- B. PREPARAR BADGE DE ESTADO ---
             let statusSpan = link.parentNode.querySelector(`.link-status-badge[data-for="${encodeURIComponent(url)}"]`);
             if (!statusSpan) {
                 statusSpan = document.createElement('span');
@@ -158,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 link.after(statusSpan);
             }
 
-            // 1. Verificación HTTPS
             const isSecure = url.startsWith('https://');
             if (!isSecure) {
                 statusSpan.innerHTML = '⚠️ <span title="Conexión no segura (HTTP)">Inseguro</span>';
@@ -171,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function () {
             statusSpan.style.backgroundColor = '#f5f5f5';
             statusSpan.style.color = '#616161';
 
-            // 2. Verificación de disponibilidad
             const isAlive = await checkGovSiteStatus(url);
 
             if (isAlive) {
@@ -243,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR INTEROPERABLE CON SINÓNIMOS BIDIRECCIONALES
+    // 3. BUSCADOR CON SINÓNIMOS BIDIRECCIONALES
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -278,7 +258,6 @@ document.addEventListener('DOMContentLoaded', function () {
         'cedula': ['registraduria', 'duplicado', 'identificacion']
     };
 
-    // Función de expansión bidireccional de la consulta
     function getExpandedSearchTerms(query) {
         const normQuery = normalizeText(query);
         if (!normQuery) return [];
@@ -289,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const normKey = normalizeText(key);
             const normSynonyms = synonyms.map(s => normalizeText(s));
 
-            // Si la consulta coincide con la clave O con alguno de los sinónimos del arreglo
             const matchesKey = normKey.includes(normQuery) || normQuery.includes(normKey);
             const matchesSynonym = normSynonyms.some(s => s.includes(normQuery) || normQuery.includes(s));
 
@@ -319,9 +297,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return searchTerms.some(term => normalizedTarget.includes(term));
             };
 
-            // ------------------------------------------
-            // A. Filtrado de trámites nacionales
-            // ------------------------------------------
             nationalItems.forEach(item => {
                 if (query === '') {
                     item.style.display = '';
@@ -337,9 +312,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // ------------------------------------------
-            // B. Filtrado de categorías y ciudades regionales
-            // ------------------------------------------
             categoryItems.forEach(item => {
                 const details = item.querySelector('details');
                 const summary = item.querySelector('summary');
@@ -372,10 +344,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         let matchedServiceName = '';
 
-                        // 1. Coincidencia por nombre de la ciudad o departamento
                         const isCityMatch = isMatch(linkText) || (cityObj && (isMatch(cityObj.name) || isMatch(cityObj.dept)));
 
-                        // 2. Coincidencia dentro de la lista interoperable de servicios
                         if (cityServices) {
                             const servicesList = cityServices.split(',').map(s => s.trim());
                             const found = servicesList.find(service => isMatch(service));
@@ -384,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        // Si la categoría, la ciudad o un servicio interno coinciden, se muestra
                         if (isCityMatch || matchedServiceName !== '' || isCategoryMatch) {
                             wrapper.style.display = '';
                             visibleWrappersCount++;
@@ -412,9 +381,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // ------------------------------------------
-            // C. Control de visibilidad de títulos y mensaje
-            // ------------------------------------------
             if (query !== '') {
                 if (nationalTitle) nationalTitle.style.display = 'none';
                 if (regionalTitle) regionalTitle.style.display = 'none';
@@ -432,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
     // 4. MÓDULO DE CLIMA (OPEN-METEO API)
+    // Integración directa con #weatherTemp y #weatherCity
     // ==========================================
     function getWeatherInterpretation(code) {
         const codes = {
@@ -465,54 +432,44 @@ document.addEventListener('DOMContentLoaded', function () {
         return data.current_weather;
     }
 
-    function initWeatherWidgets() {
-        const widgets = document.querySelectorAll('.weather-widget, #weatherWidget');
-        if (widgets.length === 0) return;
+    async function initMainWeatherCard() {
+        const tempEl = document.getElementById('weatherTemp');
+        const cityEl = document.getElementById('weatherCity');
+
+        if (!tempEl || !cityEl) return;
 
         const urlParams = new URLSearchParams(window.location.search);
         const cityIdFromUrl = urlParams.get('city');
         const citiesList = getCitiesList();
 
-        widgets.forEach(async (widget) => {
-            let lat = widget.dataset.lat;
-            let lon = widget.dataset.lon;
+        let targetCity = null;
 
-            // Si el widget no trae coordenadas directas, busca por la ciudad de la URL o por dataset
-            if (!lat || !lon) {
-                const targetCityId = widget.dataset.city || cityIdFromUrl;
-                if (targetCityId) {
-                    const cityObj = citiesList.find(c => c.id === targetCityId);
-                    if (cityObj && cityObj.lat && cityObj.lon) {
-                        lat = cityObj.lat;
-                        lon = cityObj.lon;
-                    }
-                }
-            }
+        // 1. Si viene una ciudad en la URL, se usa esa
+        if (cityIdFromUrl) {
+            targetCity = citiesList.find(c => c.id === cityIdFromUrl);
+        }
 
-            if (!lat || !lon) {
-                widget.style.display = 'none';
-                return;
-            }
+        // 2. Si no viene en la URL, se usa Bogotá D.C. por defecto
+        if (!targetCity) {
+            targetCity = citiesList.find(c => c.id === 'bogota') || {
+                name: 'Bogotá D.C.',
+                lat: 4.6097,
+                lon: -74.0817
+            };
+        }
 
-            widget.innerHTML = '<span style="font-size: 12px; color: #757575;">⏳ Cargando clima...</span>';
+        try {
+            const weather = await fetchWeatherData(targetCity.lat, targetCity.lon);
+            const info = getWeatherInterpretation(weather.weathercode);
 
-            try {
-                const weather = await fetchWeatherData(lat, lon);
-                const info = getWeatherInterpretation(weather.weathercode);
-                
-                widget.innerHTML = `
-                    <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #333; background: #f0f4f8; padding: 4px 10px; border-radius: 16px;">
-                        <span style="font-size: 16px;">${info.icon}</span>
-                        <strong>${Math.round(weather.temperature)}°C</strong>
-                        <span style="color: #666;">• ${info.desc}</span>
-                    </div>
-                `;
-            } catch (err) {
-                console.warn('24col: No se pudo obtener el clima:', err);
-                widget.innerHTML = '<span style="font-size: 11px; color: #9e9e9e;">Clima no disponible</span>';
-            }
-        });
+            tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
+            cityEl.textContent = `${targetCity.name} • ${info.desc}`;
+        } catch (err) {
+            console.warn('24col: No se pudo obtener el clima:', err);
+            tempEl.textContent = 'No disponible';
+            cityEl.textContent = 'Intenta nuevamente más tarde';
+        }
     }
 
-    initWeatherWidgets();
+    initMainWeatherCard();
 });
