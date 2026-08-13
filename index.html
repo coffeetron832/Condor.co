@@ -96,40 +96,35 @@
                 No se encontraron trámites o ciudades que coincidan con tu búsqueda.
             </div>
 
-            <!-- SECCIÓN 1: Portal Nacional -->
-            <div class="section-title" id="nationalSectionTitle">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-                Trámites Nacionales
-            </div>
-            
-            <div class="national-links" id="nationalLinksBlock">
-    <ul>
-        <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración de renta</span></li>
-        <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula digital, registro civil, citas</span></li>
-        <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento de citas y trámite de pasaporte</span></li>
-        <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias de conducción y comparendos</span></li>
-        <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS y fosyga</span></li>
-        <li class="searchable-item"><a href="https://web.icetex.gov.co" target="_blank" rel="noopener noreferrer">ICETEX</a> <span class="link-desc">- créditos educativos, becas, renovación y pagos</span></li>
-        <li class="searchable-item"><a href="https://www.icbf.gov.co" target="_blank" rel="noopener noreferrer">ICBF</a> <span class="link-desc">- trámites, certificado de antecedentes y protección infantil</span></li>
-    </ul>
-</div>
+            <!-- CONTENEDOR GRID DE TARJETAS HORIZONTALES -->
+            <div class="cards-grid">
 
-            <!-- SECCIÓN 2: Portales Locales / Departamentales -->
-            <div class="section-title" id="regionalSectionTitle">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                Trámites por Ciudad o Departamento
-            </div>
+                <!-- TARJETA 1: Trámites Nacionales -->
+                <div class="card-item searchable-category" id="nationalLinksBlock">
+                    <div class="card-header" id="nationalSectionTitle">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                        <h3>Trámites Nacionales</h3>
+                    </div>
+                    
+                    <div class="national-links">
+                        <ul>
+                            <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración de renta</span></li>
+                            <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula digital, registro civil, citas</span></li>
+                            <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento de citas y trámite de pasaporte</span></li>
+                            <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias de conducción y comparendos</span></li>
+                            <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS y fosyga</span></li>
+                            <li class="searchable-item"><a href="https://web.icetex.gov.co" target="_blank" rel="noopener noreferrer">ICETEX</a> <span class="link-desc">- créditos educativos, becas, renovación y pagos</span></li>
+                            <li class="searchable-item"><a href="https://www.icbf.gov.co" target="_blank" rel="noopener noreferrer">ICBF</a> <span class="link-desc">- trámites, certificado de antecedentes y protección infantil</span></li>
+                        </ul>
+                    </div>
+                </div>
 
-            <div class="categories-list" id="regionalCategoriesBlock">
-                
-                <div class="category-item searchable-category">
+                <!-- TARJETA 2: Impuestos Regionales -->
+                <div class="card-item searchable-category">
                     <details>
                         <summary>
                             <span>Impuestos Regionales</span>
@@ -139,7 +134,8 @@
                     </details>
                 </div>
 
-                <div class="category-item searchable-category">
+                <!-- TARJETA 3: Servicios Públicos y Alcaldías -->
+                <div class="card-item searchable-category">
                     <details>
                         <summary>
                             <span>Servicios Públicos y Alcaldías</span>
@@ -149,7 +145,8 @@
                     </details>
                 </div>
 
-                <div class="category-item searchable-category">
+                <!-- TARJETA 4: Movilidad y Tránsito Local -->
+                <div class="card-item searchable-category">
                     <details>
                         <summary>
                             <span>Movilidad y Tránsito Local</span>
@@ -179,8 +176,7 @@
         </div>
 
         <p style="text-align: left; font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin-top: 15px;">
-            <strong>24col
-            </strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta.
+            <strong>24col</strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta.
         </p>
 
         <ul class="welcome-list">
