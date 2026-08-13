@@ -239,15 +239,14 @@ body {
 }
 
 /* ==========================================
-   ESTRUCTURA COMPACTA SIN SCROLL EN TARJETAS
+   ESTRUCTURA COMPACTA MASONRY HORIZONTAL
    ========================================== */
 
 .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 10px;
-    margin-top: 6px;
-    align-items: flex-start;
+    column-width: 220px;
+    column-gap: 12px;
+    margin-top: 10px;
+    width: 100%;
 }
 
 .card-item {
@@ -258,6 +257,8 @@ body {
     box-shadow: 0 1px 3px var(--shadow-color);
     display: flex;
     flex-direction: column;
+    break-inside: avoid;
+    margin-bottom: 12px;
 }
 
 .card-header {
@@ -511,12 +512,12 @@ dialog::backdrop {
     }
 
     .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
+        column-count: 1;
     }
 
     .card-item {
         padding: 8px 10px;
+        margin-bottom: 8px;
     }
 
     .national-links {
