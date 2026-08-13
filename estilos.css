@@ -239,15 +239,14 @@ body {
 }
 
 /* ==========================================
-   ESTRUCTURA COMPACTA DE TARJETAS HORIZONTALES
+   ESTRUCTURA COMPACTA MASONRY HORIZONTAL
    ========================================== */
 
 .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
+    column-width: 220px;
+    column-gap: 12px;
     margin-top: 10px;
-    align-items: stretch;
+    width: 100%;
 }
 
 .card-item {
@@ -258,7 +257,8 @@ body {
     box-shadow: 0 1px 3px var(--shadow-color);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    break-inside: avoid;
+    margin-bottom: 12px;
 }
 
 .card-header {
@@ -512,12 +512,12 @@ dialog::backdrop {
     }
 
     .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
+        column-count: 1;
     }
 
     .card-item {
         padding: 8px 10px;
+        margin-bottom: 8px;
     }
 
     .national-links {
