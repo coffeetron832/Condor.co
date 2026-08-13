@@ -74,11 +74,11 @@ body {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border-color);
-    padding: 8px 24px;
+    padding: 8px 16px;
 }
 
 .header-container {
-    max-width: 1400px; /* Ampliado para mayor cobertura horizontal */
+    max-width: 1100px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -148,7 +148,7 @@ body {
 }
 
 .hero-container {
-    max-width: 650px;
+    max-width: 580px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -187,7 +187,7 @@ body {
 
 .search-container {
     width: 100%;
-    max-width: 480px;
+    max-width: 440px;
     margin: 0 auto;
 }
 
@@ -224,13 +224,13 @@ body {
 }
 
 .container {
-    max-width: 1400px; /* Ampliado para permitir más columnas */
+    max-width: 1100px;
     margin: 0 auto;
     flex: 1;
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 10px 24px 20px 24px;
+    padding: 10px 16px 20px 16px;
 }
 
 .main-content {
@@ -239,12 +239,14 @@ body {
 }
 
 /* ==========================================
-   ESTRUCTURA COMPACTA MASONRY HORIZONTAL
+   ESTRUCTURA GRID HORIZONTAL (De izq. a der.)
    ========================================== */
 
 .cards-grid {
-    column-width: 200px; /* Ancho optimizado para encajar más columnas horizontalmente */
-    column-gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    align-items: start;
     margin-top: 10px;
     width: 100%;
 }
@@ -257,8 +259,7 @@ body {
     box-shadow: 0 1px 3px var(--shadow-color);
     display: flex;
     flex-direction: column;
-    break-inside: avoid;
-    margin-bottom: 12px;
+    margin-bottom: 0;
 }
 
 .card-header {
@@ -458,7 +459,7 @@ dialog::backdrop {
 }
 
 .footer-content {
-    max-width: 1400px; /* Alineado con el header y container principal */
+    max-width: 1100px;
     margin: 0 auto;
     line-height: 1.5;
     font-weight: 500;
@@ -512,12 +513,11 @@ dialog::backdrop {
     }
 
     .cards-grid {
-        column-count: 1;
+        grid-template-columns: 1fr;
     }
 
     .card-item {
         padding: 8px 10px;
-        margin-bottom: 8px;
     }
 
     .national-links {
