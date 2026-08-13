@@ -239,34 +239,34 @@ body {
 }
 
 /* ==========================================
-   ESTRUCTURA COMPACTA MASONRY HORIZONTAL
+   ESTRUCTURA ORGANIZADA Y ALINEADA DE TARJETAS
    ========================================== */
 
 .cards-grid {
-    column-width: 220px;
-    column-gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
     margin-top: 10px;
-    width: 100%;
+    align-items: stretch; /* Asegura que todas las tarjetas de una fila tengan el mismo alto */
 }
 
 .card-item {
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 6px;
-    padding: 10px 12px;
+    padding: 12px;
     box-shadow: 0 1px 3px var(--shadow-color);
     display: flex;
     flex-direction: column;
-    break-inside: avoid;
-    margin-bottom: 12px;
+    height: 100%;
 }
 
 .card-header {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 6px;
-    padding-bottom: 4px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
 }
@@ -281,6 +281,7 @@ body {
     text-align: left;
     line-height: 1.45;
     font-size: 12px;
+    flex: 1; /* Permite que el contenedor llene el espacio remanente */
 }
 
 .national-links ul {
@@ -290,7 +291,7 @@ body {
 }
 
 .national-links li {
-    padding: 3px 0;
+    padding: 4px 0;
     border-bottom: 1px dashed var(--border-color);
 }
 
@@ -315,6 +316,10 @@ body {
 }
 
 /* Acordeones (Details/Summary) Sin Scroll */
+
+details {
+    width: 100%;
+}
 
 details summary {
     cursor: pointer;
@@ -512,12 +517,12 @@ dialog::backdrop {
     }
 
     .cards-grid {
-        column-count: 1;
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .card-item {
-        padding: 8px 10px;
-        margin-bottom: 8px;
+        padding: 10px;
     }
 
     .national-links {
