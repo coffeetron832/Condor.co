@@ -6,7 +6,8 @@
     <title>24col - Tu guía de confianza</title>
     
     <!-- Políticas de Seguridad e Inserción de Cabeceras HTTP desde el Meta Tag -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co;">
+    <!-- Se actualiza connect-src para permitir la API del tipo de cambio -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Frame-Options" content="DENY">
     
@@ -82,7 +83,7 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                        <input type="text" id="searchInput" class="search-input" placeholder="Busca por trámite, ciudad o entidad (ej. RUT, Medellín, Pasaporte)..." autocomplete="off" maxlength="100">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Busca por trámite, ciudad o entidad (ej. RUT, Medellín, Pasaporte, Emergencias)..." autocomplete="off" maxlength="100">
                     </div>
                 </form>
             </div>
@@ -123,7 +124,47 @@
                     </div>
                 </div>
 
-                <!-- TARJETA 2: Impuestos Regionales -->
+                <!-- TARJETA 2: Dólar en Tiempo Real (USD / COP) -->
+                <div class="card-item searchable-category">
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <h3>Dólar HOY (TRM Colombia)</h3>
+                    </div>
+                    <div style="padding: 12px 15px; text-align: center;">
+                        <div id="trmRate" style="font-size: 26px; font-weight: 700; color: var(--ok-color, #2e7d32); margin-bottom: 4px;">
+                            Cargando...
+                        </div>
+                        <div id="trmUpdate" style="font-size: 11px; color: var(--text-secondary, #666);">
+                            Consultando tasa en tiempo real...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TARJETA 3: Líneas de Emergencia -->
+                <div class="card-item searchable-category">
+                    <details>
+                        <summary>
+                            <span>Líneas de Emergencia Nacional</span>
+                            <span class="category-desc">- Policía, Bomberos, Ambulancia, Defensa Civil</span>
+                        </summary>
+                        <div class="national-links" style="padding-top: 10px;">
+                            <ul>
+                                <li class="searchable-item"><a href="tel:123"><strong>123</strong> - Emergencias Generales / Policía</a> <span class="link-desc">(Atención inmediata a nivel nacional)</span></li>
+                                <li class="searchable-item"><a href="tel:112"><strong>112</strong> - Policía Nacional</a> <span class="link-desc">(Atención directas a cuadrantes)</span></li>
+                                <li class="searchable-item"><a href="tel:119"><strong>119</strong> - Cuerpo de Bomberos</a> <span class="link-desc">(Incendios y rescates)</span></li>
+                                <li class="searchable-item"><a href="tel:125"><strong>125</strong> - Ambulancias / Red de Salud</a> <span class="link-desc">(Urgencias médicas)</span></li>
+                                <li class="searchable-item"><a href="tel:155"><strong>155</strong> - Orientación a Mujeres Víctimas de Violencia</a> <span class="link-desc">(Línea 155 confidencial)</span></li>
+                                <li class="searchable-item"><a href="tel:144"><strong>144</strong> - Defensa Civil Colombiana</a> <span class="link-desc">(Atención de desastres y emergencias)</span></li>
+                                <li class="searchable-item"><a href="tel:165"><strong>165</strong> - GAULA (Anti-secuestro y Extorsión)</a> <span class="link-desc">(Yo no pago, yo denuncio)</span></li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- TARJETA 4: Impuestos Regionales -->
                 <div class="card-item searchable-category">
                     <details>
                         <summary>
@@ -134,7 +175,7 @@
                     </details>
                 </div>
 
-                <!-- TARJETA 3: Servicios Públicos y Alcaldías -->
+                <!-- TARJETA 5: Servicios Públicos y Alcaldías -->
                 <div class="card-item searchable-category">
                     <details>
                         <summary>
@@ -145,7 +186,7 @@
                     </details>
                 </div>
 
-                <!-- TARJETA 4: Movilidad y Tránsito Local -->
+                <!-- TARJETA 6: Movilidad y Tránsito Local -->
                 <div class="card-item searchable-category">
                     <details>
                         <summary>
@@ -251,6 +292,32 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Cargar TRM Dólar a COP ---
+            async function fetchTRM() {
+                const trmRateEl = document.getElementById('trmRate');
+                const trmUpdateEl = document.getElementById('trmUpdate');
+                try {
+                    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                    const data = await response.json();
+                    if (data && data.rates && data.rates.COP) {
+                        const rateFormatted = new Intl.NumberFormat('es-CO', {
+                            style: 'currency',
+                            currency: 'COP',
+                            maximumFractionDigits: 2
+                        }).format(data.rates.COP);
+
+                        trmRateEl.textContent = `${rateFormatted} COP`;
+                        trmUpdateEl.textContent = `Actualizado: ${data.date || 'Hoy'}`;
+                    } else {
+                        throw new Error('Formato inválido');
+                    }
+                } catch (err) {
+                    if (trmRateEl) trmRateEl.textContent = 'No disponible';
+                    if (trmUpdateEl) trmUpdateEl.textContent = 'Intenta nuevamente más tarde';
+                }
+            }
+            fetchTRM();
+
             // --- Theme Switcher ---
             const themeToggleBtn = document.getElementById('themeToggleBtn');
             const themeToggleText = document.getElementById('themeToggleText');
