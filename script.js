@@ -45,7 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return {
                     id: key,
                     name: name,
-                    dept: dept
+                    dept: dept,
+                    lat: item.lat || item.latitude,
+                    lon: item.lon || item.lng || item.longitude
                 };
             });
         }
@@ -426,4 +428,91 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+
+    // ==========================================
+    // 4. MÓDULO DE CLIMA (OPEN-METEO API)
+    // ==========================================
+    function getWeatherInterpretation(code) {
+        const codes = {
+            0: { desc: 'Despejado', icon: '☀️' },
+            1: { desc: 'Mayormente despejado', icon: '🌤️' },
+            2: { desc: 'Parcialmente nublado', icon: '⛅' },
+            3: { desc: 'Nublado', icon: '☁️' },
+            45: { desc: 'Niebla', icon: '🌫️' },
+            48: { desc: 'Niebla con escarcha', icon: '🌫️' },
+            51: { desc: 'Llovizna ligera', icon: '🌦️' },
+            53: { desc: 'Llovizna moderada', icon: '🌦️' },
+            55: { desc: 'Llovizna densa', icon: '🌧️' },
+            61: { desc: 'Lluvia ligera', icon: '🌧️' },
+            63: { desc: 'Lluvia moderada', icon: '🌧️' },
+            65: { desc: 'Lluvia fuerte', icon: '🌧️' },
+            80: { desc: 'Chubascos ligeros', icon: '🌦️' },
+            81: { desc: 'Chubascos moderados', icon: '🌧️' },
+            82: { desc: 'Chubascos violentos', icon: '⛈️' },
+            95: { desc: 'Tormenta eléctrica', icon: '⛈️' },
+            96: { desc: 'Tormenta con granizo ligero', icon: '⛈️' },
+            99: { desc: 'Tormenta con granizo fuerte', icon: '⛈️' }
+        };
+        return codes[code] || { desc: 'Clima variable', icon: '🌡️' };
+    }
+
+    async function fetchWeatherData(lat, lon) {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Error al consultar Open-Meteo');
+        const data = await response.json();
+        return data.current_weather;
+    }
+
+    function initWeatherWidgets() {
+        const widgets = document.querySelectorAll('.weather-widget, #weatherWidget');
+        if (widgets.length === 0) return;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const cityIdFromUrl = urlParams.get('city');
+        const citiesList = getCitiesList();
+
+        widgets.forEach(async (widget) => {
+            let lat = widget.dataset.lat;
+            let lon = widget.dataset.lon;
+
+            // Si el widget no trae coordenadas directas, busca por la ciudad de la URL o por dataset
+            if (!lat || !lon) {
+                const targetCityId = widget.dataset.city || cityIdFromUrl;
+                if (targetCityId) {
+                    const cityObj = citiesList.find(c => c.id === targetCityId);
+                    if (cityObj && cityObj.lat && cityObj.lon) {
+                        lat = cityObj.lat;
+                        lon = cityObj.lon;
+                    }
+                }
+            }
+
+            if (!lat || !lon) {
+                widget.style.display = 'none';
+                return;
+            }
+
+            widget.innerHTML = '<span style="font-size: 12px; color: #757575;">⏳ Cargando clima...</span>';
+
+            try {
+                const weather = await fetchWeatherData(lat, lon);
+                const info = getWeatherInterpretation(weather.weathercode);
+                
+                widget.innerHTML = `
+                    <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #333; background: #f0f4f8; padding: 4px 10px; border-radius: 16px;">
+                        <span style="font-size: 16px;">${info.icon}</span>
+                        <strong>${Math.round(weather.temperature)}°C</strong>
+                        <span style="color: #666;">• ${info.desc}</span>
+                    </div>
+                `;
+            } catch (err) {
+                console.warn('24col: No se pudo obtener el clima:', err);
+                widget.innerHTML = '<span style="font-size: 11px; color: #9e9e9e;">Clima no disponible</span>';
+            }
+        });
+    }
+
+    initWeatherWidgets();
 });
