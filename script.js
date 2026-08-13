@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
    // ==========================================
-    // 4. MÓDULO DE CLIMA Y SELECCIÓN DE CIUDAD
+    // 4. MÓDULO DE CLIMA Y BÚSQUEDA DE CIUDADES
     // ==========================================
     function getWeatherInterpretation(code) {
         const codes = {
@@ -425,30 +425,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchWeatherData(lat, lon) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        const validLat = parseFloat(lat);
-        const validLon = parseFloat(lon);
-
-        if (isNaN(validLat) || isNaN(validLon)) {
-            throw new Error('Coordenadas geográficas inválidas o ausentes');
-        }
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
 
         try {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${validLat}&longitude=${validLon}&current=temperature_2m,weather_code`;
-            
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${parseFloat(lat)}&longitude=${parseFloat(lon)}&current=temperature_2m,weather_code`;
             const response = await fetch(url, {
                 signal: controller.signal,
                 headers: { 'Accept': 'application/json' }
             });
 
             clearTimeout(timeoutId);
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}: Error en servidor Open-Meteo`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();
-            if (!data.current) throw new Error('Estructura de respuesta inválida');
-
             return {
                 temperature: data.current.temperature_2m,
                 weathercode: data.current.weather_code
@@ -459,100 +448,145 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function updateWeatherForCity(cityObj) {
+    async function searchCitiesApi(query) {
+        if (!query || query.trim().length < 2) return [];
+        try {
+            const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=es&format=json&country_code=CO`;
+            const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (!response.ok) return [];
+
+            const data = await response.json();
+            if (data && data.results) {
+                return data.results.map(item => ({
+                    name: item.name,
+                    admin1: item.admin1 || '',
+                    lat: item.latitude,
+                    lon: item.longitude
+                }));
+            }
+        } catch (err) {
+            console.warn('24col: Error al buscar ciudad:', err);
+        }
+        return [];
+    }
+
+    async function updateWeatherUI(cityName, lat, lon) {
         const tempEl = document.getElementById('weatherTemp');
         const cityEl = document.getElementById('weatherCity');
 
         if (!tempEl || !cityEl) return;
 
-        const lat = cityObj.lat || 4.6097;
-        const lon = cityObj.lon || -74.0817;
+        tempEl.textContent = '...';
+        cityEl.textContent = cityName;
 
         try {
-            tempEl.textContent = '⏳ ...';
             const weather = await fetchWeatherData(lat, lon);
             const info = getWeatherInterpretation(weather.weathercode);
 
             tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
-            cityEl.textContent = `${cityObj.name} • ${info.desc}`;
+            cityEl.textContent = `${cityName} • ${info.desc}`;
 
-            // Guardar preferencia para la próxima visita
-            localStorage.setItem('24col_selected_city', cityObj.id);
+            localStorage.setItem('24col_last_city', JSON.stringify({ name: cityName, lat, lon }));
         } catch (err) {
-            console.warn('24col: Error al consultar clima:', err);
-            tempEl.textContent = '🌡️ --°C';
-            cityEl.textContent = `${cityObj.name} • No disponible`;
+            tempEl.textContent = '⚠️ Error';
+            cityEl.textContent = `${cityName} (Sin datos)`;
         }
     }
 
-    function renderWeatherSearchUI(citiesList, currentCityId) {
-        const container = document.getElementById('weatherCitySearchContainer') || document.querySelector('.weather-card-search');
-        if (!container) return;
+    function setupWeatherSearch() {
+        const searchInput = document.getElementById('weatherSearchInput');
+        const resultsContainer = document.getElementById('weatherSearchResults');
 
-        const sortedCities = [...citiesList].sort((a, b) => a.name.localeCompare(b.name, 'es'));
+        if (!searchInput || !resultsContainer) return;
 
-        container.innerHTML = `
-            <div class="weather-selector-wrapper" style="margin-top: 6px; display: inline-block; position: relative;">
-                <input 
-                    type="text" 
-                    id="weatherCityInput" 
-                    list="weatherCitiesDatalist" 
-                    placeholder="🔍 Buscar ciudad..." 
-                    value="${(citiesList.find(c => c.id === currentCityId) || {}).name || ''}"
-                    style="font-size: 11px; padding: 3px 8px; border: 1px solid #ccc; border-radius: 12px; outline: none; background: rgba(255,255,255,0.8); width: 140px;"
-                />
-                <datalist id="weatherCitiesDatalist">
-                    ${sortedCities.map(c => `<option value="${c.name}" data-id="${c.id}"></option>`).join('')}
-                </datalist>
-            </div>
-        `;
+        let debounceTimer = null;
 
-        const input = document.getElementById('weatherCityInput');
-        if (input) {
-            input.addEventListener('input', function () {
-                const val = this.value.trim().toLowerCase();
-                const matched = citiesList.find(c => c.name.toLowerCase() === val);
-                if (matched) {
-                    updateWeatherForCity(matched);
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim();
+            clearTimeout(debounceTimer);
+
+            if (query.length < 2) {
+                resultsContainer.style.display = 'none';
+                resultsContainer.innerHTML = '';
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                const cities = await searchCitiesApi(query);
+                resultsContainer.innerHTML = '';
+
+                if (cities.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'Sin resultados';
+                    li.style.padding = '6px 10px';
+                    li.style.fontSize = '11px';
+                    li.style.color = '#888';
+                    resultsContainer.appendChild(li);
+                } else {
+                    cities.forEach(city => {
+                        const li = document.createElement('li');
+                        const label = city.admin1 ? `${city.name}, ${city.admin1}` : city.name;
+                        li.textContent = label;
+                        li.style.padding = '6px 10px';
+                        li.style.fontSize = '12px';
+                        li.style.cursor = 'pointer';
+                        li.style.borderBottom = '1px solid #eee';
+                        li.style.color = '#333';
+
+                        li.addEventListener('mouseenter', () => li.style.backgroundColor = '#f4f4f4');
+                        li.addEventListener('mouseleave', () => li.style.backgroundColor = '#fff');
+
+                        li.addEventListener('click', () => {
+                            searchInput.value = '';
+                            resultsContainer.style.display = 'none';
+                            updateWeatherUI(label, city.lat, city.lon);
+                        });
+
+                        resultsContainer.appendChild(li);
+                    });
                 }
-            });
+                resultsContainer.style.display = 'block';
+            }, 300);
+        });
 
-            // Limpiar al hacer click para facilitar una nueva búsqueda rápida
-            input.addEventListener('focus', function () {
-                this.select();
-            });
-        }
+        document.addEventListener('click', function (e) {
+            if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
     }
 
     async function initMainWeatherCard() {
-        const tempEl = document.getElementById('weatherTemp');
-        if (!tempEl) return;
+        setupWeatherSearch();
 
-        const bogotaFallback = { id: 'bogota', name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
-        const citiesList = getCitiesList();
+        const bogotaFallback = { name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // Prioridades: 1. URL (?city=) | 2. Guardada previamente (localStorage) | 3. Bogotá por defecto
-        const cityFromUrl = urlParams.get('city');
-        const savedCityId = localStorage.getItem('24col_selected_city');
+        const cityIdFromUrl = urlParams.get('city');
+        const citiesList = getCitiesList();
 
-        let initialCity = null;
-
-        if (cityFromUrl) {
-            initialCity = citiesList.find(c => c.id === cityFromUrl);
-        }
-        if (!initialCity && savedCityId) {
-            initialCity = citiesList.find(c => c.id === savedCityId);
-        }
-        if (!initialCity) {
-            initialCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
+        if (cityIdFromUrl) {
+            const targetCity = citiesList.find(c => c.id === cityIdFromUrl);
+            if (targetCity) {
+                updateWeatherUI(targetCity.name, targetCity.lat || bogotaFallback.lat, targetCity.lon || bogotaFallback.lon);
+                return;
+            }
         }
 
-        // Renderizar la barra de búsqueda sutil y cargar el clima inicial
-        renderWeatherSearchUI(citiesList, initialCity.id);
-        await updateWeatherForCity(initialCity);
+        const savedCity = localStorage.getItem('24col_last_city');
+        if (savedCity) {
+            try {
+                const parsed = JSON.parse(savedCity);
+                if (parsed.name && parsed.lat && parsed.lon) {
+                    updateWeatherUI(parsed.name, parsed.lat, parsed.lon);
+                    return;
+                }
+            } catch (e) {}
+        }
+
+        const defaultCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
+        updateWeatherUI(defaultCity.name, defaultCity.lat || bogotaFallback.lat, defaultCity.lon || bogotaFallback.lon);
     }
 
-    initMainWeatherCard();;
+    initMainWeatherCard();
     
 });
