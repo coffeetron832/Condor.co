@@ -3,7 +3,12 @@
 > Directorio ciudadano público de portales de trámites y servicios públicos en Colombia.
 
 <p align="center">
-  <img src="condor01.svg" alt="Cóndor 24col Logo" width="370" />
+  <picture>
+    <!-- Si el usuario usa modo oscuro, muestra la del contorno blanco limpia -->
+    <source media="(prefers-color-scheme: dark)" srcset="condor02.svg">
+    <!-- Si usa modo claro, puedes aplicarle un filtro de silueta negra/oscura con CSS -->
+    <img src="condor01.svg" width="370" alt="Condor" style="filter: drop-shadow(0px 2px 5px rgba(0,0,0,0.3));">
+  </picture>
 </p>
 
 ## ¿Qué es 24col?
