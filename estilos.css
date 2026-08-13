@@ -102,7 +102,7 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Capa del gradiente de la bandera (Efecto Ondeante) */
+/* Capa del gradiente de la bandera con distribución equilibrada */
 .header-brand::before {
     content: '';
     position: absolute;
@@ -110,14 +110,14 @@ body {
     background: linear-gradient(
         135deg, 
         #ffd100 0%, 
-        #ffd100 35%, 
-        #003893 35%, 
-        #003893 68%, 
-        #ce1126 68%, 
+        #ffd100 33%, 
+        #003893 33%, 
+        #003893 66%, 
+        #ce1126 66%, 
         #ce1126 100%
     );
-    background-size: 250% 250%;
-    background-position: 100% 100%;
+    background-size: 180% 180%;
+    background-position: 100% 0%;
     opacity: 0;
     transition: opacity 0.3s ease, background-position 0.6s ease-in-out;
     z-index: 1;
@@ -145,16 +145,13 @@ body {
 .header-brand:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .header-brand:hover::before {
     opacity: 1;
-    background-position: 0% 0%; /* Desplaza el gradiente simulando la onda */
-}
-
-.header-brand:hover {
-    color: #ffffff; /* El texto principal cambia a blanco para resaltar */
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    background-position: 0% 100%; /* Muestra la transición fluida asegurando que se vean los 3 colores */
 }
 
 .header-brand:hover .header-brand-badge {
