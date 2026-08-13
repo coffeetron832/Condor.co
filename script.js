@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchWeatherData(lat, lon) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 segundos de tiempo límite
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
 
         try {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current_weather=true`;
@@ -454,7 +454,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Fallback secundario ligero usando wttr.in en JSON
     async function fetchBackupWeatherData(cityName) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -473,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             return {
                 temperature: parseFloat(current.temp_C),
-                weathercode: 1, // Despejado/Parcial por defecto si no coincide código
+                weathercode: 1,
                 customDesc: current.lang_es && current.lang_es[0] ? current.lang_es[0].value : current.weatherDesc[0].value
             };
         } catch (err) {
@@ -531,3 +530,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     initMainWeatherCard();
+
+});
