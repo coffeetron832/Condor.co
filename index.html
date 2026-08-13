@@ -6,7 +6,6 @@
     <title>24col - Tu guía de confianza</title>
     
     <!-- Políticas de Seguridad (CSP) -->
-    <!-- Se incluye https://api.open-meteo.com en connect-src para permitir consultas del clima -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Frame-Options" content="DENY">
@@ -143,28 +142,25 @@
                     </div>
                 </div>
 
-                <!-- TARJETA 3: Clima Local en Tiempo Real -->
+                <!-- TARJETA 3: Clima en Tiempo Real -->
                 <div class="card-item searchable-category">
                     <div class="card-header">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
                         </svg>
-                        <h3>Clima Local</h3>
+                        <h3>Clima en Tiempo Real</h3>
                     </div>
                     <div style="padding: 12px 15px; text-align: center;">
-                        <div id="weatherCity" style="font-size: 12px; font-weight: 600; color: var(--text-secondary, #666); margin-bottom: 2px;">
-                            Obteniendo ubicación...
+                        <div id="weatherTemp" style="font-size: 26px; font-weight: 700; color: var(--text-main, #111); margin-bottom: 4px;">
+                            Cargando...
                         </div>
-                        <div id="weatherTemp" style="font-size: 26px; font-weight: 700; color: var(--text-primary, #222); margin-bottom: 4px;">
-                            -- °C
-                        </div>
-                        <div id="weatherDesc" style="font-size: 12px; color: var(--text-secondary, #666);">
-                            Consultando clima...
+                        <div id="weatherCity" style="font-size: 11px; color: var(--text-secondary, #666);">
+                            Consultando ubicación...
                         </div>
                     </div>
                 </div>
 
-                <!-- TARJETA 3: Líneas de Emergencia -->
+                <!-- TARJETA 4: Líneas de Emergencia -->
                 <div class="card-item searchable-category">
                     <details>
                         <summary class="card-header" style="cursor: pointer;">
@@ -177,7 +173,7 @@
                         <div class="national-links" style="padding-top: 10px;">
                             <ul>
                                 <li class="searchable-item"><a href="tel:123"><strong>123</strong> - Emergencias Generales / Policía</a> <span class="link-desc">(Atención inmediata a nivel nacional)</span></li>
-                                <li class="searchable-item"><a href="tel:112"><strong>112</strong> - Policía Nacional</a> <span class="link-desc">(Atención directas a cuadrantes)</span></li>
+                                <li class="searchable-item"><a href="tel:112"><strong>112</strong> - Policía Nacional</a> <span class="link-desc">(Atención directa a cuadrantes)</span></li>
                                 <li class="searchable-item"><a href="tel:119"><strong>119</strong> - Cuerpo de Bomberos</a> <span class="link-desc">(Incendios y rescates)</span></li>
                                 <li class="searchable-item"><a href="tel:125"><strong>125</strong> - Ambulancias / Red de Salud</a> <span class="link-desc">(Urgencias médicas)</span></li>
                                 <li class="searchable-item"><a href="tel:155"><strong>155</strong> - Orientación a Mujeres Víctimas de Violencia</a> <span class="link-desc">(Línea 155 confidencial)</span></li>
@@ -188,7 +184,7 @@
                     </details>
                 </div>
 
-                <!-- TARJETA 4: Impuestos Regionales -->
+                <!-- TARJETA 5: Impuestos Regionales -->
                 <div class="card-item searchable-category">
                     <details>
                         <summary class="card-header" style="cursor: pointer;">
@@ -206,7 +202,7 @@
                     </details>
                 </div>
 
-                <!-- TARJETA 5: Servicios Públicos y Alcaldías -->
+                <!-- TARJETA 6: Servicios Públicos y Alcaldías -->
                 <div class="card-item searchable-category">
                     <details>
                         <summary class="card-header" style="cursor: pointer;">
@@ -223,7 +219,7 @@
                     </details>
                 </div>
 
-                <!-- TARJETA 6: Movilidad y Tránsito Local -->
+                <!-- TARJETA 7: Movilidad y Tránsito Local -->
                 <div class="card-item searchable-category">
                     <details>
                         <summary class="card-header" style="cursor: pointer;">
@@ -395,7 +391,7 @@
                 });
             }
 
-            // --- Modal Behaviors ---
+            // --- Modales ---
             const welcomeModal = document.getElementById('welcomeModal');
             const openWelcomeBtn = document.getElementById('openWelcomeModal');
             const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
