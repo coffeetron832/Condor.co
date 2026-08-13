@@ -78,7 +78,7 @@ body {
 }
 
 .header-container {
-    max-width: 680px;
+    max-width: 900px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -224,7 +224,7 @@ body {
 }
 
 .container {
-    max-width: 680px;
+    max-width: 900px;
     margin: 0 auto;
     flex: 1;
     display: flex;
@@ -238,29 +238,47 @@ body {
     width: 100%;
 }
 
-.section-title {
-    font-size: 14px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
-    margin: 22px 0 14px 0;
-    text-align: left;
-    color: var(--text-color);
+/* ==========================================
+   ESTRUSTURA EN GRID DE TARJETAS HORIZONTALES
+   ========================================== */
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.card-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
 }
 
-.section-title:first-of-type {
-    margin-top: 0;
+.card-header h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .national-links {
     text-align: left;
-    margin-bottom: 24px;
-    line-height: 1.8;
-    font-size: 14px;
+    line-height: 1.7;
+    font-size: 13.5px;
 }
 
 .national-links ul {
@@ -270,7 +288,7 @@ body {
 }
 
 .national-links li {
-    padding: 7px 0;
+    padding: 6px 0;
     border-bottom: 1px dashed var(--border-color);
 }
 
@@ -293,19 +311,7 @@ body {
     font-weight: normal;
 }
 
-.categories-list {
-    text-align: left;
-    margin: 12px 0;
-    font-size: 14px;
-}
-
-.category-item {
-    margin-bottom: 10px;
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 4px;
-    padding: 10px 14px;
-}
+/* Estilos de Acordeones (Details/Summary) dentro de las tarjetas */
 
 details summary {
     cursor: pointer;
@@ -316,6 +322,7 @@ details summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
 }
 
 details summary::-webkit-details-marker {
@@ -326,13 +333,14 @@ details summary::-webkit-details-marker {
     color: var(--text-secondary);
     font-weight: normal;
     font-size: 13px;
+    text-decoration: none;
 }
 
 .cities-menu {
-    margin-top: 8px;
-    padding: 8px 10px;
+    margin-top: 12px;
+    padding: 10px;
     background-color: var(--bg-color);
-    border-radius: 3px;
+    border-radius: 4px;
     border: 1px solid var(--border-color);
     font-size: 13px;
     line-height: 1.6;
@@ -342,7 +350,7 @@ details summary::-webkit-details-marker {
     color: var(--link-color);
     font-weight: normal;
     text-decoration: underline;
-    margin: 0 5px;
+    margin: 0 4px;
     display: inline-block;
 }
 
@@ -358,9 +366,11 @@ details summary::-webkit-details-marker {
     margin: 15px 0;
 }
 
+/* Modales */
+
 dialog {
     border: 1px solid var(--border-color);
-    border-radius: 5px;
+    border-radius: 6px;
     padding: 20px;
     background: var(--modal-bg);
     color: var(--text-color);
@@ -425,19 +435,12 @@ dialog::backdrop {
     width: 100%;
     padding: 8px;
     border: 1px solid var(--input-border);
-    border-radius: 3px;
+    border-radius: 4px;
     box-sizing: border-box;
     font-size: 13px;
     background-color: var(--input-bg);
     color: var(--text-color);
     margin-top: 4px;
-}
-
-.flag-icon {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 3px;
-    border-radius: 1px;
 }
 
 .site-footer {
@@ -451,7 +454,7 @@ dialog::backdrop {
 }
 
 .footer-content {
-    max-width: 680px;
+    max-width: 900px;
     margin: 0 auto;
     line-height: 1.7;
     font-weight: 500;
@@ -480,10 +483,6 @@ dialog::backdrop {
     .header-btn {
         padding: 6px 8px;
         font-size: 11px;
-    }
-
-    .header-btn span.btn-text {
-        display: none;
     }
 
     .hero-section {
@@ -516,9 +515,13 @@ dialog::backdrop {
         padding: 12px 14px 24px 14px;
     }
 
-    .section-title {
-        font-size: 13px;
-        margin: 18px 0 10px 0;
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .card-item {
+        padding: 12px;
     }
 
     .national-links {
@@ -526,7 +529,7 @@ dialog::backdrop {
     }
 
     .national-links li {
-        padding: 10px 0;
+        padding: 8px 0;
     }
 
     .national-links a {
@@ -534,23 +537,11 @@ dialog::backdrop {
         word-break: break-word;
     }
 
-    .link-favicon {
-        margin-right: 6px !important;
-    }
-
-    .link-status-badge {
-        display: inline-block !important;
-        margin-top: 4px;
-        margin-left: 0 !important;
-    }
-
-    .category-item {
-        padding: 12px 12px;
-    }
-
     details summary {
         font-size: 14px;
-        min-height: 24px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
     }
 
     .cities-menu {
