@@ -20,20 +20,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
     // AUXILIAR: Obtención unificada de ciudades
+    // Interoperable con window.CITIES_DATA y window.CITY_META_DATA
     // ==========================================
     function getCitiesList() {
         if (Array.isArray(window.CITIES_DATA)) {
             return window.CITIES_DATA;
         }
         
-        // Si data.js usa el nuevo formato de objeto CITY_META_DATA
+        // Adaptador para el esquema CITY_META_DATA
         if (window.CITY_META_DATA && typeof window.CITY_META_DATA === 'object') {
             return Object.keys(window.CITY_META_DATA).map(key => {
                 const item = window.CITY_META_DATA[key];
+                
+                // Si fullName viene en formato "Ciudad / Departamento"
+                let name = item.name || item.fullName || key;
+                let dept = item.dept || item.department || '';
+
+                if (!item.dept && item.fullName && item.fullName.includes('/')) {
+                    const parts = item.fullName.split('/');
+                    name = parts[0].trim();
+                    dept = parts[1].trim();
+                }
+
                 return {
                     id: key,
-                    name: item.name || item.fullName || key,
-                    dept: item.dept || item.department || ''
+                    name: name,
+                    dept: dept
                 };
             });
         }
@@ -60,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const localServices = window.LOCAL_SERVICES_INDEX || {};
 
         menus.forEach(menu => {
-            const category = menu.dataset.category;
+            const category = menu.dataset.category || '';
             const showDept = menu.dataset.showDept === 'true';
 
             const linksHTML = sortedCities.map((city) => {
@@ -72,9 +84,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     ? localServices[city.id][category].join(', ') 
                     : '';
 
+                // Construcción de URL compatible con query params estándar
+                const href = category 
+                    ? `ciudad.html?cat=${category}&city=${city.id}`
+                    : `ciudad.html?city=${city.id}`;
+
                 return `
                     <li class="city-link-wrapper" data-city-id="${city.id}" data-category="${category}" data-services="${cityServices}" style="margin-bottom: 6px;">
-                        <a href="ciudad.html?cat=${category}&city=${city.id}">${label}</a>
+                        <a href="${href}">${label}</a>
                         <span class="matched-service-tag" style="display:none; font-size:11px; color:#1976d2; font-weight:bold; margin-left:4px;"></span>
                     </li>`;
             }).join('');
@@ -224,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR CON SINÓNIMOS (CORREGIDO)
+    // 3. BUSCADOR CON SINÓNIMOS
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
