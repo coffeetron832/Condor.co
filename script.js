@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
    // ==========================================
-    // 4. MÓDULO DE CLIMA Y DETECCIÓN DE UBICACIÓN
+    // 4. MÓDULO DE CLIMA CON BUSCADOR INTEGRADO
     // ==========================================
     function getWeatherInterpretation(code) {
         const codes = {
@@ -423,10 +423,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return codes[code] || { desc: 'Clima variable', icon: '🌡️' };
     }
 
-    // 1. Obtener datos meteorológicos por coordenadas
     async function fetchWeatherData(lat, lon) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         const validLat = parseFloat(lat);
         const validLon = parseFloat(lon);
@@ -460,129 +459,112 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 2. Resolver el nombre exacto de la ciudad vía GPS usando el endpoint de Geocoding de Open-Meteo
-    async function fetchCityNameFromCoords(lat, lon) {
-        try {
-            const url = `https://geocoding-api.open-meteo.com/v1/get?latitude=${lat}&longitude=${lon}`;
-            const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-            if (!response.ok) return null;
-
-            const data = await response.json();
-            if (data && data.name) {
-                return data.admin1 ? `${data.name}, ${data.admin1}` : data.name;
-            }
-        } catch (e) {
-            console.warn('24col: No se pudo geocodificar las coordenadas:', e);
-        }
-        return null;
-    }
-
-    // 3. Método auxiliar para medir cercanía en el dataset interno
-    function findClosestCityInCatalog(lat, lon, citiesList) {
-        if (!citiesList || citiesList.length === 0) return null;
-
-        let closest = null;
-        let minDistance = Infinity;
-
-        citiesList.forEach(city => {
-            if (city.lat && city.lon) {
-                const cLat = parseFloat(city.lat);
-                const cLon = parseFloat(city.lon);
-                const dist = Math.hypot(cLat - lat, cLon - lon);
-
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    closest = city;
-                }
-            }
-        });
-
-        // Solo asumir coincidencia si está relativamente cerca (~50km aprox)
-        return minDistance < 0.5 ? closest : null;
-    }
-
-    // 4. Promesa limpia para la geolocalización nativa
-    function getUserLocation() {
-        return new Promise((resolve, reject) => {
-            if (!navigator.geolocation) {
-                reject(new Error('Geolocalización no soportada'));
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-                (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-                (err) => reject(err),
-                { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
-            );
-        });
-    }
-
-    // 5. Inicialización Principal
-    async function initMainWeatherCard() {
+    async function updateWeatherDisplay(cityObj) {
         const tempEl = document.getElementById('weatherTemp');
         const cityEl = document.getElementById('weatherCity');
 
         if (!tempEl || !cityEl) return;
 
         const bogotaFallback = { name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
+        const lat = cityObj.lat || bogotaFallback.lat;
+        const lon = cityObj.lon || bogotaFallback.lon;
+
+        tempEl.textContent = '⏳ Cargando...';
+
+        try {
+            const weather = await fetchWeatherData(lat, lon);
+            const info = getWeatherInterpretation(weather.weathercode);
+
+            tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
+            cityEl.textContent = `${cityObj.name} • ${info.desc}`;
+        } catch (err) {
+            console.warn(`24col: No se pudo obtener clima para ${cityObj.name}:`, err);
+            tempEl.textContent = 'Clima local';
+            cityEl.textContent = `${cityObj.name}`;
+        }
+    }
+
+    function renderWeatherCitySelector(citiesList, currentCityId, onCitySelect) {
+        const cityEl = document.getElementById('weatherCity');
+        if (!cityEl || document.getElementById('weatherCitySelect')) return;
+
+        // Crear contenedor para la barra sutil
+        const selectContainer = document.createElement('div');
+        selectContainer.style.marginTop = '6px';
+
+        const selectEl = document.createElement('select');
+        selectEl.id = 'weatherCitySelect';
+        selectEl.style.fontSize = '12px';
+        selectEl.style.padding = '3px 6px';
+        selectEl.style.borderRadius = '4px';
+        selectEl.style.border = '1px solid #ccc';
+        selectEl.style.backgroundColor = '#fff';
+        selectEl.style.color = '#333';
+        selectEl.style.cursor = 'pointer';
+        selectEl.style.maxWidth = '100%';
+
+        const sortedCities = [...citiesList].sort((a, b) => 
+            a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+        );
+
+        sortedCities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city.id;
+            option.textContent = city.dept && city.dept !== 'Bogotá D.C.' ? `${city.name} (${city.dept})` : city.name;
+            if (city.id === currentCityId) {
+                option.selected = true;
+            }
+            selectEl.appendChild(option);
+        });
+
+        selectEl.addEventListener('change', (e) => {
+            const selectedId = e.target.value;
+            const selectedCity = citiesList.find(c => c.id === selectedId);
+            if (selectedCity) {
+                localStorage.setItem('24col_user_city', selectedId);
+                onCitySelect(selectedCity);
+            }
+        });
+
+        selectContainer.appendChild(selectEl);
+        cityEl.parentNode.insertBefore(selectContainer, cityEl.nextSibling);
+    }
+
+    async function initMainWeatherCard() {
+        const tempEl = document.getElementById('weatherTemp');
+        const cityEl = document.getElementById('weatherCity');
+
+        if (!tempEl || !cityEl) return;
+
+        const bogotaFallback = { id: 'bogota', name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
+        const citiesList = getCitiesList();
+        
+        // Prioridad: 1. URL (?city=medellin) -> 2. LocalStorage -> 3. Bogotá por defecto
         const urlParams = new URLSearchParams(window.location.search);
         const cityIdFromUrl = urlParams.get('city');
-        const citiesList = getCitiesList();
+        const savedCityId = localStorage.getItem('24col_user_city');
 
-        // OPCIÓN A: Si viene forzada una ciudad por URL (?city=medellin)
+        let targetCity = null;
+
         if (cityIdFromUrl) {
-            const targetCity = citiesList.find(c => c.id === cityIdFromUrl);
-            if (targetCity) {
-                try {
-                    const weather = await fetchWeatherData(targetCity.lat || bogotaFallback.lat, targetCity.lon || bogotaFallback.lon);
-                    const info = getWeatherInterpretation(weather.weathercode);
-                    tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
-                    cityEl.textContent = `${targetCity.name} • ${info.desc}`;
-                    return;
-                } catch (err) {
-                    console.warn('24col: Error obteniendo clima por URL:', err);
-                }
-            }
+            targetCity = citiesList.find(c => c.id === cityIdFromUrl);
         }
 
-        // OPCIÓN B: Intentar detectar ubicación real mediante GPS
-        try {
-            const userCoords = await getUserLocation();
-            
-            // Consultar clima y nombre de ciudad en paralelo
-            const [weather, apiCityName] = await Promise.all([
-                fetchWeatherData(userCoords.lat, userCoords.lon),
-                fetchCityNameFromCoords(userCoords.lat, userCoords.lon)
-            ]);
-
-            const info = getWeatherInterpretation(weather.weathercode);
-
-            // Determinar cuál nombre mostrar:
-            // 1. Coincidencia cercana en tu archivo de ciudades
-            // 2. Nombre devuelto por la API de Open-Meteo
-            // 3. Fallback a "Tu ubicación"
-            const matchedCatalogCity = findClosestCityInCatalog(userCoords.lat, userCoords.lon, citiesList);
-            const finalCityLabel = matchedCatalogCity ? matchedCatalogCity.name : (apiCityName || 'Tu ubicación');
-
-            tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
-            cityEl.textContent = `${finalCityLabel} • ${info.desc}`;
-            return;
-        } catch (geoErr) {
-            console.log('24col: GPS denegado o no disponible. Usando fallback:', geoErr.message);
+        if (!targetCity && savedCityId) {
+            targetCity = citiesList.find(c => c.id === savedCityId);
         }
 
-        // OPCIÓN C: Fallback a Bogotá por defecto
-        const defaultCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
-        try {
-            const weather = await fetchWeatherData(defaultCity.lat || bogotaFallback.lat, defaultCity.lon || bogotaFallback.lon);
-            const info = getWeatherInterpretation(weather.weathercode);
-
-            tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
-            cityEl.textContent = `${defaultCity.name} • ${info.desc}`;
-        } catch (err) {
-            tempEl.textContent = 'Clima local';
-            cityEl.textContent = `${defaultCity.name}`;
+        if (!targetCity) {
+            targetCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
         }
+
+        // Renderizar el clima inicial
+        await updateWeatherDisplay(targetCity);
+
+        // Inyectar el selector sutil debajo de la tarjeta del clima
+        renderWeatherCitySelector(citiesList, targetCity.id, (newCity) => {
+            updateWeatherDisplay(newCity);
+        });
     }
 
     initMainWeatherCard();
