@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
    // ==========================================
-    // 4. MÓDULO DE CLIMA CON BUSCADOR INTEGRADO
+    // 4. MÓDULO DE CLIMA Y SELECCIÓN DE CIUDAD
     // ==========================================
     function getWeatherInterpretation(code) {
         const codes = {
@@ -459,114 +459,100 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function updateWeatherDisplay(cityObj) {
+    async function updateWeatherForCity(cityObj) {
         const tempEl = document.getElementById('weatherTemp');
         const cityEl = document.getElementById('weatherCity');
 
         if (!tempEl || !cityEl) return;
 
-        const bogotaFallback = { name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
-        const lat = cityObj.lat || bogotaFallback.lat;
-        const lon = cityObj.lon || bogotaFallback.lon;
-
-        tempEl.textContent = '⏳ Cargando...';
+        const lat = cityObj.lat || 4.6097;
+        const lon = cityObj.lon || -74.0817;
 
         try {
+            tempEl.textContent = '⏳ ...';
             const weather = await fetchWeatherData(lat, lon);
             const info = getWeatherInterpretation(weather.weathercode);
 
             tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
             cityEl.textContent = `${cityObj.name} • ${info.desc}`;
+
+            // Guardar preferencia para la próxima visita
+            localStorage.setItem('24col_selected_city', cityObj.id);
         } catch (err) {
-            console.warn(`24col: No se pudo obtener clima para ${cityObj.name}:`, err);
-            tempEl.textContent = 'Clima local';
-            cityEl.textContent = `${cityObj.name}`;
+            console.warn('24col: Error al consultar clima:', err);
+            tempEl.textContent = '🌡️ --°C';
+            cityEl.textContent = `${cityObj.name} • No disponible`;
         }
     }
 
-    function renderWeatherCitySelector(citiesList, currentCityId, onCitySelect) {
-        const cityEl = document.getElementById('weatherCity');
-        if (!cityEl || document.getElementById('weatherCitySelect')) return;
+    function renderWeatherSearchUI(citiesList, currentCityId) {
+        const container = document.getElementById('weatherCitySearchContainer') || document.querySelector('.weather-card-search');
+        if (!container) return;
 
-        // Crear contenedor para la barra sutil
-        const selectContainer = document.createElement('div');
-        selectContainer.style.marginTop = '6px';
+        const sortedCities = [...citiesList].sort((a, b) => a.name.localeCompare(b.name, 'es'));
 
-        const selectEl = document.createElement('select');
-        selectEl.id = 'weatherCitySelect';
-        selectEl.style.fontSize = '12px';
-        selectEl.style.padding = '3px 6px';
-        selectEl.style.borderRadius = '4px';
-        selectEl.style.border = '1px solid #ccc';
-        selectEl.style.backgroundColor = '#fff';
-        selectEl.style.color = '#333';
-        selectEl.style.cursor = 'pointer';
-        selectEl.style.maxWidth = '100%';
+        container.innerHTML = `
+            <div class="weather-selector-wrapper" style="margin-top: 6px; display: inline-block; position: relative;">
+                <input 
+                    type="text" 
+                    id="weatherCityInput" 
+                    list="weatherCitiesDatalist" 
+                    placeholder="🔍 Buscar ciudad..." 
+                    value="${(citiesList.find(c => c.id === currentCityId) || {}).name || ''}"
+                    style="font-size: 11px; padding: 3px 8px; border: 1px solid #ccc; border-radius: 12px; outline: none; background: rgba(255,255,255,0.8); width: 140px;"
+                />
+                <datalist id="weatherCitiesDatalist">
+                    ${sortedCities.map(c => `<option value="${c.name}" data-id="${c.id}"></option>`).join('')}
+                </datalist>
+            </div>
+        `;
 
-        const sortedCities = [...citiesList].sort((a, b) => 
-            a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
-        );
+        const input = document.getElementById('weatherCityInput');
+        if (input) {
+            input.addEventListener('input', function () {
+                const val = this.value.trim().toLowerCase();
+                const matched = citiesList.find(c => c.name.toLowerCase() === val);
+                if (matched) {
+                    updateWeatherForCity(matched);
+                }
+            });
 
-        sortedCities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city.id;
-            option.textContent = city.dept && city.dept !== 'Bogotá D.C.' ? `${city.name} (${city.dept})` : city.name;
-            if (city.id === currentCityId) {
-                option.selected = true;
-            }
-            selectEl.appendChild(option);
-        });
-
-        selectEl.addEventListener('change', (e) => {
-            const selectedId = e.target.value;
-            const selectedCity = citiesList.find(c => c.id === selectedId);
-            if (selectedCity) {
-                localStorage.setItem('24col_user_city', selectedId);
-                onCitySelect(selectedCity);
-            }
-        });
-
-        selectContainer.appendChild(selectEl);
-        cityEl.parentNode.insertBefore(selectContainer, cityEl.nextSibling);
+            // Limpiar al hacer click para facilitar una nueva búsqueda rápida
+            input.addEventListener('focus', function () {
+                this.select();
+            });
+        }
     }
 
     async function initMainWeatherCard() {
         const tempEl = document.getElementById('weatherTemp');
-        const cityEl = document.getElementById('weatherCity');
-
-        if (!tempEl || !cityEl) return;
+        if (!tempEl) return;
 
         const bogotaFallback = { id: 'bogota', name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
         const citiesList = getCitiesList();
-        
-        // Prioridad: 1. URL (?city=medellin) -> 2. LocalStorage -> 3. Bogotá por defecto
         const urlParams = new URLSearchParams(window.location.search);
-        const cityIdFromUrl = urlParams.get('city');
-        const savedCityId = localStorage.getItem('24col_user_city');
+        
+        // Prioridades: 1. URL (?city=) | 2. Guardada previamente (localStorage) | 3. Bogotá por defecto
+        const cityFromUrl = urlParams.get('city');
+        const savedCityId = localStorage.getItem('24col_selected_city');
 
-        let targetCity = null;
+        let initialCity = null;
 
-        if (cityIdFromUrl) {
-            targetCity = citiesList.find(c => c.id === cityIdFromUrl);
+        if (cityFromUrl) {
+            initialCity = citiesList.find(c => c.id === cityFromUrl);
+        }
+        if (!initialCity && savedCityId) {
+            initialCity = citiesList.find(c => c.id === savedCityId);
+        }
+        if (!initialCity) {
+            initialCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
         }
 
-        if (!targetCity && savedCityId) {
-            targetCity = citiesList.find(c => c.id === savedCityId);
-        }
-
-        if (!targetCity) {
-            targetCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
-        }
-
-        // Renderizar el clima inicial
-        await updateWeatherDisplay(targetCity);
-
-        // Inyectar el selector sutil debajo de la tarjeta del clima
-        renderWeatherCitySelector(citiesList, targetCity.id, (newCity) => {
-            updateWeatherDisplay(newCity);
-        });
+        // Renderizar la barra de búsqueda sutil y cargar el clima inicial
+        renderWeatherSearchUI(citiesList, initialCity.id);
+        await updateWeatherForCity(initialCity);
     }
 
-    initMainWeatherCard();
+    initMainWeatherCard();;
     
 });
