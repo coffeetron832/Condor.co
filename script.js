@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 1. RENDERIZADO DEL MENÚ DE CIUDADES
+    // 1. RENDERIZADO DEL MENÚ DE CIUDADES (VERTICAL)
     // ==========================================
     function renderCitiesMenu() {
         const menus = document.querySelectorAll('.cities-menu');
@@ -63,26 +63,27 @@ document.addEventListener('DOMContentLoaded', function () {
             const category = menu.dataset.category;
             const showDept = menu.dataset.showDept === 'true';
 
-            const linksHTML = sortedCities.map((city, index) => {
+            const linksHTML = sortedCities.map((city) => {
                 const label = showDept && city.dept && city.dept !== 'Bogotá D.C.' 
                     ? `${city.name} / ${city.dept}` 
                     : city.name;
-                
-                const separator = index < sortedCities.length - 1 ? '<span class="city-sep"> | </span>' : '';
                 
                 const cityServices = (localServices[city.id] && localServices[city.id][category]) 
                     ? localServices[city.id][category].join(', ') 
                     : '';
 
                 return `
-                    <span class="city-link-wrapper" data-city-id="${city.id}" data-category="${category}" data-services="${cityServices}">
+                    <li class="city-link-wrapper" data-city-id="${city.id}" data-category="${category}" data-services="${cityServices}" style="margin-bottom: 6px;">
                         <a href="ciudad.html?cat=${category}&city=${city.id}">${label}</a>
                         <span class="matched-service-tag" style="display:none; font-size:11px; color:#1976d2; font-weight:bold; margin-left:4px;"></span>
-                        ${separator}
-                    </span>`;
+                    </li>`;
             }).join('');
 
-            menu.innerHTML = `<span class="cities-label">Selecciona tu ubicación:</span><br><div class="cities-list">${linksHTML}</div>`;
+            menu.innerHTML = `
+                <span class="cities-label" style="font-weight: bold; display: block; margin-bottom: 6px;">Selecciona tu ubicación:</span>
+                <ul class="cities-list" style="list-style: none; padding-left: 0; margin: 0;">
+                    ${linksHTML}
+                </ul>`;
         });
     }
 
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
         allLinks.forEach(async (link) => {
             const url = link.getAttribute('href');
             
-            // Filtro para descartar rutas internas y esquemas especiales (tel:, mailto:, javascript:, etc.)
+            // Filtro para descartar rutas internas y esquemas especiales
             if (!url || url.startsWith('ciudad.html') || url.startsWith('#') || (!url.startsWith('http://') && !url.startsWith('https://'))) {
                 return;
             }
@@ -304,8 +305,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         wrapper.style.display = '';
                         const tag = wrapper.querySelector('.matched-service-tag');
                         if (tag) tag.style.display = 'none';
-                        const sep = wrapper.querySelector('.city-sep');
-                        if (sep) sep.style.display = '';
                     });
                     regionalVisibleCount++;
                 } else {
@@ -344,13 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         } else {
                             wrapper.style.display = 'none';
                             if (tag) tag.style.display = 'none';
-                        }
-                    });
-
-                    visibleWrappers.forEach((wrapper, idx) => {
-                        const sep = wrapper.querySelector('.city-sep');
-                        if (sep) {
-                            sep.style.display = (idx === visibleWrappers.length - 1) ? 'none' : '';
                         }
                     });
 
