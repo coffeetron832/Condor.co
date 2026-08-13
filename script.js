@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR CON SINÓNIMOS
+    // 3. BUSCADOR CON SINÓNIMOS (CORREGIDO)
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -245,8 +245,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const keywordSynonyms = {
         'hacienda': ['impuestos', 'predial', 'vehiculos', 'retencion', 'ica', 'dian'],
+        'impuesto': ['impuestos', 'predial', 'vehiculos', 'hacienda', 'dian'],
+        'impuestos': ['predial', 'vehiculos', 'hacienda', 'dian', 'ica'],
         'predial': ['impuestos', 'hacienda', 'alcaldia'],
         'vehiculo': ['vehiculos', 'impuestos', 'movilidad', 'tránsito', 'transito', 'patios', 'runt', 'simit', 'afinia'],
+        'vehiculos': ['vehiculo', 'impuestos', 'movilidad', 'tránsito', 'transito', 'patios', 'runt', 'simit', 'afinia'],
         'agua': ['acueducto', 'veolia', 'eaab', 'epm', 'emcali', 'triple a', 'acuacar', 'empopasto', 'ibal', 'essmar'],
         'luz': ['energia', 'afinia', 'air-e', 'enel', 'epm', 'essa', 'celsia', 'chec', 'cens', 'cedenar', 'emsa'],
         'gas': ['surtigas', 'vanti', 'gases', 'efigas', 'alcanos', 'llanogas', 'gasoriente'],
@@ -258,44 +261,60 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (searchInput) {
         searchInput.addEventListener('input', function () {
-            const query = normalizeText(this.value.trim());
+            const rawQuery = this.value.trim();
+            const query = normalizeText(rawQuery);
             const citiesList = getCitiesList();
+            
             let nationalVisibleCount = 0;
             let regionalVisibleCount = 0;
 
-            let searchTerms = [query];
+            // Construcción del conjunto de términos a buscar (palabra clave + sinónimos)
+            let searchTerms = query !== '' ? [query] : [];
             if (query !== '') {
                 Object.keys(keywordSynonyms).forEach(key => {
-                    if (key.includes(query) || query.includes(key)) {
-                        searchTerms = searchTerms.concat(keywordSynonyms[key]);
+                    const normKey = normalizeText(key);
+                    if (normKey.includes(query) || query.includes(normKey)) {
+                        keywordSynonyms[key].forEach(syn => searchTerms.push(normalizeText(syn)));
                     }
                 });
             }
 
+            // Función de comprobación flexible
             const isMatch = (textToTest) => {
-                if (!textToTest) return false;
+                if (!textToTest || searchTerms.length === 0) return false;
                 const normalizedTarget = normalizeText(textToTest);
                 return searchTerms.some(term => normalizedTarget.includes(term));
             };
 
+            // ------------------------------------------
             // A. Filtrado de trámites nacionales
+            // ------------------------------------------
             nationalItems.forEach(item => {
-                if (query === '' || isMatch(item.textContent)) {
+                if (query === '') {
                     item.style.display = '';
                     nationalVisibleCount++;
                 } else {
-                    item.style.display = 'none';
+                    const itemText = item.textContent || '';
+                    if (isMatch(itemText)) {
+                        item.style.display = '';
+                        nationalVisibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
                 }
             });
 
-            // B. Filtrado de trámites regionales y categorías
+            // ------------------------------------------
+            // B. Filtrado de categorías y ciudades regionales
+            // ------------------------------------------
             categoryItems.forEach(item => {
                 const details = item.querySelector('details');
                 const summary = item.querySelector('summary');
                 const cityWrappers = item.querySelectorAll('.city-link-wrapper');
 
                 const summaryText = summary ? summary.textContent : '';
-                const isCategoryMatch = (query !== '') && isMatch(summaryText);
+                const categoryAttr = item.dataset.category || '';
+                const isCategoryMatch = (query !== '') && (isMatch(summaryText) || isMatch(categoryAttr));
 
                 if (query === '') {
                     item.style.display = '';
@@ -308,20 +327,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                     regionalVisibleCount++;
                 } else {
-                    let visibleWrappers = [];
+                    let visibleWrappersCount = 0;
 
                     cityWrappers.forEach(wrapper => {
                         const link = wrapper.querySelector('a');
                         const linkText = link ? link.textContent : '';
-                        const cityId = wrapper.dataset.cityId;
+                        const cityId = wrapper.dataset.cityId || '';
                         const cityServices = wrapper.dataset.services || '';
                         const cityObj = citiesList.find(c => c.id === cityId);
                         const tag = wrapper.querySelector('.matched-service-tag');
 
                         let matchedServiceName = '';
 
+                        // 1. ¿Coincide el nombre de la ciudad o departamento?
                         let isCityMatch = isMatch(linkText) || (cityObj && (isMatch(cityObj.name) || isMatch(cityObj.dept)));
 
+                        // 2. ¿Coincide algún servicio específico asignado a esta ciudad?
                         if (cityServices) {
                             const servicesList = cityServices.split(', ');
                             const found = servicesList.find(service => isMatch(service));
@@ -330,9 +351,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
+                        // Si la categoría general coincide, o la ciudad/servicio coincide, mostramos este ítem
                         if (isCityMatch || matchedServiceName !== '' || isCategoryMatch) {
                             wrapper.style.display = '';
-                            visibleWrappers.push(wrapper);
+                            visibleWrappersCount++;
 
                             if (tag && matchedServiceName !== '') {
                                 tag.textContent = `(${matchedServiceName})`;
@@ -346,7 +368,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
 
-                    if (visibleWrappers.length > 0) {
+                    // Si hay ciudades visibles o si la categoría entera coincide, desplegar y mostrar la tarjeta
+                    if (visibleWrappersCount > 0) {
                         item.style.display = '';
                         if (details) details.open = true;
                         regionalVisibleCount++;
@@ -357,7 +380,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // C. Control de títulos y avisos
+            // ------------------------------------------
+            // C. Control de visibilidad de títulos y mensaje de "no resultados"
+            // ------------------------------------------
             if (query !== '') {
                 if (nationalTitle) nationalTitle.style.display = 'none';
                 if (regionalTitle) regionalTitle.style.display = 'none';
