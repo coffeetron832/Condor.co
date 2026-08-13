@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 4. MÓDULO DE CLIMA ROBUSTO (OPEN-METEO + FALLBACK)
+    // 4. MÓDULO DE CLIMA ROBUSTO (OPEN-METEO)
     // ==========================================
     function getWeatherInterpretation(code) {
         const codes = {
@@ -427,8 +427,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 4000);
 
+        // Validar coordenadas numéricas
+        const validLat = parseFloat(lat);
+        const validLon = parseFloat(lon);
+
+        if (isNaN(validLat) || isNaN(validLon)) {
+            throw new Error('Coordenadas geográficas inválidas o ausentes');
+        }
+
         try {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current_weather=true`;
+            // Parámetros actualizados según API estándar v1 de Open-Meteo
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${validLat}&longitude=${validLon}&current=temperature_2m,weather_code`;
             
             const response = await fetch(url, {
                 signal: controller.signal,
@@ -443,37 +452,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const data = await response.json();
             
-            if (!data.current_weather) {
+            if (!data.current) {
                 throw new Error('Estructura de respuesta inválida');
             }
 
-            return data.current_weather;
-        } catch (err) {
-            clearTimeout(timeoutId);
-            throw err;
-        }
-    }
-
-    async function fetchBackupWeatherData(cityName) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-        try {
-            const cleanCity = encodeURIComponent(cityName.split('/')[0].trim());
-            const url = `https://wttr.in/${cleanCity}?format=j1`;
-
-            const response = await fetch(url, { signal: controller.signal });
-            clearTimeout(timeoutId);
-
-            if (!response.ok) throw new Error('wttr.in no disponible');
-
-            const data = await response.json();
-            const current = data.current_condition[0];
-
             return {
-                temperature: parseFloat(current.temp_C),
-                weathercode: 1,
-                customDesc: current.lang_es && current.lang_es[0] ? current.lang_es[0].value : current.weatherDesc[0].value
+                temperature: data.current.temperature_2m,
+                weathercode: data.current.weather_code
             };
         } catch (err) {
             clearTimeout(timeoutId);
@@ -497,15 +482,17 @@ document.addEventListener('DOMContentLoaded', function () {
             targetCity = citiesList.find(c => c.id === cityIdFromUrl);
         }
 
+        const bogotaFallback = {
+            name: 'Bogotá D.C.',
+            lat: 4.6097,
+            lon: -74.0817
+        };
+
         if (!targetCity) {
-            targetCity = citiesList.find(c => c.id === 'bogota') || {
-                name: 'Bogotá D.C.',
-                lat: 4.6097,
-                lon: -74.0817
-            };
+            targetCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
         }
 
-        // Intento 1: Open-Meteo
+        // Intento 1: Obtener clima de la ciudad objetivo
         try {
             const weather = await fetchWeatherData(targetCity.lat, targetCity.lon);
             const info = getWeatherInterpretation(weather.weathercode);
@@ -514,19 +501,26 @@ document.addEventListener('DOMContentLoaded', function () {
             cityEl.textContent = `${targetCity.name} • ${info.desc}`;
             return;
         } catch (primaryErr) {
-            console.warn('24col: Open-Meteo no respondió, intentando servicio de respaldo...', primaryErr);
+            console.warn(`24col: No se pudo consultar el clima para ${targetCity.name}:`, primaryErr);
         }
 
-        // Intento 2: Respaldo (wttr.in)
-        try {
-            const backupWeather = await fetchBackupWeatherData(targetCity.name);
-            tempEl.textContent = `🌡️ ${Math.round(backupWeather.temperature)}°C`;
-            cityEl.textContent = `${targetCity.name} • ${backupWeather.customDesc}`;
-        } catch (backupErr) {
-            console.warn('24col: No se pudo conectar a ningún servicio meteorológico:', backupErr);
-            tempEl.textContent = 'Clima local';
-            cityEl.textContent = `${targetCity.name}`;
+        // Intento 2: Fallback interno con Bogotá (Misma API permitida en CSP)
+        if (targetCity.id !== 'bogota') {
+            try {
+                const weather = await fetchWeatherData(bogotaFallback.lat, bogotaFallback.lon);
+                const info = getWeatherInterpretation(weather.weathercode);
+
+                tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
+                cityEl.textContent = `${bogotaFallback.name} • ${info.desc}`;
+                return;
+            } catch (fallbackErr) {
+                console.warn('24col: Fallo también el intento con coordenadas de Bogotá:', fallbackErr);
+            }
         }
+
+        // Estado por defecto si falla red/timeout
+        tempEl.textContent = 'Clima local';
+        cityEl.textContent = `${targetCity.name || 'Colombia'}`;
     }
 
     initMainWeatherCard();
