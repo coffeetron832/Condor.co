@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>24col - Trámites por Ciudad</title>
 
-    <!-- Content Security Policy: Permite imágenes de dominios externos (https:) y blobs/data -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self';">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-
-    <!-- Importación de Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -43,28 +37,29 @@
         html, body { height: 100%; margin: 0; padding: 0; }
         body { font-family: Arial, Helvetica, sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; min-height: 100vh; transition: background-color 0.2s ease, color 0.2s ease; }
 
-        .container { max-width: 680px; margin: 0 auto; flex: 1; width: 100%; padding: 20px; }
+        .container { max-width: 680px; margin: 0 auto; flex: 1; width: 100%; padding: 20px; box-sizing: border-box; }
         
-        .header-nav { margin: 10px 0 20px 0; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .header-nav { margin: 10px 0 20px 0; font-size: 14px; }
         .header-nav a { color: var(--link-color); font-weight: 600; text-decoration: underline; }
 
-        .city-title { font-family: 'Archivo Black', sans-serif; font-size: 32px; margin-bottom: 5px; text-transform: capitalize; color: var(--text-color); }
+        .city-title { font-family: 'Archivo Black', sans-serif; font-size: 32px; margin-bottom: 5px; color: var(--text-color); }
         .category-subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
 
-        .city-banner-wrapper { margin: 0 0 20px 0; }
-        .city-banner-container { width: 100%; max-width: 480px; margin: 0 auto 4px auto; background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; min-height: 180px; }
-        .city-banner-img { width: 100%; height: auto; max-height: 240px; object-fit: cover; display: block; }
-        .image-credit { font-size: 11px; color: var(--text-secondary); text-align: right; margin-bottom: 10px; font-style: italic; }
+        .city-banner-wrapper { margin: 0 0 20px 0; padding: 0; }
+        .city-banner-container { width: 100%; max-width: 480px; margin: 0 auto 4px auto; background-color: var(--card-bg); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .city-banner-img { width: 100%; height: auto; max-height: 240px; display: block; object-fit: cover; }
+        .image-credit { font-size: 11px; color: var(--text-secondary); text-align: right; margin-bottom: 0; font-style: italic; }
         .image-credit a { color: var(--text-secondary); text-decoration: underline; }
 
         .links-list { text-align: left; margin: 20px 0; font-size: 15px; line-height: 1.8; }
         .links-list ul { list-style-type: none; padding-left: 0; margin: 0; }
         .links-list li { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--border-color); }
         .links-list a { color: var(--link-color); font-weight: 600; text-decoration: underline; }
-        .link-desc { display: block; color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+        .link-desc { color: var(--text-secondary); font-size: 13px; }
 
-        footer { margin-top: auto; padding: 20px; font-size: 12px; color: var(--text-secondary); text-align: center; border-top: 1px solid var(--border-color); }
+        footer { margin-top: auto; padding: 30px 20px; font-size: 12px; color: var(--text-secondary); text-align: center; border-top: 1px solid var(--border-color); }
 
+        /* Media query para móviles */
         @media (max-width: 600px) {
             .container { padding: 15px 12px; }
             .city-title { font-size: 24px; line-height: 1.2; }
@@ -81,48 +76,49 @@
 
     <div class="container">
         
+        <!-- Navegación superior -->
         <div class="header-nav">
             <a href="index.html">&laquo; Volver a 24col</a>
         </div>
 
-        <div class="city-title" id="cityName">Cargando...</div>
-        <div class="category-subtitle" id="categoryName"></div>
+        <!-- Título dinámico de la ciudad y categoría -->
+        <div class="city-title" id="cityName">Ciudad</div>
+        <div class="category-subtitle" id="categoryName">Categoría seleccionada</div>
 
+        <!-- Banner de imagen y créditos Wikimedia -->
         <figure class="city-banner-wrapper" id="cityBannerWrapper">
             <div class="city-banner-container">
                 <img id="cityBanner" src="" alt="Imagen de la ciudad" class="city-banner-img">
             </div>
-            <figcaption class="image-credit" id="imageCredit"></figcaption>
+            <figcaption class="image-credit" id="imageCredit">Foto: Crédito de la imagen</figcaption>
         </figure>
 
+        <!-- Contenedor dinámico de enlaces -->
         <div class="links-list">
             <ul id="linksContainer">
-                <!-- Se cargan dinámicamente -->
+                <!-- Se puebla mediante JavaScript desde data.js -->
             </ul>
         </div>
 
     </div>
 
+    <!-- Pie de página -->
     <footer>
         &copy; 2026 (24col) | versión 2.2 | RECHACE IMITACIONES | Por: jahp
     </footer>
 
-    <!-- Archivo de datos unificado -->
+    <!-- Carga del archivo de datos global -->
     <script src="data.js"></script>
-    
+
+    <!-- Lógica de renderizado dinámico -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Aplicar tema guardado
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-
-            // Obtener parámetros de la URL (?ciudad=medellin&categoria=impuestos)
+            // Lectura de parámetros URL (?ciudad= o ?city=, y ?categoria= o ?cat=)
             const params = new URLSearchParams(window.location.search);
-            const cityKey = params.get('ciudad') || params.get('city');
-            const catKey = params.get('categoria') || params.get('cat');
+            const cityKey = (params.get('ciudad') || params.get('city') || 'bogota').toLowerCase();
+            const catKey = (params.get('categoria') || params.get('cat') || 'impuestos').toLowerCase();
 
+            // Elementos del DOM
             const cityNameEl = document.getElementById('cityName');
             const categoryNameEl = document.getElementById('categoryName');
             const linksContainer = document.getElementById('linksContainer');
@@ -130,81 +126,66 @@
             const bannerWrapper = document.getElementById('cityBannerWrapper');
             const imageCreditEl = document.getElementById('imageCredit');
 
-            if (typeof window.colombiaData === 'undefined') {
-                cityNameEl.textContent = "Error de datos";
-                linksContainer.innerHTML = "<li>No se pudo cargar la base de datos (data.js).</li>";
-                return;
+            // Mapeo seguro contra el objeto global proveniente de data.js
+            const metaData = window.CITY_META_DATA || {};
+            const categoryNames = window.CATEGORY_NAMES || {};
+            const linksData = window.LINKS_DATA || {};
+
+            const cityMeta = metaData[cityKey] || metaData['bogota'];
+            const currentLinks = linksData[cityKey] || linksData['bogota'];
+
+            // 1. Inyectar título y subcategoría
+            if (cityNameEl && cityMeta) {
+                cityNameEl.textContent = cityMeta.fullName;
+            }
+            if (categoryNameEl) {
+                categoryNameEl.textContent = categoryNames[catKey] || 'Trámites locales';
             }
 
-            const data = window.colombiaData;
-
-            if (!cityKey || !data.cities || !data.cities[cityKey]) {
-                cityNameEl.textContent = "Ciudad no encontrada";
-                categoryNameEl.textContent = "Por favor regresa al inicio y selecciona una ciudad válida.";
-                if (bannerWrapper) bannerWrapper.style.display = 'none';
-                return;
-            }
-
-            const cityData = data.cities[cityKey];
-            
-            // Renderizar nombre de la ciudad
-            cityNameEl.textContent = cityData.name || cityKey;
-
-            // Renderizar Categoría
-            let categoryTitle = "Trámites Disponibles";
-            if (catKey && data.categories && data.categories[catKey]) {
-                categoryTitle = data.categories[catKey].name;
-            }
-            categoryNameEl.textContent = categoryTitle;
-
-            // Renderizar Imagen
-            if (cityData.image && cityData.image.url) {
-                bannerImg.src = cityData.image.url;
-                bannerImg.alt = `Fotografía de ${cityData.name}`;
-                if (cityData.image.credit) {
-                    imageCreditEl.innerHTML = `Foto: ${cityData.image.credit}`;
-                } else {
-                    imageCreditEl.textContent = '';
-                }
-            } else {
-                if (bannerWrapper) bannerWrapper.style.display = 'none';
-            }
-
-            // Renderizar Enlaces según categoría
-            let linksToDisplay = [];
-            if (catKey && cityData.links && cityData.links[catKey]) {
-                linksToDisplay = cityData.links[catKey];
-            } else if (cityData.links) {
-                // Si no hay categoría especificada, aplanar todos los links
-                Object.keys(cityData.links).forEach(k => {
-                    linksToDisplay = linksToDisplay.concat(cityData.links[k]);
-                });
-            }
-
-            linksContainer.innerHTML = '';
-
-            if (linksToDisplay.length === 0) {
-                linksContainer.innerHTML = '<li>No hay enlaces disponibles para esta selección.</li>';
-                return;
-            }
-
-            linksToDisplay.forEach(item => {
-                const li = document.createElement('li');
+            // 2. Cargar banner y créditos de Wikimedia
+            if (bannerImg && cityMeta) {
+                bannerImg.src = cityMeta.image;
+                bannerImg.alt = `Fotografía panorámica de ${cityMeta.fullName}`;
                 
-                const link = document.createElement('a');
-                link.href = item.url;
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.textContent = item.title;
+                bannerImg.onerror = function() {
+                    if (bannerWrapper) bannerWrapper.style.display = 'none';
+                };
 
-                const desc = document.createElement('span');
-                desc.className = 'link-desc';
-                desc.textContent = item.desc ? `- ${item.desc}` : '';
+                if (imageCreditEl) {
+                    imageCreditEl.innerHTML = cityMeta.credit || 'Foto: Dominio Público';
+                }
+            }
 
-                li.appendChild(link);
-                if (item.desc) li.appendChild(desc);
-                linksContainer.appendChild(li);
-            });
+            // 3. Renderizar la lista de trámites y enlaces
+            if (linksContainer) {
+                const list = (currentLinks && currentLinks[catKey]) ? currentLinks[catKey] : [];
+                linksContainer.innerHTML = '';
+
+                if (list.length === 0) {
+                    linksContainer.innerHTML = '<li><span class="link-desc">No hay enlaces disponibles para esta sección.</span></li>';
+                } else {
+                    list.forEach(item => {
+                        const li = document.createElement('li');
+                        
+                        const link = document.createElement('a');
+                        link.href = item.url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.textContent = item.name;
+
+                        li.appendChild(link);
+
+                        if (item.desc) {
+                            const desc = document.createElement('span');
+                            desc.className = 'link-desc';
+                            desc.textContent = ` - ${item.desc}`;
+                            li.appendChild(desc);
+                        }
+
+                        linksContainer.appendChild(li);
+                    });
+                }
+            }
         });
     </script>
 </body>
