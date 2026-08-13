@@ -19,27 +19,59 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
+    // AUXILIAR: Obtención unificada de ciudades
+    // ==========================================
+    function getCitiesList() {
+        if (Array.isArray(window.CITIES_DATA)) {
+            return window.CITIES_DATA;
+        }
+        
+        // Si data.js usa el nuevo formato de objeto CITY_META_DATA
+        if (window.CITY_META_DATA && typeof window.CITY_META_DATA === 'object') {
+            return Object.keys(window.CITY_META_DATA).map(key => {
+                const item = window.CITY_META_DATA[key];
+                return {
+                    id: key,
+                    name: item.name || item.fullName || key,
+                    dept: item.dept || item.department || ''
+                };
+            });
+        }
+
+        return [];
+    }
+
+    // ==========================================
     // 1. RENDERIZADO DEL MENÚ DE CIUDADES
     // ==========================================
     function renderCitiesMenu() {
         const menus = document.querySelectorAll('.cities-menu');
-        const sortedCities = [...CITIES_DATA].sort((a, b) => 
+        const rawCities = getCitiesList();
+
+        if (rawCities.length === 0) {
+            console.warn('24col: No se encontraron datos de ciudades disponibles.');
+            return;
+        }
+
+        const sortedCities = [...rawCities].sort((a, b) => 
             a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
         );
+
+        const localServices = window.LOCAL_SERVICES_INDEX || {};
 
         menus.forEach(menu => {
             const category = menu.dataset.category;
             const showDept = menu.dataset.showDept === 'true';
 
             const linksHTML = sortedCities.map((city, index) => {
-                const label = showDept && city.dept !== 'Bogotá D.C.' 
+                const label = showDept && city.dept && city.dept !== 'Bogotá D.C.' 
                     ? `${city.name} / ${city.dept}` 
                     : city.name;
                 
                 const separator = index < sortedCities.length - 1 ? '<span class="city-sep"> | </span>' : '';
                 
-                const cityServices = (LOCAL_SERVICES_INDEX[city.id] && LOCAL_SERVICES_INDEX[city.id][category]) 
-                    ? LOCAL_SERVICES_INDEX[city.id][category].join(', ') 
+                const cityServices = (localServices[city.id] && localServices[city.id][category]) 
+                    ? localServices[city.id][category].join(', ') 
                     : '';
 
                 return `
@@ -222,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const query = normalizeText(this.value.trim());
+            const citiesList = getCitiesList();
             let nationalVisibleCount = 0;
             let regionalVisibleCount = 0;
 
@@ -279,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const linkText = link ? link.textContent : '';
                         const cityId = wrapper.dataset.cityId;
                         const cityServices = wrapper.dataset.services || '';
-                        const cityObj = CITIES_DATA.find(c => c.id === cityId);
+                        const cityObj = citiesList.find(c => c.id === cityId);
                         const tag = wrapper.querySelector('.matched-service-tag');
 
                         let matchedServiceName = '';
