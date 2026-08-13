@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 4. MÓDULO DE CLIMA ROBUSTO (OPEN-METEO)
+    // 4. MÓDULO DE CLIMA CON GEOLOCALIZACIÓN
     // ==========================================
     function getWeatherInterpretation(code) {
         const codes = {
@@ -427,7 +427,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-        // Validar coordenadas numéricas
         const validLat = parseFloat(lat);
         const validLon = parseFloat(lon);
 
@@ -436,7 +435,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            // Parámetros actualizados según API estándar v1 de Open-Meteo
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${validLat}&longitude=${validLon}&current=temperature_2m,weather_code`;
             
             const response = await fetch(url, {
@@ -466,61 +464,79 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Helper para obtener ubicación actual vía GPS/Navegador
+    function getUserLocation() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error('Geolocalización no soportada en este navegador'));
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    resolve({
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    });
+                },
+                (error) => {
+                    reject(error);
+                },
+                { timeout: 5000, maximumAge: 300000 } // Timeout de 5s
+            );
+        });
+    }
+
     async function initMainWeatherCard() {
         const tempEl = document.getElementById('weatherTemp');
         const cityEl = document.getElementById('weatherCity');
 
         if (!tempEl || !cityEl) return;
 
+        const bogotaFallback = { name: 'Bogotá D.C.', lat: 4.6097, lon: -74.0817 };
         const urlParams = new URLSearchParams(window.location.search);
         const cityIdFromUrl = urlParams.get('city');
         const citiesList = getCitiesList();
 
+        // 1. Intentar por Geolocalización del navegador primero
+        try {
+            const userCoords = await getUserLocation();
+            const weather = await fetchWeatherData(userCoords.lat, userCoords.lon);
+            const info = getWeatherInterpretation(weather.weathercode);
+
+            tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
+            cityEl.textContent = `Tu ubicación • ${info.desc}`;
+            return;
+        } catch (geoErr) {
+            console.log('24col: Geolocalización no disponible o denegada, usando ubicación por parámetro/por defecto.');
+        }
+
+        // 2. Si no hay geolocalización, buscar según la URL o ciudad por defecto
         let targetCity = null;
 
         if (cityIdFromUrl) {
             targetCity = citiesList.find(c => c.id === cityIdFromUrl);
         }
 
-        const bogotaFallback = {
-            name: 'Bogotá D.C.',
-            lat: 4.6097,
-            lon: -74.0817
-        };
-
         if (!targetCity) {
             targetCity = citiesList.find(c => c.id === 'bogota') || bogotaFallback;
         }
 
-        // Intento 1: Obtener clima de la ciudad objetivo
+        // Asegurar que siempre haya lat/lon (usar Bogotá si la ciudad del array no las tenía)
+        const targetLat = targetCity.lat || bogotaFallback.lat;
+        const targetLon = targetCity.lon || bogotaFallback.lon;
+
         try {
-            const weather = await fetchWeatherData(targetCity.lat, targetCity.lon);
+            const weather = await fetchWeatherData(targetLat, targetLon);
             const info = getWeatherInterpretation(weather.weathercode);
 
             tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
             cityEl.textContent = `${targetCity.name} • ${info.desc}`;
-            return;
         } catch (primaryErr) {
-            console.warn(`24col: No se pudo consultar el clima para ${targetCity.name}:`, primaryErr);
+            console.warn(`24col: No se pudo obtener el clima:`, primaryErr);
+            tempEl.textContent = 'Clima local';
+            cityEl.textContent = `${targetCity.name || 'Colombia'}`;
         }
-
-        // Intento 2: Fallback interno con Bogotá (Misma API permitida en CSP)
-        if (targetCity.id !== 'bogota') {
-            try {
-                const weather = await fetchWeatherData(bogotaFallback.lat, bogotaFallback.lon);
-                const info = getWeatherInterpretation(weather.weathercode);
-
-                tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
-                cityEl.textContent = `${bogotaFallback.name} • ${info.desc}`;
-                return;
-            } catch (fallbackErr) {
-                console.warn('24col: Fallo también el intento con coordenadas de Bogotá:', fallbackErr);
-            }
-        }
-
-        // Estado por defecto si falla red/timeout
-        tempEl.textContent = 'Clima local';
-        cityEl.textContent = `${targetCity.name || 'Colombia'}`;
     }
 
     initMainWeatherCard();
