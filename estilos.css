@@ -373,17 +373,24 @@ details summary::-webkit-details-marker {
 
 /* Modales */
 
+/* ==========================================
+   MODALES (AMPLIADOS Y MODERNOS)
+   ========================================== */
+
 dialog {
+    width: 100%;
+    max-width: 600px; /* 👈 Controla el ancho en escritorio (antes era fit-content) */
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 16px;
+    border-radius: 8px;
+    padding: 20px 24px; /* Un poco más de espacio interno */
     background: var(--modal-bg);
     color: var(--text-color);
-    box-shadow: 0 10px 25px var(--shadow-color);
+    box-shadow: 0 10px 30px var(--shadow-color);
 }
 
 dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px); /* Efecto blur moderno de fondo */
 }
 
 .modal-header {
@@ -391,36 +398,43 @@ dialog::backdrop {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 6px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .modal-header h3 {
     margin: 0;
     color: var(--text-color);
-    font-size: 14.5px;
+    font-size: 16px; /* Tipografía del título un poco más grande */
+    font-weight: 700;
 }
 
 .modal-close-btn {
     background: none;
     border: none;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     font-weight: bold;
     line-height: 1;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.modal-close-btn:hover {
     color: var(--text-color);
 }
 
 .welcome-list {
     text-align: left;
-    padding-left: 16px;
-    font-size: 12px;
-    line-height: 1.4;
+    padding-left: 18px;
+    font-size: 13.5px; /* Un poco más legible para modal grande */
+    line-height: 1.5;
     color: var(--text-secondary);
-    margin: 8px 0;
+    margin: 12px 0;
 }
 
 .welcome-list li {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .modal-action-btn {
@@ -428,12 +442,17 @@ dialog::backdrop {
     background-color: var(--text-color);
     color: var(--bg-color);
     border: none;
-    padding: 7px;
-    border-radius: 4px;
+    padding: 10px; /* Botón con mejor área de clic */
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 12px;
-    margin-top: 8px;
+    font-size: 13px;
+    margin-top: 12px;
+    transition: opacity 0.15s ease;
+}
+
+.modal-action-btn:hover {
+    opacity: 0.9;
 }
 
 .form-input, .form-select, .form-textarea {
