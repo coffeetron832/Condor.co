@@ -1,6 +1,10 @@
 :root {
     --bg-color: #f8fafc;
-    --header-bg: rgba(255, 255, 255, 0.95);
+    /* Header y Footer oscuros elegantes con translucidez */
+    --header-bg: rgba(15, 23, 42, 0.75);
+    --header-text: #f8fafc;
+    --header-border: rgba(255, 255, 255, 0.1);
+    
     --text-color: #0f172a;
     --text-secondary: #475569;
     --border-color: #e2e8f0;
@@ -11,9 +15,11 @@
     --input-bg: #ffffff;
     --input-border: #94a3b8;
     --modal-bg: #ffffff;
-    --footer-bg: #0f172a;
+
+    --footer-bg: rgba(15, 23, 42, 0.85);
     --footer-text: #94a3b8;
     --footer-link: #38bdf8;
+    
     --shadow-color: rgba(15, 23, 42, 0.05);
     --ok-color: #22c55e;
     --hero-bg: #ffffff;
@@ -21,14 +27,17 @@
     --chip-text: #334155;
     --svg-filter: none;
 
-    /* Valores base (Overlay equilibrado al 70%) */
+    /* Valores base (Overlay equilibrado) */
     --bg-image: url('img/manana.jpg');
     --bg-overlay: rgba(248, 250, 252, 0.7); 
 }
 
 [data-theme="dark"] {
     --bg-color: #121212;
-    --header-bg: rgba(18, 18, 18, 0.95);
+    --header-bg: rgba(10, 10, 12, 0.8);
+    --header-text: #f4f4f5;
+    --header-border: rgba(255, 255, 255, 0.08);
+
     --text-color: #f4f4f5;
     --text-secondary: #a1a1aa;
     --border-color: #27272a;
@@ -39,9 +48,11 @@
     --input-bg: #27272a;
     --input-border: #3f3f46;
     --modal-bg: #1e1e20;
-    --footer-bg: #0a0a0a;
+
+    --footer-bg: rgba(10, 10, 12, 0.88);
     --footer-text: #71717a;
     --footer-link: #38bdf8;
+
     --shadow-color: rgba(0, 0, 0, 0.6);
     --ok-color: #4ade80;
     --hero-bg: #18181b;
@@ -49,7 +60,6 @@
     --chip-text: #e4e4e7;
     --svg-filter: invert(1) hue-rotate(180deg);
 
-    /* Tinta oscura reducida del 88% al 70% */
     --bg-overlay: rgba(18, 18, 18, 0.7);
 }
 
@@ -84,7 +94,7 @@ body[data-time="night"] {
 }
 [data-theme="dark"] body[data-time="night"],
 body[data-time="night"][data-theme="dark"] {
-    --bg-overlay: rgba(18, 18, 18, 0.65); /* Un poco más ligero para dejar ver la noche */
+    --bg-overlay: rgba(18, 18, 18, 0.65);
 }
 
 * {
@@ -112,18 +122,18 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease, background-image 0.5s ease;
 }
 
+/* HEADER CON EFECTO BLUR Y OSCURO */
 .site-header {
     position: sticky;
     top: 0;
     z-index: 100;
     background-color: var(--header-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--header-border);
     padding: 8px 16px;
 }
 
-/* Ampliado a 1400px para mayor cobertura horizontal */
 .header-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -138,7 +148,7 @@ body {
     align-items: center;
     gap: 6px;
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--header-text);
     font-family: 'Archivo Black', sans-serif;
     font-size: 20px;
     letter-spacing: -0.5px;
@@ -149,7 +159,6 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Capa del gradiente de la bandera con distribución equilibrada */
 .header-brand::before {
     content: '';
     position: absolute;
@@ -170,7 +179,6 @@ body {
     z-index: 1;
 }
 
-/* Asegura que el texto y los elementos internos queden por encima del gradiente */
 .header-brand > * {
     position: relative;
     z-index: 2;
@@ -188,7 +196,6 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Efecto al hacer Hover */
 .header-brand:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -213,10 +220,10 @@ body {
 }
 
 .header-btn {
-    background: none;
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--header-border);
     border-radius: 4px;
-    color: var(--text-secondary);
+    color: #cbd5e1;
     cursor: pointer;
     font-size: 12px;
     font-weight: 500;
@@ -229,9 +236,9 @@ body {
 }
 
 .header-btn:hover {
-    background-color: var(--card-bg);
-    border-color: var(--link-color);
-    color: var(--link-color);
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
 }
 
 .header-btn svg {
@@ -322,7 +329,6 @@ body {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Ampliado a 1400px para dar espacio a la grilla de tarjetas */
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -337,10 +343,6 @@ body {
     flex: 1;
     width: 100%;
 }
-
-/* ==========================================
-   ESTRUCTURA GRID HORIZONTAL (De izq. a der.)
-   ========================================== */
 
 .cards-grid {
     display: grid;
@@ -415,8 +417,6 @@ body {
     font-size: 11px;
 }
 
-/* Acordeones (Details/Summary) Sin Scroll */
-
 details summary {
     cursor: pointer;
     color: var(--link-color);
@@ -470,8 +470,6 @@ details summary::-webkit-details-marker {
     color: var(--text-secondary);
     margin: 8px 0;
 }
-
-/* Modales */
 
 dialog {
     border: 1px solid var(--border-color);
@@ -548,17 +546,23 @@ dialog::backdrop {
     margin-top: 3px;
 }
 
+/* FOOTER CON EFECTO BLUR Y OSCURO */
 .site-footer {
-    background-color: transparent;
-    color: var(--text-secondary);
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     padding: 14px;
     font-size: 11px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--header-border);
     margin-top: auto;
     text-align: center;
 }
 
-/* Ampliado a 1400px para coincidir con la alineación del header */
+.site-footer a {
+    color: var(--footer-link);
+}
+
 .footer-content {
     max-width: 1400px;
     margin: 0 auto;
@@ -568,10 +572,6 @@ dialog::backdrop {
     flex-direction: column;
     gap: 3px;
 }
-
-/* ==========================================
-   MODAL BIENVENIDA (AMPLIADO)
-   ========================================== */
 
 #welcomeModal.modal-welcome {
     width: 90%;
@@ -622,10 +622,6 @@ dialog::backdrop {
     font-size: 14.5px;
     border-radius: 6px;
 }
-
-/* ==========================================
-   RESPONSIVE & MEDIA QUERIES PARA MÓVILES
-   ========================================== */
 
 @media screen and (max-width: 640px) {
     .site-header {
