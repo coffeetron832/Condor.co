@@ -598,8 +598,8 @@ dialog::backdrop {
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-top: 1px solid var(--header-border);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-    padding: 8px 14px;
-    font-size: 11px;
+    padding: 10px 20px;
+    font-size: 12px;
     margin-top: auto;
     text-align: center;
     transition: background-color 0.3s ease, border-color 0.3s ease;
