@@ -198,6 +198,37 @@ body {
     border-radius: 3px;
 }
 
+/* Créditos de Imagen en el Header */
+.header-credit {
+    font-size: 11px;
+    color: var(--header-text);
+    opacity: 0.8;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+.header-credit a {
+    color: var(--header-text);
+    text-decoration: underline;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.header-credit a:hover {
+    opacity: 1;
+    color: var(--footer-link);
+}
+
+/* Ocultar sutilmente en pantallas pequeñas para evitar saturación del header */
+@media screen and (max-width: 768px) {
+    .header-credit {
+        display: none;
+    }
+}
+
 /* Navegación y Botones del Header */
 .header-nav {
     display: flex;
