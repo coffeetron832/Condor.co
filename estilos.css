@@ -30,7 +30,7 @@
     --hero-bg: #ffffff;
     --chip-bg: #f1f5f9;
     --chip-text: #334155;
-    --svg-filter: none;
+    --svg-filter: invert(1) hue-rotate(180deg);
 
     /* Overlay oscuro consistente en ambos modos */
     --bg-overlay: rgba(15, 23, 42, 0.6); 
