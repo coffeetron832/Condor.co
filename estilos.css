@@ -1,9 +1,14 @@
+/* ==========================================
+   1. VARIABLES DE TEMA Y PALETA DE COLOR
+   ========================================== */
+
 :root {
     --bg-color: #f8fafc;
-    /* Header y Footer oscuros elegantes con translucidez */
+    
+    /* Header y Footer estilo Glassmorphism */
     --header-bg: rgba(15, 23, 42, 0.75);
     --header-text: #f8fafc;
-    --header-border: rgba(255, 255, 255, 0.1);
+    --header-border: rgba(255, 255, 255, 0.12);
     
     --text-color: #0f172a;
     --text-secondary: #475569;
@@ -27,14 +32,16 @@
     --chip-text: #334155;
     --svg-filter: none;
 
-    /* Valores base (Overlay equilibrado) */
+    /* Valores base de Fondo y Overlay */
     --bg-image: url('img/manana.jpg');
     --bg-overlay: rgba(248, 250, 252, 0.7); 
 }
 
 [data-theme="dark"] {
     --bg-color: #121212;
-    --header-bg: rgba(10, 10, 12, 0.8);
+    
+    /* Header y Footer estilo Glassmorphism (Modo Oscuro) */
+    --header-bg: rgba(10, 10, 12, 0.75);
     --header-text: #f4f4f5;
     --header-border: rgba(255, 255, 255, 0.08);
 
@@ -49,7 +56,7 @@
     --input-border: #3f3f46;
     --modal-bg: #1e1e20;
 
-    --footer-bg: rgba(10, 10, 12, 0.88);
+    --footer-bg: rgba(10, 10, 12, 0.82);
     --footer-text: #71717a;
     --footer-link: #38bdf8;
 
@@ -63,8 +70,9 @@
     --bg-overlay: rgba(18, 18, 18, 0.7);
 }
 
+
 /* ==========================================
-   AJUSTE DE IMAGEN Y OVERLAY SEGÚN EL HORARIO
+   2. CONFIGURACIÓN DINÁMICA DE HORARIOS
    ========================================== */
 
 /* MAÑANA */
@@ -97,6 +105,11 @@ body[data-time="night"][data-theme="dark"] {
     --bg-overlay: rgba(18, 18, 18, 0.65);
 }
 
+
+/* ==========================================
+   3. REGLAS GLOBALES Y ESTRUCTURA BASE
+   ========================================== */
+
 * {
     box-sizing: border-box;
 }
@@ -122,16 +135,37 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease, background-image 0.5s ease;
 }
 
-/* HEADER CON EFECTO BLUR Y OSCURO */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px 16px 20px 16px;
+}
+
+.main-content {
+    flex: 1;
+    width: 100%;
+}
+
+
+/* ==========================================
+   4. COMPONENTE HEADER (GLASSMORPHISM)
+   ========================================== */
+
 .site-header {
     position: sticky;
     top: 0;
     z-index: 100;
     background-color: var(--header-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-bottom: 1px solid var(--header-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 8px 16px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .header-container {
@@ -143,6 +177,7 @@ body {
     gap: 12px;
 }
 
+/* Marca del Header */
 .header-brand {
     display: flex;
     align-items: center;
@@ -213,6 +248,7 @@ body {
     color: #ffffff;
 }
 
+/* Navegación y Botones del Header */
 .header-nav {
     display: flex;
     align-items: center;
@@ -246,6 +282,11 @@ body {
     stroke: currentColor;
     fill: none;
 }
+
+
+/* ==========================================
+   5. SECCIÓN HERO Y BÚSQUEDA
+   ========================================== */
 
 .hero-section {
     background-color: transparent;
@@ -291,6 +332,7 @@ body {
     line-height: 1.35;
 }
 
+/* Caja de Búsqueda */
 .search-container {
     width: 100%;
     max-width: 440px;
@@ -329,20 +371,10 @@ body {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 10px 16px 20px 16px;
-}
 
-.main-content {
-    flex: 1;
-    width: 100%;
-}
+/* ==========================================
+   6. GRID DE TARJETAS Y CONTENIDO
+   ========================================== */
 
 .cards-grid {
     display: grid;
@@ -417,6 +449,7 @@ body {
     font-size: 11px;
 }
 
+/* Acordeones (Details / Summary) */
 details summary {
     cursor: pointer;
     color: var(--link-color);
@@ -471,6 +504,11 @@ details summary::-webkit-details-marker {
     margin: 8px 0;
 }
 
+
+/* ==========================================
+   7. MODALES Y FORMULARIOS
+   ========================================== */
+
 dialog {
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -508,19 +546,6 @@ dialog::backdrop {
     color: var(--text-color);
 }
 
-.welcome-list {
-    text-align: left;
-    padding-left: 16px;
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--text-secondary);
-    margin: 8px 0;
-}
-
-.welcome-list li {
-    margin-bottom: 5px;
-}
-
 .modal-action-btn {
     width: 100%;
     background-color: var(--text-color);
@@ -546,33 +571,7 @@ dialog::backdrop {
     margin-top: 3px;
 }
 
-/* FOOTER CON EFECTO BLUR Y OSCURO */
-.site-footer {
-    background-color: var(--footer-bg);
-    color: var(--footer-text);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 14px;
-    font-size: 11px;
-    border-top: 1px solid var(--header-border);
-    margin-top: auto;
-    text-align: center;
-}
-
-.site-footer a {
-    color: var(--footer-link);
-}
-
-.footer-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    line-height: 1.5;
-    font-weight: 500;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
+/* Modal de Bienvenida Específico */
 #welcomeModal.modal-welcome {
     width: 90%;
     max-width: 750px;
@@ -622,6 +621,44 @@ dialog::backdrop {
     font-size: 14.5px;
     border-radius: 6px;
 }
+
+
+/* ==========================================
+   8. COMPONENTE FOOTER (GLASSMORPHISM)
+   ========================================== */
+
+.site-footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border-top: 1px solid var(--header-border);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    padding: 14px;
+    font-size: 11px;
+    margin-top: auto;
+    text-align: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.site-footer a {
+    color: var(--footer-link);
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    line-height: 1.5;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+
+/* ==========================================
+   9. DISEÑO RESPONSIVO (MEDIA QUERIES)
+   ========================================== */
 
 @media screen and (max-width: 640px) {
     .site-header {
