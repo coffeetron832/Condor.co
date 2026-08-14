@@ -177,47 +177,15 @@ body {
     gap: 12px;
 }
 
-/* Marca del Header */
 .header-brand {
     display: flex;
     align-items: center;
     gap: 6px;
     text-decoration: none;
-    color: var(--header-text);
+    color: var(--text-color);
     font-family: 'Archivo Black', sans-serif;
     font-size: 20px;
     letter-spacing: -0.5px;
-    position: relative;
-    padding: 4px 8px;
-    border-radius: 6px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.header-brand::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        135deg, 
-        #ffd100 0%, 
-        #ffd100 33%, 
-        #003893 33%, 
-        #003893 66%, 
-        #ce1126 66%, 
-        #ce1126 100%
-    );
-    background-size: 180% 180%;
-    background-position: 100% 0%;
-    opacity: 0;
-    transition: opacity 0.3s ease, background-position 0.6s ease-in-out;
-    z-index: 1;
-}
-
-.header-brand > * {
-    position: relative;
-    z-index: 2;
-    transition: color 0.3s ease;
 }
 
 .header-brand-badge {
@@ -228,24 +196,6 @@ body {
     font-weight: 800;
     padding: 2px 6px;
     border-radius: 3px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.header-brand:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
-.header-brand:hover::before {
-    opacity: 1;
-    background-position: 0% 100%;
-}
-
-.header-brand:hover .header-brand-badge {
-    background-color: rgba(0, 0, 0, 0.25);
-    color: #ffffff;
 }
 
 /* Navegación y Botones del Header */
