@@ -21,9 +21,9 @@
     --chip-text: #334155;
     --svg-filter: none;
 
-    /* Imagen de fondo por defecto y overlay semi-transparente */
+    /* Valores base */
     --bg-image: url('img/manana.jpg');
-    --bg-overlay: rgba(248, 250, 252, 0.85);
+    --bg-overlay: rgba(248, 250, 252, 0.5); /* Opacidad reducida para mejor visibilidad */
 }
 
 [data-theme="dark"] {
@@ -49,24 +49,41 @@
     --chip-text: #e4e4e7;
     --svg-filter: invert(1) hue-rotate(180deg);
 
-    /* Overlay para asegurar legibilidad en modo oscuro */
-    --bg-overlay: rgba(18, 18, 18, 0.88);
+    --bg-overlay: rgba(18, 18, 18, 0.55);
 }
 
 /* ==========================================
-   ASIGNACIÓN DE IMÁGENES SEGÚN EL HORARIO
+   AJUSTE DE IMAGEN Y OVERLAY SEGÚN EL HORARIO
    ========================================== */
 
+/* MAÑANA */
 body[data-time="morning"] {
     --bg-image: url('img/manana.jpg');
+    --bg-overlay: rgba(248, 250, 252, 0.45);
+}
+[data-theme="dark"] body[data-time="morning"],
+body[data-time="morning"][data-theme="dark"] {
+    --bg-overlay: rgba(18, 18, 18, 0.55);
 }
 
+/* TARDE */
 body[data-time="afternoon"] {
     --bg-image: url('img/tarde.jpg');
+    --bg-overlay: rgba(248, 250, 252, 0.4);
+}
+[data-theme="dark"] body[data-time="afternoon"],
+body[data-time="afternoon"][data-theme="dark"] {
+    --bg-overlay: rgba(18, 18, 18, 0.5);
 }
 
+/* NOCHE (Overlay súper liviano para que la foto no se apague) */
 body[data-time="night"] {
     --bg-image: url('img/noche.jpg');
+    --bg-overlay: rgba(255, 255, 255, 0.2); 
+}
+[data-theme="dark"] body[data-time="night"],
+body[data-time="night"][data-theme="dark"] {
+    --bg-overlay: rgba(0, 0, 0, 0.35); /* Tinta negra ligera en vez de opaca */
 }
 
 * {
