@@ -67,7 +67,8 @@
     --chip-text: #e4e4e7;
     --svg-filter: invert(1) hue-rotate(180deg);
 
-    --bg-overlay: rgba(18, 18, 18, 0.7);
+    /* Mantenemos el overlay claro incluso en modo oscuro para que la imagen de fondo no cambie de tono */
+    --bg-overlay: rgba(248, 250, 252, 0.7);
 }
 
 
@@ -82,7 +83,7 @@ body[data-time="morning"] {
 }
 [data-theme="dark"] body[data-time="morning"],
 body[data-time="morning"][data-theme="dark"] {
-    --bg-overlay: rgba(18, 18, 18, 0.7);
+    --bg-overlay: rgba(248, 250, 252, 0.7);
 }
 
 /* TARDE */
@@ -92,7 +93,7 @@ body[data-time="afternoon"] {
 }
 [data-theme="dark"] body[data-time="afternoon"],
 body[data-time="afternoon"][data-theme="dark"] {
-    --bg-overlay: rgba(18, 18, 18, 0.68);
+    --bg-overlay: rgba(248, 250, 252, 0.68);
 }
 
 /* NOCHE */
@@ -102,7 +103,7 @@ body[data-time="night"] {
 }
 [data-theme="dark"] body[data-time="night"],
 body[data-time="night"][data-theme="dark"] {
-    --bg-overlay: rgba(18, 18, 18, 0.65);
+    --bg-overlay: rgba(248, 250, 252, 0.65);
 }
 
 
