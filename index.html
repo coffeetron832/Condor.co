@@ -25,6 +25,9 @@
                 <span>24col</span>
             </a>
 
+            <!-- Crédito de la imagen dinámico (Centro) -->
+            <div id="imageCredit" class="header-credit"></div>
+
             <nav class="header-nav">
                 <!-- Botón Modo Oscuro -->
                 <button id="themeToggleBtn" class="header-btn" type="button" aria-label="Cambiar tema">
@@ -144,31 +147,31 @@
 
                 <!-- TARJETA 3: Clima en Tiempo Real -->
                 <div class="card-item searchable-category">
-    <div class="card-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
-        </svg>
-        <h3>Clima</h3>
-    </div>
-    <div style="padding: 12px 15px; text-align: center;">
-        <div id="weatherTemp" style="font-size: 26px; font-weight: 700; color: var(--text-main, #111); margin-bottom: 4px;">
-            --°C
-        </div>
-        <div id="weatherCity" style="font-size: 11px; color: var(--text-secondary, #666); margin-bottom: 10px;">
-            Selecciona una ciudad
-        </div>
+                    <div class="card-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
+                        </svg>
+                        <h3>Clima</h3>
+                    </div>
+                    <div style="padding: 12px 15px; text-align: center;">
+                        <div id="weatherTemp" style="font-size: 26px; font-weight: 700; color: var(--text-main, #111); margin-bottom: 4px;">
+                            --°C
+                        </div>
+                        <div id="weatherCity" style="font-size: 11px; color: var(--text-secondary, #666); margin-bottom: 10px;">
+                            Selecciona una ciudad
+                        </div>
 
-        <!-- Campo de búsqueda integrado -->
-        <div style="position: relative; text-align: left;">
-            <input type="text" id="weatherSearchInput" placeholder="Buscar municipio..." autocomplete="off" 
-                   style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline: none;">
-            
-            <ul id="weatherSearchResults" 
-                style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 0 0 4px 4px; list-style: none; margin: 0; padding: 0; z-index: 1000; max-height: 150px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            </ul>
-        </div>
-    </div>
-</div>
+                        <!-- Campo de búsqueda integrado -->
+                        <div style="position: relative; text-align: left;">
+                            <input type="text" id="weatherSearchInput" placeholder="Buscar municipio..." autocomplete="off" 
+                                   style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline: none;">
+                            
+                            <ul id="weatherSearchResults" 
+                                style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 0 0 4px 4px; list-style: none; margin: 0; padding: 0; z-index: 1000; max-height: 150px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- TARJETA 4: Líneas de Emergencia -->
                 <div class="card-item searchable-category">
@@ -341,20 +344,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Fondo Dinámico según Hora del Día ---
+            // --- Fondo Dinámico y Créditos según Hora del Día ---
             function updateTimeTheme() {
                 const hour = new Date().getHours();
+                const creditEl = document.getElementById('imageCredit');
                 let timeTheme = 'day';
+                let creditHTML = '';
 
                 if (hour >= 6 && hour < 12) {
                     timeTheme = 'morning';   // Mañana: 6:00 AM - 11:59 AM
+                    creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/rascador-de-la-ciudad-por-la-noche-03gVOLHq9ec?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Saravia (Unsplash)</a>';
                 } else if (hour >= 12 && hour < 18) {
                     timeTheme = 'afternoon'; // Tarde: 12:00 PM - 5:59 PM
+                    creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/loro-rojo-verde-y-azul-en-la-rama-marron-del-arbol-durante-el-dia-57SHaZUAOtQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Camilo Guarin P (Unsplash)</a>';
                 } else {
                     timeTheme = 'night';     // Noche: 6:00 PM - 5:59 AM
+                    creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/rascador-de-la-ciudad-por-la-noche-03gVOLHq9ec?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Saravia (Unsplash)</a>';
                 }
 
                 document.body.setAttribute('data-time', timeTheme);
+                if (creditEl) {
+                    creditEl.innerHTML = creditHTML;
+                }
             }
 
             updateTimeTheme();
