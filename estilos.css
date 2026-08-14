@@ -585,10 +585,13 @@ dialog::backdrop {
 
 
 /* ==========================================
-   8. COMPONENTE FOOTER (GLASSMORPHISM)
+   8. COMPONENTE FOOTER (STICKY / GLASSMORPHISM)
    ========================================== */
 
 .site-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 90;
     background-color: var(--footer-bg);
     color: var(--footer-text);
     backdrop-filter: blur(12px) saturate(160%);
