@@ -77,8 +77,9 @@ body {
     padding: 8px 16px;
 }
 
+/* Ampliado a 1400px para mayor cobertura horizontal */
 .header-container {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -151,15 +152,13 @@ body {
 
 .header-brand:hover::before {
     opacity: 1;
-    background-position: 0% 100%; /* Muestra la transición fluida asegurando que se vean los 3 colores */
+    background-position: 0% 100%;
 }
 
 .header-brand:hover .header-brand-badge {
     background-color: rgba(0, 0, 0, 0.25);
     color: #ffffff;
 }
-
-
 
 .header-nav {
     display: flex;
@@ -277,8 +276,9 @@ body {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+/* Ampliado a 1400px para dar espacio a la grilla de tarjetas */
 .container {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
     flex: 1;
     display: flex;
@@ -298,7 +298,7 @@ body {
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 12px;
     align-items: start;
     margin-top: 10px;
@@ -512,8 +512,9 @@ dialog::backdrop {
     text-align: center;
 }
 
+/* Ampliado a 1400px para coincidir con la alineación del header */
 .footer-content {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
     line-height: 1.5;
     font-weight: 500;
@@ -522,14 +523,13 @@ dialog::backdrop {
     gap: 3px;
 }
 
-
 /* ==========================================
    MODAL BIENVENIDA (AMPLIADO)
    ========================================== */
 
 #welcomeModal.modal-welcome {
     width: 90%;
-    max-width: 750px; /* <--- Tamaño grande */
+    max-width: 750px;
     padding: 30px 36px;
 }
 
@@ -560,7 +560,7 @@ dialog::backdrop {
 #welcomeModal .welcome-list {
     text-align: left;
     padding-left: 0;
-    list-style: none; /* Quitamos las viñetas por defecto ya que usas SVGs */
+    list-style: none;
     font-size: 14.5px;
     line-height: 1.65;
     color: var(--text-secondary);
