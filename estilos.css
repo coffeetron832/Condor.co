@@ -615,7 +615,7 @@ dialog::backdrop {
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-top: 1px solid var(--header-border);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-    padding: 14px;
+    padding: 8px 14px; /* Reducido de 14px a 8px */
     font-size: 11px;
     margin-top: auto;
     text-align: center;
@@ -629,11 +629,13 @@ dialog::backdrop {
 .footer-content {
     max-width: 1400px;
     margin: 0 auto;
-    line-height: 1.5;
+    line-height: 1.3;
     font-weight: 500;
     display: flex;
-    flex-direction: column;
-    gap: 3px;
+    flex-direction: row; /* Coloca los textos en una misma línea en pantallas medianas/grandes */
+    justify-content: center;
+    align-items: center;
+    gap: 12px; /* Espacio horizontal entre textos */
 }
 
 
