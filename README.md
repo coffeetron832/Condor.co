@@ -1,4 +1,4 @@
-# 24col v.2.2
+# 24col v.2.5
 
 > Directorio ciudadano público de portales de trámites y servicios públicos en Colombia.
 
