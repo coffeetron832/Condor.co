@@ -341,6 +341,26 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Fondo Dinámico según Hora del Día ---
+            function updateTimeTheme() {
+                const hour = new Date().getHours();
+                let timeTheme = 'day';
+
+                if (hour >= 6 && hour < 12) {
+                    timeTheme = 'morning';   // Mañana: 6:00 AM - 11:59 AM
+                } else if (hour >= 12 && hour < 18) {
+                    timeTheme = 'afternoon'; // Tarde: 12:00 PM - 5:59 PM
+                } else {
+                    timeTheme = 'night';     // Noche: 6:00 PM - 5:59 AM
+                }
+
+                document.body.setAttribute('data-time', timeTheme);
+            }
+
+            updateTimeTheme();
+            // Actualización automática por si cambia de jornada mientras navega
+            setInterval(updateTimeTheme, 15 * 60 * 1000);
+
             // --- Cargar TRM Dólar a COP ---
             async function fetchTRM() {
                 const trmRateEl = document.getElementById('trmRate');
