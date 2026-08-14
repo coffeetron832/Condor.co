@@ -6,7 +6,7 @@
     --bg-color: #f8fafc;
     
     /* Header y Footer estilo Glassmorphism */
-    --header-bg: rgba(15, 23, 42, 0.75);
+    --header-bg: rgba(15, 23, 42, 0.85);
     --header-text: #f8fafc;
     --header-border: rgba(255, 255, 255, 0.12);
     
@@ -25,21 +25,21 @@
     --footer-text: #94a3b8;
     --footer-link: #38bdf8;
     
-    --shadow-color: rgba(15, 23, 42, 0.05);
+    --shadow-color: rgba(15, 23, 42, 0.08);
     --ok-color: #22c55e;
     --hero-bg: #ffffff;
     --chip-bg: #f1f5f9;
     --chip-text: #334155;
     --svg-filter: none;
 
-    /* Overlay oscuro consistente */
+    /* Overlay oscuro consistente en ambos modos */
     --bg-overlay: rgba(15, 23, 42, 0.6); 
 }
 
 [data-theme="dark"] {
     --bg-color: #121212;
     
-    --header-bg: rgba(10, 10, 12, 0.75);
+    --header-bg: rgba(10, 10, 12, 0.85);
     --header-text: #f4f4f5;
     --header-border: rgba(255, 255, 255, 0.08);
 
@@ -65,7 +65,7 @@
     --chip-text: #e4e4e7;
     --svg-filter: invert(1) hue-rotate(180deg);
 
-    /* Mantenemos el overlay oscuro en modo oscuro */
+    /* Overlay oscuro ajustado */
     --bg-overlay: rgba(10, 10, 12, 0.75);
 }
 
@@ -136,7 +136,7 @@ body {
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-bottom: 1px solid var(--header-border);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     padding: 8px 16px;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
@@ -155,7 +155,7 @@ body {
     align-items: center;
     gap: 6px;
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--header-text);
     font-family: 'Archivo Black', sans-serif;
     font-size: 20px;
     letter-spacing: -0.5px;
@@ -175,7 +175,7 @@ body {
 .header-credit {
     font-size: 11px;
     color: var(--header-text);
-    opacity: 0.8;
+    opacity: 0.85;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -195,7 +195,6 @@ body {
     color: var(--footer-link);
 }
 
-/* Ocultar sutilmente en pantallas pequeñas para evitar saturación del header */
 @media screen and (max-width: 768px) {
     .header-credit {
         display: none;
@@ -210,10 +209,10 @@ body {
 }
 
 .header-btn {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--header-border);
     border-radius: 4px;
-    color: #cbd5e1;
+    color: #f8fafc;
     cursor: pointer;
     font-size: 12px;
     font-weight: 500;
@@ -226,8 +225,8 @@ body {
 }
 
 .header-btn:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
     color: #ffffff;
 }
 
@@ -267,7 +266,8 @@ body {
 .hero-title-text {
     font-family: 'Archivo Black', sans-serif;
     font-size: 34px;
-    color: var(--text-color);
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     line-height: 1;
     letter-spacing: -1px;
 }
@@ -275,13 +275,14 @@ body {
 .logo-img {
     width: 150px;
     height: auto;
-    filter: var(--svg-filter);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .hero-subtitle {
-    font-size: 12.5px;
-    color: var(--text-secondary);
-    margin: 0 0 10px 0;
+    font-size: 13px;
+    color: #f1f5f9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    margin: 0 0 12px 0;
     max-width: 500px;
     line-height: 1.35;
 }
@@ -322,7 +323,7 @@ body {
 
 .search-input:focus {
     border-color: var(--link-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 }
 
 
@@ -344,7 +345,7 @@ body {
     border: 1px solid var(--card-border);
     border-radius: 6px;
     padding: 10px 12px;
-    box-shadow: 0 1px 3px var(--shadow-color);
+    box-shadow: 0 2px 5px var(--shadow-color);
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
@@ -473,7 +474,8 @@ dialog {
 }
 
 dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
 }
 
 .modal-header {
@@ -502,15 +504,20 @@ dialog::backdrop {
 
 .modal-action-btn {
     width: 100%;
-    background-color: var(--text-color);
-    color: var(--bg-color);
+    background-color: var(--link-color);
+    color: #ffffff;
     border: none;
-    padding: 7px;
+    padding: 8px;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
     font-size: 12px;
     margin-top: 8px;
+    transition: background-color 0.15s ease;
+}
+
+.modal-action-btn:hover {
+    background-color: var(--link-hover);
 }
 
 .form-input, .form-select, .form-textarea {
@@ -588,7 +595,7 @@ dialog::backdrop {
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-top: 1px solid var(--header-border);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-    padding: 8px 14px; /* Reducido de 14px a 8px */
+    padding: 8px 14px;
     font-size: 11px;
     margin-top: auto;
     text-align: center;
@@ -605,10 +612,10 @@ dialog::backdrop {
     line-height: 1.3;
     font-weight: 500;
     display: flex;
-    flex-direction: row; /* Coloca los textos en una misma línea en pantallas medianas/grandes */
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 12px; /* Espacio horizontal entre textos */
+    gap: 12px;
 }
 
 
@@ -681,6 +688,11 @@ dialog::backdrop {
     .site-footer {
         padding: 12px 10px;
         font-size: 10.5px;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: 4px;
     }
 }
 
