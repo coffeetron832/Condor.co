@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Array.isArray(window.CITIES_DATA)) {
             return window.CITIES_DATA;
         }
-        
+
         if (window.CITY_META_DATA && typeof window.CITY_META_DATA === 'object') {
             return Object.keys(window.CITY_META_DATA).map(key => {
                 const item = window.CITY_META_DATA[key];
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const label = showDept && city.dept && city.dept !== 'Bogotá D.C.' 
                     ? `${city.name} / ${city.dept}` 
                     : city.name;
-                
+
                 const cityServices = (localServices[city.id] && localServices[city.id][category]) 
                     ? localServices[city.id][category].join(', ') 
                     : '';
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         allLinks.forEach(async (link) => {
             const url = link.getAttribute('href');
-            
+
             if (!url || url.startsWith('ciudad.html') || url.startsWith('#') || (!url.startsWith('http://') && !url.startsWith('https://'))) {
                 return;
             }
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 statusSpan.style.padding = '1px 5px';
                 statusSpan.style.borderRadius = '4px';
                 statusSpan.style.display = 'inline-block';
-                
+
                 link.after(statusSpan);
             }
 
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (!resolved) {
                         resolved = true;
                         clearTimeout(timer);
-                        
+
                         fetch(targetUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-cache' })
                             .then(() => resolve(true))
                             .catch(() => resolve(false));
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const rawQuery = this.value.trim();
             const query = normalizeText(rawQuery);
             const citiesList = getCitiesList();
-            
+
             let nationalVisibleCount = 0;
             let regionalVisibleCount = 0;
 
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (query === '') {
                     item.style.display = '';
                     if (details) details.open = false;
-                    
+
                     cityWrappers.forEach(wrapper => {
                         wrapper.style.display = '';
                         const tag = wrapper.querySelector('.matched-service-tag');
@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-   // ==========================================
+    // ==========================================
     // 4. MÓDULO DE CLIMA Y BÚSQUEDA DINÁMICA
     // ==========================================
     function getWeatherInterpretation(code) {
@@ -544,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     cities.forEach(city => {
                         const li = document.createElement('li');
                         const label = city.admin1 ? `${city.name}, ${city.admin1}` : city.name;
-                        
+
                         li.textContent = label;
                         li.style.padding = '6px 10px';
                         li.style.fontSize = '12px';
@@ -602,5 +602,72 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     initMainWeatherCard();
-    
+
+
+    // ==========================================
+    // 5. REORDENAMIENTO DE TARJETAS (DRAG & DROP)
+    // ==========================================
+    function setupCardsDragAndDrop() {
+        const grid = document.querySelector('.cards-grid');
+        if (!grid) return;
+
+        let draggedItem = null;
+
+        function restoreCardOrder() {
+            const savedOrder = JSON.parse(localStorage.getItem('cardsOrder'));
+            if (!savedOrder) return;
+
+            const cardMap = new Map();
+            grid.querySelectorAll('.card-item').forEach(card => {
+                const title = card.querySelector('h3')?.textContent.trim();
+                if (title) cardMap.set(title, card);
+            });
+
+            savedOrder.forEach(title => {
+                const card = cardMap.get(title);
+                if (card) grid.appendChild(card);
+            });
+        }
+
+        function saveCardOrder() {
+            const order = Array.from(grid.querySelectorAll('.card-item'))
+                .map(card => card.querySelector('h3')?.textContent.trim())
+                .filter(Boolean);
+            localStorage.setItem('cardsOrder', JSON.stringify(order));
+        }
+
+        grid.addEventListener('dragstart', (e) => {
+            const card = e.target.closest('.card-item');
+            if (!card) return;
+
+            draggedItem = card;
+            setTimeout(() => card.classList.add('dragging'), 0);
+        });
+
+        grid.addEventListener('dragend', (e) => {
+            const card = e.target.closest('.card-item');
+            if (card) card.classList.remove('dragging');
+
+            grid.querySelectorAll('.card-item').forEach(c => c.classList.remove('drag-over'));
+            draggedItem = null;
+            saveCardOrder();
+        });
+
+        grid.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const targetCard = e.target.closest('.card-item');
+
+            if (!targetCard || targetCard === draggedItem) return;
+
+            const rect = targetCard.getBoundingClientRect();
+            const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+
+            grid.insertBefore(draggedItem, next ? targetCard.nextSibling : targetCard);
+        });
+
+        restoreCardOrder();
+    }
+
+    setupCardsDragAndDrop();
+
 });
