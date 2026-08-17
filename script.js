@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR CON SINÓNIMOS BIDIRECCIONALES
+    // 3. BUSCADOR CON FILTRADO PRECISO POR ÍTEM
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -297,14 +297,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 return searchTerms.some(term => normalizedTarget.includes(term));
             };
 
+            // 1. Filtrar tarjetas/ítems nacionales
             nationalItems.forEach(item => {
+                const cardParent = item.closest('.card-item');
+
                 if (query === '') {
                     item.style.display = '';
+                    if (cardParent) cardParent.style.display = '';
                     nationalVisibleCount++;
                 } else {
                     const itemText = item.textContent || '';
                     if (isMatch(itemText)) {
                         item.style.display = '';
+                        if (cardParent) cardParent.style.display = '';
                         nationalVisibleCount++;
                     } else {
                         item.style.display = 'none';
@@ -312,6 +317,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
+            // Ocultar tarjetas nacionales completas que no tengan ningún ítem visible
+            if (query !== '') {
+                const allNationalCards = document.querySelectorAll('.card-item');
+                allNationalCards.forEach(card => {
+                    const hasVisibleItems = card.querySelectorAll('.searchable-item:not([style*="display: none"])').length > 0;
+                    if (!hasVisibleItems && !card.querySelector('.searchable-category')) {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            // 2. Filtrar elementos dentro de categorías / regionales
             categoryItems.forEach(item => {
                 const details = item.querySelector('details');
                 const summary = item.querySelector('summary');
@@ -343,7 +360,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         const tag = wrapper.querySelector('.matched-service-tag');
 
                         let matchedServiceName = '';
-
                         const isCityMatch = isMatch(linkText) || (cityObj && (isMatch(cityObj.name) || isMatch(cityObj.dept)));
 
                         if (cityServices) {
@@ -423,7 +439,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return codes[code] || { desc: 'Clima variable', icon: '🌡️' };
     }
 
-    // 1. Consultar clima por coordenadas exactas
     async function fetchWeatherData(lat, lon) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 6000);
@@ -449,7 +464,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 2. Búsqueda dinámica directa en la API de Open-Meteo
     async function searchCitiesApi(query) {
         if (!query || query.trim().length < 2) return [];
 
@@ -465,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data && Array.isArray(data.results)) {
                 return data.results.map(item => ({
                     name: item.name,
-                    admin1: item.admin1 || '', // Departamento/Estado
+                    admin1: item.admin1 || '',
                     lat: item.latitude,
                     lon: item.longitude
                 }));
@@ -476,7 +490,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return [];
     }
 
-    // 3. Actualizar la interfaz de usuario con los datos de la API
     async function updateWeatherUI(cityName, lat, lon) {
         const tempEl = document.getElementById('weatherTemp');
         const cityEl = document.getElementById('weatherCity');
@@ -502,7 +515,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
             cityEl.textContent = `${cityName} • ${info.desc}`;
 
-            // Persistencia opcional en localStorage para mantener la elección del usuario
             localStorage.setItem('24col_last_city', JSON.stringify({ name: cityName, lat: validLat, lon: validLon }));
         } catch (err) {
             tempEl.textContent = '⚠️ Error';
@@ -510,7 +522,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 4. Búsqueda con retardo (Debounce)
     function setupWeatherSearch() {
         const searchInput = document.getElementById('weatherSearchInput');
         const resultsContainer = document.getElementById('weatherSearchResults');
@@ -575,14 +586,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 5. Inicialización sin ciudad por defecto
     function initMainWeatherCard() {
         setupWeatherSearch();
 
         const tempEl = document.getElementById('weatherTemp');
         const cityEl = document.getElementById('weatherCity');
 
-        // Solo carga datos si el usuario ya tenía una ciudad guardada previamente en su navegador
         const savedCity = localStorage.getItem('24col_last_city');
         if (savedCity) {
             try {
@@ -594,7 +603,6 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (e) {}
         }
 
-        // Estado inicial neutro (Sin ciudad precargada)
         if (tempEl && cityEl) {
             tempEl.textContent = '--°C';
             cityEl.textContent = 'Selecciona una ciudad';
