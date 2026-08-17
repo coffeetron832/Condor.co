@@ -328,37 +328,64 @@ body {
 
 
 /* ==========================================
-   6. GRID DE TARJETAS Y CONTENIDO
+   6. GRID DE TARJETAS Y CONTENIDO (ESTILO PINTEREST / MASONRY)
    ========================================== */
 
 .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-    align-items: start;
-    margin-top: 10px;
+    column-count: 1; /* 1 columna en móviles */
+    column-gap: 12px;
     width: 100%;
+    margin-top: 10px;
+}
+
+/* Transición a 2 columnas en pantallas medianas */
+@media screen and (min-width: 640px) {
+    .cards-grid {
+        column-count: 2;
+    }
+}
+
+/* Transición a 3 columnas en pantallas grandes */
+@media screen and (min-width: 1024px) {
+    .cards-grid {
+        column-count: 3;
+    }
+}
+
+/* Transición a 4 columnas en pantallas muy anchas */
+@media screen and (min-width: 1400px) {
+    .cards-grid {
+        column-count: 4;
+    }
 }
 
 .card-item {
+    break-inside: avoid; /* Previene que la tarjeta se rompa entre columnas */
+    display: inline-block; /* Requerido para compatibilidad con column-count */
+    width: 100%;
+    margin-bottom: 12px; /* Margen inferior para separar verticalmente las tarjetas */
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 6px;
     padding: 10px 12px;
     box-shadow: 0 2px 5px var(--shadow-color);
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
+    box-sizing: border-box;
 }
 
 .card-header {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin-bottom: 6px;
     padding-bottom: 4px;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
+    cursor: grab;
+    user-select: none;
+}
+
+.card-header:active {
+    cursor: grabbing;
 }
 
 .card-header h3 {
@@ -459,20 +486,6 @@ details summary::-webkit-details-marker {
     margin: 8px 0;
 }
 
-
-/* Indicador visual en el encabezado para reordenar */
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: grab;
-    user-select: none;
-}
-
-.card-header:active {
-    cursor: grabbing;
-}
-
 /* Icono de 6 puntos (Grip Handle) */
 .drag-handle {
     color: var(--text-secondary, #888);
@@ -488,11 +501,11 @@ details summary::-webkit-details-marker {
 /* Estado de la tarjeta mientras se arrastra */
 .card-item.dragging {
     opacity: 0.4;
-    border: 2px dashed var(--primary-color, #0056b3);
+    border: 2px dashed var(--link-color, #2563eb);
 }
 
 .card-item.drag-over {
-    border-top: 3px solid var(--primary-color, #0056b3);
+    border-top: 3px solid var(--link-color, #2563eb);
 }
 
 /* ==========================================
@@ -699,10 +712,6 @@ dialog::backdrop {
 
     .container {
         padding: 8px 12px 16px 12px;
-    }
-
-    .cards-grid {
-        grid-template-columns: 1fr;
     }
 
     .card-item {
