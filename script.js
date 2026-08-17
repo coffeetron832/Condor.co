@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR CON FILTRADO GRANULAR POR ENLACE / ÍTEM
+    // 3. BUSCADOR FILTRADO ESTRICTO POR ÍTEM Y SERVICIO
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -240,15 +240,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
+    // Sinónimos organizados por área temática
     const keywordSynonyms = {
-        'hacienda': ['impuestos', 'predial', 'vehiculos', 'retencion', 'ica', 'dian'],
-        'impuesto': ['impuestos', 'predial', 'vehiculos', 'hacienda', 'dian'],
-        'impuestos': ['predial', 'vehiculos', 'hacienda', 'dian', 'ica'],
+        'hacienda': ['impuestos', 'predial', 'retencion', 'ica', 'dian'],
+        'impuestos': ['hacienda', 'predial', 'vehiculos', 'ica', 'dian'],
         'predial': ['impuestos', 'hacienda', 'alcaldia'],
-        'vehiculo': ['vehiculos', 'impuestos', 'movilidad', 'tránsito', 'transito', 'patios', 'runt', 'simit', 'afinia'],
-        'vehiculos': ['vehiculo', 'impuestos', 'movilidad', 'tránsito', 'transito', 'patios', 'runt', 'simit', 'afinia'],
+        'vehiculos': ['vehiculo', 'movilidad', 'tránsito', 'transito', 'patios', 'runt', 'simit'],
+        'tránsito': ['transito', 'movilidad', 'vehiculos', 'simit', 'runt', 'fotomulta', 'patios'],
         'agua': ['acueducto', 'veolia', 'eaab', 'epm', 'emcali', 'triple a', 'acuacar', 'empopasto', 'ibal', 'essmar'],
-        'luz': ['energia', 'afinia', 'air-e', 'enel', 'epm', 'essa', 'celsia', 'chec', 'cens', 'cedenar', 'emsa'],
+        'luz': ['energia', 'electricidad', 'afinia', 'air-e', 'enel', 'epm', 'essa', 'celsia', 'chec', 'cens', 'cedenar', 'emsa'],
         'gas': ['surtigas', 'vanti', 'gases', 'efigas', 'alcanos', 'llanogas', 'gasoriente'],
         'soat': ['runt', 'simit', 'movilidad', 'tránsito', 'transito'],
         'fotomulta': ['simit', 'runt', 'movilidad', 'tránsito', 'transito', 'datt'],
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const normSynonyms = synonyms.map(s => normalizeText(s));
 
             const matchesKey = normKey.includes(normQuery) || normQuery.includes(normKey);
-            const matchesSynonym = normSynonyms.some(s => s.includes(normQuery) || normQuery.includes(s));
+            const matchesSynonym = normSynonyms.some(s => s.includes(normQuery) || (normQuery.length >= 3 && s.includes(normQuery)));
 
             if (matchesKey || matchesSynonym) {
                 terms.add(normKey);
@@ -327,17 +327,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // 2. FILTRADO INDIVIDUAL EN CATEGORÍAS REGIONALES
+            // 2. FILTRADO INDIVIDUAL EN MENÚS REGIONALES POR CIUDAD
             const categoryItems = document.querySelectorAll('.searchable-category');
 
             categoryItems.forEach(item => {
                 const details = item.querySelector('details');
-                const summary = item.querySelector('summary');
                 const cityWrappers = item.querySelectorAll('.city-link-wrapper');
-
-                const summaryText = summary ? summary.textContent : '';
-                const categoryAttr = item.dataset.category || '';
-                const isCategoryMatch = (query !== '') && (isMatch(summaryText) || isMatch(categoryAttr));
 
                 if (query === '') {
                     item.style.display = '';
@@ -371,7 +366,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        if (isCityMatch || matchedServiceName !== '' || isCategoryMatch) {
+                        // SOLO mostrar el enlace de la ciudad si la ciudad coincide O si ofrece el servicio buscado
+                        if (isCityMatch || matchedServiceName !== '') {
                             wrapper.style.display = '';
                             visibleWrappersCount++;
 
