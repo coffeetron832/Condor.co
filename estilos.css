@@ -460,6 +460,41 @@ details summary::-webkit-details-marker {
 }
 
 
+/* Indicador visual en el encabezado para reordenar */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: grab;
+    user-select: none;
+}
+
+.card-header:active {
+    cursor: grabbing;
+}
+
+/* Icono de 6 puntos (Grip Handle) */
+.drag-handle {
+    color: var(--text-secondary, #888);
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+.card-header:hover .drag-handle {
+    opacity: 1;
+}
+
+/* Estado de la tarjeta mientras se arrastra */
+.card-item.dragging {
+    opacity: 0.4;
+    border: 2px dashed var(--primary-color, #0056b3);
+}
+
+.card-item.drag-over {
+    border-top: 3px solid var(--primary-color, #0056b3);
+}
+
 /* ==========================================
    7. MODALES Y FORMULARIOS
    ========================================== */
