@@ -332,30 +332,37 @@ body {
    ========================================== */
 
 .cards-grid {
-    column-count: 1; /* 1 columna en móviles */
+    column-count: 1; /* 1 columna en móviles pequeños */
     column-gap: 12px;
     width: 100%;
     margin-top: 10px;
 }
 
-/* Transición a 2 columnas en pantallas medianas */
-@media screen and (min-width: 640px) {
+/* Transición a 2 columnas en móviles grandes y phablets */
+@media screen and (min-width: 480px) {
     .cards-grid {
         column-count: 2;
     }
 }
 
-/* Transición a 3 columnas en pantallas grandes */
-@media screen and (min-width: 1024px) {
+/* Transición a 3 columnas en tablets */
+@media screen and (min-width: 768px) {
     .cards-grid {
         column-count: 3;
     }
 }
 
-/* Transición a 4 columnas en pantallas muy anchas */
-@media screen and (min-width: 1400px) {
+/* Transición a 4 columnas en laptops y monitores estándar */
+@media screen and (min-width: 1024px) {
     .cards-grid {
         column-count: 4;
+    }
+}
+
+/* Transición a 5 columnas en pantallas anchas / Full HD */
+@media screen and (min-width: 1366px) {
+    .cards-grid {
+        column-count: 5;
     }
 }
 
