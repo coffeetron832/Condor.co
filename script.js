@@ -223,12 +223,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR CON FILTRADO PRECISO POR ÍTEM
+    // 3. BUSCADOR CON FILTRADO GRANULAR POR ENLACE / ÍTEM
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
-    const nationalItems = document.querySelectorAll('.searchable-item');
-    const categoryItems = document.querySelectorAll('.searchable-category');
     const nationalTitle = document.getElementById('nationalSectionTitle');
     const regionalTitle = document.getElementById('regionalSectionTitle');
     const noResultsMsg = document.getElementById('noResultsMsg');
@@ -297,38 +295,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 return searchTerms.some(term => normalizedTarget.includes(term));
             };
 
-            // 1. Filtrar tarjetas/ítems nacionales
-            nationalItems.forEach(item => {
-                const cardParent = item.closest('.card-item');
+            // 1. FILTRADO INDIVIDUAL EN TARJETAS NACIONALES
+            const allNationalCards = document.querySelectorAll('.card-item');
+
+            allNationalCards.forEach(card => {
+                const items = card.querySelectorAll('li, .searchable-item');
+                let cardHasMatches = false;
 
                 if (query === '') {
-                    item.style.display = '';
-                    if (cardParent) cardParent.style.display = '';
+                    card.style.display = '';
+                    items.forEach(item => item.style.display = '');
                     nationalVisibleCount++;
                 } else {
-                    const itemText = item.textContent || '';
-                    if (isMatch(itemText)) {
-                        item.style.display = '';
-                        if (cardParent) cardParent.style.display = '';
+                    items.forEach(item => {
+                        const itemText = item.textContent || '';
+                        
+                        if (isMatch(itemText)) {
+                            item.style.display = '';
+                            cardHasMatches = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    if (cardHasMatches) {
+                        card.style.display = '';
                         nationalVisibleCount++;
                     } else {
-                        item.style.display = 'none';
+                        card.style.display = 'none';
                     }
                 }
             });
 
-            // Ocultar tarjetas nacionales completas que no tengan ningún ítem visible
-            if (query !== '') {
-                const allNationalCards = document.querySelectorAll('.card-item');
-                allNationalCards.forEach(card => {
-                    const hasVisibleItems = card.querySelectorAll('.searchable-item:not([style*="display: none"])').length > 0;
-                    if (!hasVisibleItems && !card.querySelector('.searchable-category')) {
-                        card.style.display = 'none';
-                    }
-                });
-            }
+            // 2. FILTRADO INDIVIDUAL EN CATEGORÍAS REGIONALES
+            const categoryItems = document.querySelectorAll('.searchable-category');
 
-            // 2. Filtrar elementos dentro de categorías / regionales
             categoryItems.forEach(item => {
                 const details = item.querySelector('details');
                 const summary = item.querySelector('summary');
