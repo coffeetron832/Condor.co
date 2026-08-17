@@ -348,7 +348,60 @@ const LINKS_DATA = {
     }
 };
 
+// Indice de servicios especificos por municipio para filtrado dinamico
+const LOCAL_SERVICES_INDEX = {
+    'bogota': {
+        'hogar': ['eaab', 'acueducto', 'enel', 'vanti', 'gas natural']
+    },
+    'medellin': {
+        'hogar': ['epm', 'agua', 'luz', 'gas']
+    },
+    'cali': {
+        'hogar': ['emcali', 'gases del occidente', 'gdo']
+    },
+    'barranquilla': {
+        'hogar': ['triple a', 'air-e', 'aire', 'gases del caribe']
+    },
+    'monteria': {
+        'hogar': ['veolia', 'afinia', 'surtigas']
+    },
+    'cartagena': {
+        'hogar': ['acuacar', 'aguas de cartagena', 'afinia', 'surtigas']
+    },
+    'bucaramanga': {
+        'hogar': ['amb', 'acueducto', 'essa', 'gasoriente', 'vanti']
+    },
+    'pereira': {
+        'hogar': ['aguas y aguas', 'energia de pereira', 'efigas']
+    },
+    'manizales': {
+        'hogar': ['aguas de manizales', 'chec', 'efigas']
+    },
+    'cucuta': {
+        'hogar': ['eis', 'veolia', 'cens', 'gases del oriente']
+    },
+    'ibague': {
+        'hogar': ['ibal', 'celsia', 'alcanos']
+    },
+    'santamarta': {
+        'hogar': ['essmar', 'air-e', 'aire', 'gases del caribe']
+    },
+    'pasto': {
+        'hogar': ['empopasto', 'cedenar', 'alcanos']
+    },
+    'sincelejo': {
+        'hogar': ['veolia', 'veaa', 'afinia', 'surtigas']
+    },
+    'villavicencio': {
+        'hogar': ['eaav', 'emsa', 'llanogas']
+    },
+    'valledupar': {
+        'hogar': ['emdupar', 'afinia', 'gases del caribe']
+    }
+};
+
 // Exponer explícitamente las constantes al ámbito global
 window.CITY_META_DATA = CITY_META_DATA;
 window.CATEGORY_NAMES = CATEGORY_NAMES;
 window.LINKS_DATA = LINKS_DATA;
+window.LOCAL_SERVICES_INDEX = LOCAL_SERVICES_INDEX;
