@@ -5,6 +5,27 @@ document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     }
 
+    // --- Subtítulo Dinámico de Bienvenida ---
+    function updateGreeting() {
+        const subtitleEl = document.querySelector('.hero-subtitle');
+        if (!subtitleEl) return;
+
+        const hour = new Date().getHours();
+        let greeting = '';
+
+        if (hour >= 5 && hour < 12) {
+            greeting = '¡Buenos días! Te damos la bienvenida a 24col.';
+        } else if (hour >= 12 && hour < 19) {
+            greeting = '¡Buenas tardes! Te damos la bienvenida a 24col.';
+        } else {
+            greeting = '¡Buenas noches! Te damos la bienvenida a 24col.';
+        }
+
+        subtitleEl.textContent = greeting;
+    }
+
+    updateGreeting();
+
     // --- Fondo Dinámico y Créditos según Hora del Día ---
     function updateTimeTheme() {
         const hour = new Date().getHours();
@@ -30,7 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateTimeTheme();
-    setInterval(updateTimeTheme, 15 * 60 * 1000);
+    setInterval(() => {
+        updateTimeTheme();
+        updateGreeting();
+    }, 15 * 60 * 1000);
 
     // --- Cargar TRM Dólar a COP ---
     async function fetchTRM() {
