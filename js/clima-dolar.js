@@ -1,0 +1,199 @@
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Inicializar iconos de Lucide
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // --- Fondo Dinámico y Créditos según Hora del Día ---
+    function updateTimeTheme() {
+        const hour = new Date().getHours();
+        const creditEl = document.getElementById('imageCredit');
+        let timeTheme = 'day';
+        let creditHTML = '';
+
+        if (hour >= 6 && hour < 12) {
+            timeTheme = 'morning';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/vista-superior-de-sombreros-para-el-sol-marrones-y-blancos-QkOy8LbWtdg?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Ricardo Gomez Angel (Unsplash)</a>';
+        } else if (hour >= 12 && hour < 18) {
+            timeTheme = 'afternoon';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/loro-rojo-verde-y-azul-en-la-rama-marron-del-arbol-durante-el-dia-57SHaZUAOtQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Camilo Guarin P (Unsplash)</a>';
+        } else {
+            timeTheme = 'night';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/rascador-de-la-ciudad-por-la-noche-03gVOLHq9ec?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Saravia (Unsplash)</a>';
+        }
+
+        document.body.setAttribute('data-time', timeTheme);
+        if (creditEl) {
+            creditEl.innerHTML = creditHTML;
+        }
+    }
+
+    updateTimeTheme();
+    setInterval(updateTimeTheme, 15 * 60 * 1000);
+
+    // --- Cargar TRM Dólar a COP ---
+    async function fetchTRM() {
+        const trmRateEl = document.getElementById('trmRate');
+        const trmUpdateEl = document.getElementById('trmUpdate');
+        try {
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            const data = await response.json();
+            if (data && data.rates && data.rates.COP) {
+                const rateFormatted = new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    maximumFractionDigits: 2
+                }).format(data.rates.COP);
+
+                trmRateEl.textContent = `${rateFormatted} COP`;
+                trmUpdateEl.textContent = `Actualizado: ${data.date || 'Hoy'}`;
+            } else {
+                throw new Error('Formato inválido');
+            }
+        } catch (err) {
+            if (trmRateEl) trmRateEl.textContent = 'No disponible';
+            if (trmUpdateEl) trmUpdateEl.textContent = 'Intenta nuevamente más tarde';
+        }
+    }
+    fetchTRM();
+
+    // --- Theme Switcher ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleText = document.getElementById('themeToggleText');
+    const iconSun = document.getElementById('themeIconSun');
+    const iconMoon = document.getElementById('themeIconMoon');
+
+    function updateThemeUI(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (themeToggleText) themeToggleText.textContent = 'Modo Claro';
+            if (iconSun) iconSun.style.display = 'inline-block';
+            if (iconMoon) iconMoon.style.display = 'none';
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            if (themeToggleText) themeToggleText.textContent = 'Modo Oscuro';
+            if (iconSun) iconSun.style.display = 'none';
+            if (iconMoon) iconMoon.style.display = 'inline-block';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    updateThemeUI(currentTheme);
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+        });
+    }
+
+    // --- Manejo de Modales de Categoría ---
+    const triggerBtns = document.querySelectorAll('.category-trigger-btn');
+    const categoryModals = document.querySelectorAll('.category-modal');
+
+    triggerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-modal-target');
+            const targetModal = document.getElementById(targetId);
+            if (targetModal && typeof targetModal.showModal === 'function') {
+                targetModal.showModal();
+            }
+        });
+    });
+
+    categoryModals.forEach(modal => {
+        const closeBtn = modal.querySelector('.modal-close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => modal.close());
+        }
+        modal.addEventListener('click', (e) => {
+            const rect = modal.getBoundingClientRect();
+            if (
+                e.clientX < rect.left ||
+                e.clientX > rect.right ||
+                e.clientY < rect.top ||
+                e.clientY > rect.bottom
+            ) {
+                modal.close();
+            }
+        });
+    });
+
+    // --- Modales Informativos (Bienvenida y Reporte) ---
+    const welcomeModal = document.getElementById('welcomeModal');
+    const openWelcomeBtn = document.getElementById('openWelcomeModal');
+    const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
+    const closeWelcomeCross = document.getElementById('closeWelcomeModalCross');
+    const reportModal = document.getElementById('reportModal');
+    const openReportBtn = document.getElementById('openReportModal');
+    const closeReportBtn = document.getElementById('closeReportModal');
+
+    if (!localStorage.getItem('welcomeShown')) {
+        setTimeout(() => {
+            if (welcomeModal && typeof welcomeModal.showModal === 'function') {
+                welcomeModal.showModal();
+            }
+        }, 400);
+    }
+
+    function closeWelcome() {
+        if (welcomeModal) {
+            welcomeModal.close();
+            localStorage.setItem('welcomeShown', 'true');
+        }
+    }
+
+    if (closeWelcomeBtn) closeWelcomeBtn.addEventListener('click', closeWelcome);
+    if (closeWelcomeCross) closeWelcomeCross.addEventListener('click', closeWelcome);
+
+    if (openWelcomeBtn) {
+        openWelcomeBtn.addEventListener('click', () => {
+            if (welcomeModal) welcomeModal.showModal();
+        });
+    }
+
+    if (openReportBtn) {
+        openReportBtn.addEventListener('click', () => {
+            if (reportModal) reportModal.showModal();
+        });
+    }
+
+    if (closeReportBtn) {
+        closeReportBtn.addEventListener('click', () => {
+            if (reportModal) reportModal.close();
+        });
+    }
+
+    if (welcomeModal) {
+        welcomeModal.addEventListener('click', (e) => {
+            const rect = welcomeModal.getBoundingClientRect();
+            if (
+                e.clientX < rect.left ||
+                e.clientX > rect.right ||
+                e.clientY < rect.top ||
+                e.clientY > rect.bottom
+            ) {
+                closeWelcome();
+            }
+        });
+    }
+
+    if (reportModal) {
+        reportModal.addEventListener('click', (e) => {
+            const rect = reportModal.getBoundingClientRect();
+            if (
+                e.clientX < rect.left ||
+                e.clientX > rect.right ||
+                e.clientY < rect.top ||
+                e.clientY > rect.bottom
+            ) {
+                reportModal.close();
+            }
+        });
+    }
+});
