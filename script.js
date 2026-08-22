@@ -11,19 +11,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
-    // AUXILIAR: Escape de HTML para evitar XSS
-    // ==========================================
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    // ==========================================
     // AUXILIAR: Obtención unificada de ciudades
     // ==========================================
     function getCitiesList() {
@@ -236,17 +223,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR LOCAL Y INTEGRACIÓN SEARXNG (WEB LIBRE)
+    // 3. BUSCADOR FILTRADO ESTRICTO POR ÍTEM Y SERVICIO
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
-    const resultsContainer = document.getElementById('webSearchResults');
     const nationalTitle = document.getElementById('nationalSectionTitle');
     const regionalTitle = document.getElementById('regionalSectionTitle');
     const noResultsMsg = document.getElementById('noResultsMsg');
-
-    let debounceTimer;
-    const SEARX_INSTANCE = 'https://searx.be/search';
 
     if (searchForm) {
         searchForm.addEventListener('submit', (e) => e.preventDefault());
@@ -257,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
+    // Sinónimos organizados por área temática
     const keywordSynonyms = {
         'hacienda': ['impuestos', 'predial', 'retencion', 'ica', 'dian'],
         'impuestos': ['hacienda', 'predial', 'vehiculos', 'ica', 'dian'],
@@ -300,68 +284,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const query = normalizeText(rawQuery);
             const citiesList = getCitiesList();
 
-            clearTimeout(debounceTimer);
-
-            // --- A. BÚSQUEDA EXTERNA EN SEARXNG (CON DEBOUNCE 400ms) ---
-            if (resultsContainer) {
-                if (rawQuery.length < 3) {
-                    resultsContainer.style.display = 'none';
-                    resultsContainer.innerHTML = '';
-                } else {
-                    resultsContainer.innerHTML = `
-                        <li style="padding: 12px; text-align: center; font-size: 12px; color: var(--text-secondary, #666);">
-                            Buscando en la web libre...
-                        </li>
-                    `;
-                    resultsContainer.style.display = 'block';
-
-                    debounceTimer = setTimeout(() => {
-                        const searchUrl = `${SEARX_INSTANCE}?q=${encodeURIComponent(rawQuery)}&format=json`;
-
-                        fetch(searchUrl)
-                            .then(response => {
-                                if (!response.ok) throw new Error('Error al conectar con SearXNG');
-                                return response.json();
-                            })
-                            .then(data => {
-                                if (data.results && data.results.length > 0) {
-                                    resultsContainer.innerHTML = data.results.slice(0, 6).map(item => `
-                                        <li style="border-bottom: 1px solid var(--border-color, #eee);">
-                                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 10px 14px; text-decoration: none; color: var(--text-color, #333);">
-                                                <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: 600; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span>${escapeHtml(item.title)}</span>
-                                                    <span style="font-size: 9px; background: rgba(0,0,0,0.05); padding: 2px 5px; border-radius: 3px; color: #666;">${escapeHtml(item.engine || 'web')}</span>
-                                                </div>
-                                                <div style="font-size: 11px; color: var(--text-secondary, #666); line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                                    ${escapeHtml(item.content || 'Sin descripción disponible.')}
-                                                </div>
-                                                <div style="font-size: 10px; color: #16a34a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                    ${escapeHtml(item.url)}
-                                                </div>
-                                            </a>
-                                        </li>
-                                    `).join('');
-                                } else {
-                                    resultsContainer.innerHTML = `
-                                        <li style="padding: 12px; text-align: center; font-size: 12px; color: var(--text-secondary, #666);">
-                                            No se encontraron páginas para esa búsqueda.
-                                        </li>
-                                    `;
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error en la búsqueda web:', error);
-                                resultsContainer.innerHTML = `
-                                    <li style="padding: 12px; text-align: center; font-size: 12px; color: #dc2626;">
-                                        No se pudo conectar con el motor de búsqueda. Intenta de nuevo.
-                                    </li>
-                                `;
-                            });
-                    }, 400);
-                }
-            }
-
-            // --- B. FILTRADO EN EL DOM LOCAL DE 24COL ---
             let nationalVisibleCount = 0;
             let regionalVisibleCount = 0;
 
@@ -373,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return searchTerms.some(term => normalizedTarget.includes(term));
             };
 
-            // 1. Tarjetas nacionales
+            // 1. FILTRADO INDIVIDUAL EN TARJETAS NACIONALES
             const allNationalCards = document.querySelectorAll('.card-item');
 
             allNationalCards.forEach(card => {
@@ -405,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // 2. Menús regionales
+            // 2. FILTRADO INDIVIDUAL EN MENÚS REGIONALES POR CIUDAD
             const categoryItems = document.querySelectorAll('.searchable-category');
 
             categoryItems.forEach(item => {
@@ -444,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
+                        // SOLO mostrar el enlace de la ciudad si la ciudad coincide O si ofrece el servicio buscado
                         if (isCityMatch || matchedServiceName !== '') {
                             wrapper.style.display = '';
                             visibleWrappersCount++;
@@ -481,13 +404,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (noResultsMsg) {
                 noResultsMsg.style.display = (nationalVisibleCount === 0 && regionalVisibleCount === 0) ? 'block' : 'none';
-            }
-        });
-
-        // Ocultar resultados flotantes al hacer clic fuera del área de búsqueda
-        document.addEventListener('click', function(e) {
-            if (resultsContainer && !searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
-                resultsContainer.style.display = 'none';
             }
         });
     }
@@ -604,26 +520,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function setupWeatherSearch() {
-        const weatherSearchInput = document.getElementById('weatherSearchInput');
-        const weatherResultsContainer = document.getElementById('weatherSearchResults');
+        const searchInput = document.getElementById('weatherSearchInput');
+        const resultsContainer = document.getElementById('weatherSearchResults');
 
-        if (!weatherSearchInput || !weatherResultsContainer) return;
+        if (!searchInput || !resultsContainer) return;
 
-        let weatherDebounceTimer = null;
+        let debounceTimer = null;
 
-        weatherSearchInput.addEventListener('input', function () {
+        searchInput.addEventListener('input', function () {
             const query = this.value.trim();
-            clearTimeout(weatherDebounceTimer);
+            clearTimeout(debounceTimer);
 
             if (query.length < 2) {
-                weatherResultsContainer.style.display = 'none';
-                weatherResultsContainer.innerHTML = '';
+                resultsContainer.style.display = 'none';
+                resultsContainer.innerHTML = '';
                 return;
             }
 
-            weatherDebounceTimer = setTimeout(async () => {
+            debounceTimer = setTimeout(async () => {
                 const cities = await searchCitiesApi(query);
-                weatherResultsContainer.innerHTML = '';
+                resultsContainer.innerHTML = '';
 
                 if (cities.length === 0) {
                     const li = document.createElement('li');
@@ -631,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     li.style.padding = '6px 10px';
                     li.style.fontSize = '11px';
                     li.style.color = '#888';
-                    weatherResultsContainer.appendChild(li);
+                    resultsContainer.appendChild(li);
                 } else {
                     cities.forEach(city => {
                         const li = document.createElement('li');
@@ -648,21 +564,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         li.addEventListener('mouseleave', () => li.style.backgroundColor = '#fff');
 
                         li.addEventListener('click', () => {
-                            weatherSearchInput.value = '';
-                            weatherResultsContainer.style.display = 'none';
+                            searchInput.value = '';
+                            resultsContainer.style.display = 'none';
                             updateWeatherUI(label, city.lat, city.lon);
                         });
 
-                        weatherResultsContainer.appendChild(li);
+                        resultsContainer.appendChild(li);
                     });
                 }
-                weatherResultsContainer.style.display = 'block';
+                resultsContainer.style.display = 'block';
             }, 350);
         });
 
         document.addEventListener('click', function (e) {
-            if (!weatherSearchInput.contains(e.target) && !weatherResultsContainer.contains(e.target)) {
-                weatherResultsContainer.style.display = 'none';
+            if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                resultsContainer.style.display = 'none';
             }
         });
     }
