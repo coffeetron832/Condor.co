@@ -74,77 +74,82 @@
         </div>
     </section>
 
-    <!-- LISTA DE CATEGORÍAS CON ICONOS LUCIDE -->
+    <!-- DIRECTORIO DE SERVICIOS DESPLEGABLE -->
     <div class="container">
         <main class="main-content">
             <section class="categories-section">
-                <h2 class="categories-title">Directorio de Servicios</h2>
-                
-                <ul class="categories-list">
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-national">
-                            <i data-lucide="landmark" class="btn-icon"></i>
-                            <span class="btn-text">Trámites Nacionales</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-trm">
-                            <i data-lucide="dollar-sign" class="btn-icon"></i>
-                            <span class="btn-text">Dólar HOY (TRM Colombia)</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-consumer">
-                            <i data-lucide="shield-check" class="btn-icon"></i>
-                            <span class="btn-text">Protección al Consumidor y Reclamos</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-supers">
-                            <i data-lucide="building-2" class="btn-icon"></i>
-                            <span class="btn-text">Superintendencias de Colombia</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-weather">
-                            <i data-lucide="cloud-sun" class="btn-icon"></i>
-                            <span class="btn-text">Clima por Municipio</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-emergency">
-                            <i data-lucide="siren" class="btn-icon"></i>
-                            <span class="btn-text">Líneas de Emergencia Nacional</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-taxes">
-                            <i data-lucide="file-text" class="btn-icon"></i>
-                            <span class="btn-text">Impuestos Regionales</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-utilities">
-                            <i data-lucide="droplet" class="btn-icon"></i>
-                            <span class="btn-text">Servicios Públicos y Alcaldías</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="category-trigger-btn" data-modal-target="modal-mobility">
-                            <i data-lucide="car" class="btn-icon"></i>
-                            <span class="btn-text">Movilidad y Tránsito Local</span>
-                            <i data-lucide="chevron-right" class="btn-arrow"></i>
-                        </button>
-                    </li>
-                </ul>
+                <details class="directory-accordion">
+                    <summary class="directory-toggle-btn">
+                        <span class="btn-text">Directorio de Servicios</span>
+                        <i data-lucide="chevron-down" class="accordion-arrow"></i>
+                    </summary>
+
+                    <ul class="categories-list" style="margin-top: 15px;">
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-national">
+                                <i data-lucide="landmark" class="btn-icon"></i>
+                                <span class="btn-text">Trámites Nacionales</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-trm">
+                                <i data-lucide="dollar-sign" class="btn-icon"></i>
+                                <span class="btn-text">Dólar HOY (TRM Colombia)</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-consumer">
+                                <i data-lucide="shield-check" class="btn-icon"></i>
+                                <span class="btn-text">Protección al Consumidor y Reclamos</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-supers">
+                                <i data-lucide="building-2" class="btn-icon"></i>
+                                <span class="btn-text">Superintendencias de Colombia</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-weather">
+                                <i data-lucide="cloud-sun" class="btn-icon"></i>
+                                <span class="btn-text">Clima por Municipio</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-emergency">
+                                <i data-lucide="siren" class="btn-icon"></i>
+                                <span class="btn-text">Líneas de Emergencia Nacional</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-taxes">
+                                <i data-lucide="file-text" class="btn-icon"></i>
+                                <span class="btn-text">Impuestos Regionales</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-utilities">
+                                <i data-lucide="droplet" class="btn-icon"></i>
+                                <span class="btn-text">Servicios Públicos y Alcaldías</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-mobility">
+                                <i data-lucide="car" class="btn-icon"></i>
+                                <span class="btn-text">Movilidad y Tránsito Local</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </details>
             </section>
         </main>
     </div>
