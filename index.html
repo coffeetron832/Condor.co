@@ -78,17 +78,25 @@
             <p class="hero-subtitle">El portal web de los colombianos.</p>
 
             <!-- Buscador Integrado -->
-            <div class="search-container">
-                <form id="searchForm" onsubmit="event.preventDefault();">
-                    <div class="search-box">
-                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="text" id="searchInput" class="search-input" placeholder="Busca por trámite, ciudad o entidad (ej. RUT, Medellín, Pasaporte, Emergencias)..." autocomplete="off" maxlength="100">
-                    </div>
-                </form>
-            </div>
+<div class="search-container">
+    <form id="searchForm" onsubmit="event.preventDefault();">
+        <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Busca por trámite, ciudad o entidad (ej. RUT, Medellín, Pasaporte, Emergencias)..." autocomplete="off" maxlength="100">
+        </div>
+    </form>
+
+    <!-- Mensaje cuando no hay resultados en el filtro interno -->
+    <div id="noResultsMsg" style="display: none; padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #666);">
+        No se encontraron enlaces en el directorio local.
+    </div>
+
+    <!-- Contenedor dinámico para resultados externos (Wikipedia) -->
+    <ul id="webSearchResults" class="web-search-results" style="display: none; list-style: none; padding: 0; margin: 10px 0 0 0; background: var(--bg-card, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"></ul>
+</div>
         </div>
     </section>
 
