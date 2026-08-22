@@ -760,36 +760,56 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem('cardsOrder', JSON.stringify(order));
         }
 
-        grid.addEventListener('dragstart', (e) => {
-            const card = e.target.closest('.card-item');
-            if (!card) return;
-
-            draggedItem = card;
-            setTimeout(() => card.classList.add('dragging'), 0);
-        });
-
-        grid.addEventListener('dragend', (e) => {
-            const card = e.target.closest('.card-item');
-            if (card) card.classList.remove('dragging');
-
-            grid.querySelectorAll('.card-item').forEach(c => c.classList.remove('drag-over'));
-            draggedItem = null;
-            saveCardOrder();
-        });
-
-        grid.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const targetCard = e.target.closest('.card-item');
-
-            if (!targetCard || targetCard === draggedItem) return;
-
-            const rect = targetCard.getBoundingClientRect();
-            const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-
-            grid.insertBefore(draggedItem, next ? targetCard.nextSibling : targetCard);
-        });
-
         restoreCardOrder();
+
+        grid.querySelectorAll('.card-item').forEach(card => {
+            card.setAttribute('draggable', 'true');
+
+            card.addEventListener('dragstart', function (e) {
+                draggedItem = this;
+                this.style.opacity = '0.5';
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            card.addEventListener('dragend', function () {
+                this.style.opacity = '1';
+                draggedItem = null;
+                saveCardOrder();
+            });
+
+            card.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+
+            card.addEventListener('dragenter', function (e) {
+                e.preventDefault();
+                if (this !== draggedItem) {
+                    this.style.border = '2px dashed #2563eb';
+                }
+            });
+
+            card.addEventListener('dragleave', function () {
+                this.style.border = '';
+            });
+
+            card.addEventListener('drop', function (e) {
+                e.preventDefault();
+                this.style.border = '';
+
+                if (this !== draggedItem && draggedItem) {
+                    const allCards = Array.from(grid.querySelectorAll('.card-item'));
+                    const draggedIndex = allCards.indexOf(draggedItem);
+                    const targetIndex = allCards.indexOf(this);
+
+                    if (draggedIndex < targetIndex) {
+                        this.after(draggedItem);
+                    } else {
+                        this.before(draggedItem);
+                    }
+                }
+            });
+        });
     }
 
     setupCardsDragAndDrop();
