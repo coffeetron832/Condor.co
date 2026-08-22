@@ -28,11 +28,9 @@
     --shadow-color: rgba(15, 23, 42, 0.08);
     --ok-color: #22c55e;
     --hero-bg: #ffffff;
-    --chip-bg: #f1f5f9;
-    --chip-text: #334155;
     --svg-filter: invert(1) hue-rotate(180deg);
 
-    /* Overlay oscuro consistente en ambos modos */
+    /* Overlay oscuro consistente */
     --bg-overlay: rgba(15, 23, 42, 0.6); 
 }
 
@@ -61,11 +59,8 @@
     --shadow-color: rgba(0, 0, 0, 0.6);
     --ok-color: #4ade80;
     --hero-bg: #18181b;
-    --chip-bg: #27272a;
-    --chip-text: #e4e4e7;
     --svg-filter: invert(1) hue-rotate(180deg);
 
-    /* Overlay oscuro ajustado */
     --bg-overlay: rgba(10, 10, 12, 0.75);
 }
 
@@ -94,7 +89,7 @@ html, body {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-color);
     background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), var(--bg-image);
     background-size: cover;
@@ -105,17 +100,17 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease, background-image 0.5s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 800px;
     margin: 0 auto;
     flex: 1;
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 10px 16px 20px 16px;
+    padding: 10px 16px 30px 16px;
 }
 
 .main-content {
@@ -125,7 +120,7 @@ body {
 
 
 /* ==========================================
-   4. COMPONENTE HEADER (GLASSMORPHISM)
+   4. COMPONENTE HEADER
    ========================================== */
 
 .site-header {
@@ -138,11 +133,10 @@ body {
     border-bottom: 1px solid var(--header-border);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     padding: 8px 16px;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .header-container {
-    max-width: 1400px;
+    max-width: 1100px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -161,17 +155,6 @@ body {
     letter-spacing: -0.5px;
 }
 
-.header-brand-badge {
-    background-color: #fcd116;
-    color: #000000;
-    font-size: 10px;
-    font-family: sans-serif;
-    font-weight: 800;
-    padding: 2px 6px;
-    border-radius: 3px;
-}
-
-/* Créditos de Imagen en el Header */
 .header-credit {
     font-size: 11px;
     color: var(--header-text);
@@ -186,22 +169,8 @@ body {
 .header-credit a {
     color: var(--header-text);
     text-decoration: underline;
-    font-weight: 500;
-    transition: opacity 0.2s ease;
 }
 
-.header-credit a:hover {
-    opacity: 1;
-    color: var(--footer-link);
-}
-
-@media screen and (max-width: 768px) {
-    .header-credit {
-        display: none;
-    }
-}
-
-/* Navegación y Botones del Header */
 .header-nav {
     display: flex;
     align-items: center;
@@ -211,13 +180,12 @@ body {
 .header-btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--header-border);
-    border-radius: 4px;
+    border-radius: 6px;
     color: #f8fafc;
     cursor: pointer;
     font-size: 12px;
     font-weight: 500;
-    font-family: inherit;
-    padding: 5px 8px;
+    padding: 6px 10px;
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -230,20 +198,13 @@ body {
     color: #ffffff;
 }
 
-.header-btn svg {
-    flex-shrink: 0;
-    stroke: currentColor;
-    fill: none;
-}
-
 
 /* ==========================================
-   5. SECCIÓN HERO Y BÚSQUEDA
+   5. SECCIÓN HERO Y BÚSQUEDA (CENTRADOS)
    ========================================== */
 
 .hero-section {
-    background-color: transparent;
-    padding: 16px 16px 6px 16px;
+    padding: 40px 16px 20px 16px;
     text-align: center;
 }
 
@@ -259,38 +220,27 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 4px;
-}
-
-.hero-title-text {
-    font-family: 'Archivo Black', sans-serif;
-    font-size: 34px;
-    color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    line-height: 1;
-    letter-spacing: -1px;
+    margin-bottom: 8px;
 }
 
 .logo-img {
-    width: 150px;
+    width: 140px;
     height: auto;
     filter: var(--svg-filter);
 }
 
 .hero-subtitle {
-    font-size: 13px;
+    font-size: 15px;
     color: #f1f5f9;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-    margin: 0 0 12px 0;
-    max-width: 500px;
-    line-height: 1.35;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    margin: 0 0 20px 0;
+    font-weight: 500;
 }
 
-/* Caja de Búsqueda */
+/* Buscador Integrado */
 .search-container {
     width: 100%;
-    max-width: 440px;
+    max-width: 520px;
     margin: 0 auto;
 }
 
@@ -302,223 +252,122 @@ body {
 
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     color: var(--text-secondary);
     pointer-events: none;
 }
 
 .search-input {
     width: 100%;
-    padding: 8px 12px 8px 34px;
-    font-size: 13px;
+    padding: 12px 14px 12px 42px;
+    font-size: 14px;
     font-family: inherit;
     background-color: var(--input-bg);
     color: var(--text-color);
     border: 1px solid var(--input-border);
-    border-radius: 4px;
+    border-radius: 8px;
     outline: none;
-    box-shadow: 0 2px 6px var(--shadow-color);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all 0.2s ease;
 }
 
 .search-input:focus {
     border-color: var(--link-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
 }
 
 
 /* ==========================================
-   6. GRID DE TARJETAS Y CONTENIDO (ESTILO PINTEREST / MASONRY)
+   6. LISTA DE CATEGORÍAS (DISPARADORES)
    ========================================== */
 
-.cards-grid {
-    column-count: 1; /* 1 columna en móviles */
-    column-gap: 12px;
-    width: 100%;
-    margin-top: 10px;
-}
-
-/* Transición a 2 columnas en pantallas medianas */
-@media screen and (min-width: 640px) {
-    .cards-grid {
-        column-count: 2;
-    }
-}
-
-/* Transición a 3 columnas en pantallas grandes */
-@media screen and (min-width: 1024px) {
-    .cards-grid {
-        column-count: 3;
-    }
-}
-
-/* Transición a 4 columnas en pantallas muy anchas */
-@media screen and (min-width: 1400px) {
-    .cards-grid {
-        column-count: 4;
-    }
-}
-
-.card-item {
-    break-inside: avoid; /* Previene que la tarjeta se rompa entre columnas */
-    display: inline-block; /* Requerido para compatibilidad con column-count */
-    width: 100%;
-    margin-bottom: 12px; /* Margen inferior para separar verticalmente las tarjetas */
-    background-color: var(--card-bg);
+.categories-section {
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    box-sizing: border-box;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px var(--shadow-color);
 }
 
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-color);
-    cursor: grab;
-    user-select: none;
-}
-
-.card-header:active {
-    cursor: grabbing;
-}
-
-.card-header h3 {
-    margin: 0;
-    font-size: 13px;
+.categories-title {
+    font-size: 16px;
     font-weight: 700;
+    margin: 0 0 16px 0;
+    color: var(--text-color);
+    text-align: center;
+    letter-spacing: -0.3px;
 }
 
-.national-links {
-    text-align: left;
-    line-height: 1.45;
-    font-size: 12px;
-}
-
-.national-links ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.national-links li {
-    padding: 3px 0;
-    border-bottom: 1px dashed var(--border-color);
-}
-
-.national-links li:last-child {
-    border-bottom: none;
-}
-
-.national-links a {
-    color: var(--link-color);
-    font-weight: 600;
-    text-decoration: underline;
-}
-
-.national-links a:hover {
-    color: var(--link-hover);
-}
-
-.link-desc {
-    color: var(--text-secondary);
-    font-weight: normal;
-    font-size: 11px;
-}
-
-/* Acordeones (Details / Summary) */
-details summary {
-    cursor: pointer;
-    color: var(--link-color);
-    font-weight: 600;
-    font-size: 12.5px;
-    text-decoration: underline;
+.categories-list {
     list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+    gap: 8px;
 }
 
-details summary::-webkit-details-marker {
-    display: none;
-}
-
-.category-desc {
-    color: var(--text-secondary);
-    font-weight: normal;
-    font-size: 11px;
-    text-decoration: none;
-}
-
-.cities-menu {
-    margin-top: 6px;
-    padding: 6px 8px;
+.category-trigger-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
     background-color: var(--bg-color);
-    border-radius: 4px;
     border: 1px solid var(--border-color);
-    font-size: 11.5px;
-    line-height: 1.45;
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
 }
 
-.cities-menu a {
-    color: var(--link-color);
-    font-weight: normal;
-    text-decoration: underline;
-    margin: 0 2px;
-    display: inline-block;
-}
-
-.no-results {
-    display: none;
-    text-align: center;
-    padding: 14px;
+.category-trigger-btn:hover {
+    border-color: var(--link-color);
     background-color: var(--card-bg);
-    border: 1px dashed var(--border-color);
-    border-radius: 4px;
-    font-size: 12.5px;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.btn-icon {
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+.btn-text {
+    flex: 1;
+}
+
+.btn-arrow {
+    font-size: 16px;
     color: var(--text-secondary);
-    margin: 8px 0;
+    transition: transform 0.2s ease, color 0.2s ease;
 }
 
-/* Icono de 6 puntos (Grip Handle) */
-.drag-handle {
-    color: var(--text-secondary, #888);
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-    flex-shrink: 0;
+.category-trigger-btn:hover .btn-arrow {
+    transform: translateX(4px);
+    color: var(--link-color);
 }
 
-.card-header:hover .drag-handle {
-    opacity: 1;
-}
-
-/* Estado de la tarjeta mientras se arrastra */
-.card-item.dragging {
-    opacity: 0.4;
-    border: 2px dashed var(--link-color, #2563eb);
-}
-
-.card-item.drag-over {
-    border-top: 3px solid var(--link-color, #2563eb);
-}
 
 /* ==========================================
-   7. MODALES Y FORMULARIOS
+   7. MODALES NATIVAS (<dialog>)
    ========================================== */
 
-dialog {
+dialog.category-modal,
+dialog.modal-welcome,
+dialog#reportModal {
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 20px;
     background: var(--modal-bg);
     color: var(--text-color);
-    box-shadow: 0 10px 25px var(--shadow-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 580px;
+    margin: auto;
 }
 
 dialog::backdrop {
@@ -531,36 +380,76 @@ dialog::backdrop {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 6px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .modal-header h3 {
     margin: 0;
     color: var(--text-color);
-    font-size: 14.5px;
+    font-size: 16px;
+    font-weight: 700;
 }
 
 .modal-close-btn {
     background: none;
     border: none;
-    font-size: 18px;
+    font-size: 22px;
     cursor: pointer;
     font-weight: bold;
+    color: var(--text-secondary);
     line-height: 1;
+    padding: 0 4px;
+}
+
+.modal-close-btn:hover {
     color: var(--text-color);
 }
 
+/* Listados dentro de Modales */
+.national-links-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.national-links-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.national-links-list li:last-child {
+    border-bottom: none;
+}
+
+.national-links-list a {
+    color: var(--link-color);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.national-links-list a:hover {
+    color: var(--link-hover);
+}
+
+.link-desc {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+/* Botones y Formulario dentro de Modal */
 .modal-action-btn {
     width: 100%;
     background-color: var(--link-color);
     color: #ffffff;
     border: none;
-    padding: 8px;
-    border-radius: 4px;
+    padding: 10px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 12px;
-    margin-top: 8px;
+    font-weight: 600;
+    font-size: 13px;
     transition: background-color 0.15s ease;
 }
 
@@ -570,70 +459,23 @@ dialog::backdrop {
 
 .form-input, .form-select, .form-textarea {
     width: 100%;
-    padding: 6px;
+    padding: 8px 10px;
     border: 1px solid var(--input-border);
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 12px;
+    border-radius: 6px;
+    font-size: 13px;
     background-color: var(--input-bg);
     color: var(--text-color);
-    margin-top: 3px;
+    margin-top: 4px;
+    outline: none;
 }
 
-/* Modal de Bienvenida Específico */
-#welcomeModal.modal-welcome {
-    width: 90%;
-    max-width: 750px;
-    padding: 30px 36px;
-}
-
-#welcomeModal .modal-header {
-    padding-bottom: 12px;
-    margin-bottom: 18px;
-}
-
-#welcomeModal .modal-header h3 {
-    font-size: 26px;
-    font-weight: 700;
-}
-
-#welcomeModal .modal-close-btn {
-    font-size: 26px;
-    padding: 2px 6px;
-}
-
-#welcomeModal .welcome-intro {
-    text-align: left;
-    font-size: 15.5px;
-    line-height: 1.6;
-    color: var(--text-secondary);
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-#welcomeModal .welcome-list {
-    text-align: left;
-    padding-left: 0;
-    list-style: none;
-    font-size: 14.5px;
-    line-height: 1.65;
-    color: var(--text-secondary);
-    margin: 20px 0 28px 0;
-}
-
-#welcomeModal .welcome-list li {
-    margin-bottom: 12px;
-}
-
-#welcomeModal .modal-action-btn {
-    padding: 12px 18px;
-    font-size: 14.5px;
-    border-radius: 6px;
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--link-color);
 }
 
 
 /* ==========================================
-   8. COMPONENTE FOOTER (STICKY / GLASSMORPHISM)
+   8. COMPONENTE FOOTER
    ========================================== */
 
 .site-footer {
@@ -645,12 +487,10 @@ dialog::backdrop {
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-top: 1px solid var(--header-border);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-    padding: 10px 20px;
+    padding: 12px 20px;
     font-size: 12px;
     margin-top: auto;
     text-align: center;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .site-footer a {
@@ -658,12 +498,9 @@ dialog::backdrop {
 }
 
 .footer-content {
-    max-width: 1400px;
+    max-width: 1100px;
     margin: 0 auto;
-    line-height: 1.3;
-    font-weight: 500;
     display: flex;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 12px;
@@ -675,84 +512,34 @@ dialog::backdrop {
    ========================================== */
 
 @media screen and (max-width: 640px) {
-    .site-header {
-        padding: 8px 12px;
-    }
-
-    .header-brand {
-        font-size: 17px;
-    }
-
-    .header-btn {
-        padding: 5px 7px;
-        font-size: 11px;
+    .header-credit {
+        display: none;
     }
 
     .hero-section {
-        padding: 14px 12px 6px 12px;
-    }
-
-    .hero-title-text {
-        font-size: 26px;
+        padding: 24px 12px 16px 12px;
     }
 
     .logo-img {
-        width: 120px;
+        width: 110px;
     }
 
     .hero-subtitle {
-        font-size: 11.5px;
-        margin-bottom: 8px;
+        font-size: 13px;
     }
 
     .search-input {
-        font-size: 13.5px;
-        padding: 8px 10px 8px 32px;
+        font-size: 13px;
+        padding: 10px 12px 10px 38px;
     }
 
-    .container {
-        padding: 8px 12px 16px 12px;
-    }
-
-    .card-item {
-        padding: 8px 10px;
-    }
-
-    .national-links {
-        font-size: 12px;
-    }
-
-    dialog {
-        width: 92vw;
-        max-width: 92vw;
-        padding: 14px;
-    }
-
-    .form-input, .form-select, .form-textarea {
-        font-size: 13.5px;
-    }
-
-    .site-footer {
-        padding: 12px 10px;
-        font-size: 10.5px;
+    .category-trigger-btn {
+        padding: 10px 12px;
+        font-size: 13px;
     }
 
     .footer-content {
         flex-direction: column;
         gap: 4px;
-    }
-}
-
-@media screen and (max-width: 380px) {
-    .header-brand {
-        font-size: 15px;
-    }
-
-    .hero-title-text {
-        font-size: 22px;
-    }
-
-    .logo-img {
-        width: 100px;
     }
 }
