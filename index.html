@@ -48,35 +48,37 @@
         </div>
     </header>
 
-    <!-- HERO MINIMALISTA -->
-    <section class="hero-section">
-        <div class="hero-container">
-            <div class="hero-brand-title">
-                <img src="condor01.svg" alt="Cóndor" class="logo-img">
-            </div>
-
-            <p class="hero-subtitle">El portal web de los colombianos.</p>
-
-            <div class="search-container">
-                <form id="searchForm" onsubmit="event.preventDefault();">
-                    <div class="search-box">
-                        <i data-lucide="search" class="search-icon" style="width: 16px; height: 16px;"></i>
-                        <input type="text" id="searchInput" class="search-input" placeholder="¿Qué trámite o ciudad buscas? (ej: Predial, RUNT, Agua)" autocomplete="off" maxlength="100">
-                    </div>
-                </form>
-
-                <div id="noResultsMsg" style="display: none; padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #666);">
-                    No se encontraron enlaces en el directorio local.
-                </div>
-
-                <ul id="webSearchResults" class="web-search-results" style="display: none; list-style: none; padding: 0; margin: 10px 0 0 0; background: var(--bg-card, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"></ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- DIRECTORIO DE SERVICIOS DESPLEGABLE -->
+    <!-- WRAPPER PRINCIPAL (Agrupa Hero + Directorio para un centrado perfecto) -->
     <div class="container">
         <main class="main-content">
+
+            <!-- HERO MINIMALISTA -->
+            <section class="hero-section">
+                <div class="hero-container">
+                    <div class="hero-brand-title">
+                        <img src="condor01.svg" alt="Cóndor" class="logo-img">
+                    </div>
+
+                    <p class="hero-subtitle">El portal web de los colombianos.</p>
+
+                    <div class="search-container">
+                        <form id="searchForm" onsubmit="event.preventDefault();">
+                            <div class="search-box">
+                                <i data-lucide="search" class="search-icon" style="width: 16px; height: 16px;"></i>
+                                <input type="text" id="searchInput" class="search-input" placeholder="¿Qué trámite o ciudad buscas? (ej: Predial, RUNT, Agua)" autocomplete="off" maxlength="100">
+                            </div>
+                        </form>
+
+                        <div id="noResultsMsg" style="display: none; padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #666);">
+                            No se encontraron enlaces en el directorio local.
+                        </div>
+
+                        <ul id="webSearchResults" class="web-search-results" style="display: none; list-style: none; padding: 0; margin: 10px 0 0 0; background: var(--bg-card, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DIRECTORIO DE SERVICIOS DESPLEGABLE -->
             <section class="categories-section">
                 <details class="directory-accordion">
                     <summary class="directory-toggle-btn">
@@ -151,6 +153,7 @@
                     </ul>
                 </details>
             </section>
+
         </main>
     </div>
 
