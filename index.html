@@ -69,6 +69,7 @@
         </div>
     </header>
 
+    <!-- INICIO: HERO MINIMALISTA (Logo + Búsqueda) -->
     <section class="hero-section">
         <div class="hero-container">
             <div class="hero-brand-title">
@@ -77,354 +78,311 @@
 
             <p class="hero-subtitle">El portal web de los colombianos.</p>
 
-            <!-- Buscador Integrado -->
-<div class="search-container">
-    <form id="searchForm" onsubmit="event.preventDefault();">
-        <div class="search-box">
-            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="searchInput" class="search-input" placeholder="Búsqueda global (beta)" autocomplete="off" maxlength="100">
-        </div>
-    </form>
+            <!-- Buscador Integrado Centrado -->
+            <div class="search-container">
+                <form id="searchForm" onsubmit="event.preventDefault();">
+                    <div class="search-box">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="searchInput" class="search-input" placeholder="¿Qué trámite o ciudad buscas? (ej: Predial, RUNT, Agua)" autocomplete="off" maxlength="100">
+                    </div>
+                </form>
 
-    <!-- Mensaje cuando no hay resultados en el filtro interno -->
-    <div id="noResultsMsg" style="display: none; padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #666);">
-        No se encontraron enlaces en el directorio local.
-    </div>
+                <!-- Mensaje cuando no hay resultados en el filtro interno -->
+                <div id="noResultsMsg" style="display: none; padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #666);">
+                    No se encontraron enlaces en el directorio local.
+                </div>
 
-    <!-- Contenedor dinámico para resultados externos (Wikipedia) -->
-    <ul id="webSearchResults" class="web-search-results" style="display: none; list-style: none; padding: 0; margin: 10px 0 0 0; background: var(--bg-card, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"></ul>
-</div>
+                <!-- Contenedor dinámico para resultados externos (Wikipedia) -->
+                <ul id="webSearchResults" class="web-search-results" style="display: none; list-style: none; padding: 0; margin: 10px 0 0 0; background: var(--bg-card, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"></ul>
+            </div>
         </div>
     </section>
+    <!-- FIN: HERO MINIMALISTA -->
 
+    <!-- INICIO: LISTA DE CATEGORÍAS (Disparadores de Modales) -->
     <div class="container">
         <main class="main-content">
-
-            <div id="noResultsMsg" class="no-results">
-                No se encontraron trámites o ciudades que coincidan con tu búsqueda.
-            </div>
-
-            <!-- CONTENEDOR GRID DE TARJETAS HORIZONTALES -->
-            <div class="cards-grid">
-
-                <!-- TARJETA 1: Trámites Nacionales -->
-                <div class="card-item searchable-category" id="nationalLinksBlock" draggable="true">
-                    <div class="card-header" id="nationalSectionTitle">
-                        <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="9" cy="5" r="2"/>
-                            <circle cx="9" cy="12" r="2"/>
-                            <circle cx="9" cy="19" r="2"/>
-                            <circle cx="15" cy="5" r="2"/>
-                            <circle cx="15" cy="12" r="2"/>
-                            <circle cx="15" cy="19" r="2"/>
-                        </svg>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
-                        <h3>Trámites Nacionales</h3>
-                    </div>
-                    
-                    <div class="national-links">
-                        <ul>
-                            <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración de renta</span></li>
-                            <li class="searchable-item"><a href="https://www.dian.gov.co/Paginas/CalendarioTributario.aspx" target="_blank" rel="noopener noreferrer">Calendario Tributario DIAN</a> <span class="link-desc">- fechas límite para declaración de renta e impuestos</span></li>
-                            <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula digital, registro civil, citas</span></li>
-                            <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento de citas y trámite de pasaporte</span></li>
-                            <li class="searchable-item"><a href="https://antecedentes.policia.gov.co:7005/WebJudicial/" target="_blank" rel="noopener noreferrer">Antecedentes Policía</a> <span class="link-desc">- consulta de antecedentes judiciales y certificado en línea</span></li>
-                            <li class="searchable-item"><a href="https://redam.gov.co" target="_blank" rel="noopener noreferrer">REDAM</a> <span class="link-desc">- certificado de deudores alimentarios morosos</span></li>
-                            <li class="searchable-item"><a href="https://procesos.ramajudicial.gov.co/procesosvms/" target="_blank" rel="noopener noreferrer">Rama Judicial (Consulta y Radicación)</a> <span class="link-desc">- radicación de tutelas, demandas y consulta de procesos</span></li>
-                            <li class="searchable-item"><a href="https://www.fiscalia.gov.co/colombia/servicios-informacion-ciudadano/denuncie/" target="_blank" rel="noopener noreferrer">Fiscalía / Denuncie</a> <span class="link-desc">- consulta de estado de denuncias y denuncias virtuales (A Denunciar)</span></li>
-                            <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias de conducción y comparendos</span></li>
-                            <li class="searchable-item"><a href="https://www.invias.gov.co" target="_blank" rel="noopener noreferrer">INVIAS</a> <span class="link-desc">- estado de vías, peajes, permisos de carga y trámites de infraestructura</span></li>
-                            <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS</span></li>
-                            <li class="searchable-item"><a href="https://web.icetex.gov.co" target="_blank" rel="noopener noreferrer">ICETEX</a> <span class="link-desc">- créditos educativos, becas, renovación y pagos</span></li>
-                            <li class="searchable-item"><a href="https://www.icbf.gov.co" target="_blank" rel="noopener noreferrer">ICBF</a> <span class="link-desc">- trámites, certificado de antecedentes y protección infantil</span></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- TARJETA 2: Dólar en Tiempo Real (USD / COP) -->
-                <div class="card-item searchable-category" draggable="true">
-                    <div class="card-header">
-                        <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="9" cy="5" r="2"/>
-                            <circle cx="9" cy="12" r="2"/>
-                            <circle cx="9" cy="19" r="2"/>
-                            <circle cx="15" cy="5" r="2"/>
-                            <circle cx="15" cy="12" r="2"/>
-                            <circle cx="15" cy="19" r="2"/>
-                        </svg>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                        <h3>Dólar HOY (TRM Colombia)</h3>
-                    </div>
-                    <div style="padding: 12px 15px; text-align: center;">
-                        <div id="trmRate" style="font-size: 26px; font-weight: 700; color: var(--ok-color, #2e7d32); margin-bottom: 4px;">
-                            Cargando...
-                        </div>
-                        <div id="trmUpdate" style="font-size: 11px; color: var(--text-secondary, #666);">
-                            Consultando tasa en tiempo real...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TARJETA 3: Protección al Consumidor y Reclamos -->
-<div class="card-item searchable-category" draggable="true">
-    <div class="card-header">
-        <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="9" cy="5" r="2"/>
-            <circle cx="9" cy="12" r="2"/>
-            <circle cx="9" cy="19" r="2"/>
-            <circle cx="15" cy="5" r="2"/>
-            <circle cx="15" cy="12" r="2"/>
-            <circle cx="15" cy="19" r="2"/>
-        </svg>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-        </svg>
-        <h3>Protección al Consumidor y Reclamos</h3>
-    </div>
-    <div class="national-links" style="padding-top: 10px;">
-        <ul>
-            <li class="searchable-item">
-                <a href="https://www.sic.gov.co/funciones-jurisdiccionales" target="_blank" rel="noopener noreferrer">SIC (Funciones Jurisdiccionales)</a> 
-                <span class="link-desc">- demandas de protección al consumidor y competencia desleal</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.superfinanciera.gov.co/inicio/atencion-al-ciudadano/funciones-jurisdiccionales-61128" target="_blank" rel="noopener noreferrer">Superfinanciera (SIF Jurisdiccional)</a> 
-                <span class="link-desc">- demandas contra bancos, aseguradoras y fiducias</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.defensoria.gov.co" target="_blank" rel="noopener noreferrer">Defensoría del Pueblo</a> 
-                <span class="link-desc">- orientación jurídica gratuita, solicitudes de amparo y derechos humanos</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.claro.com.co" target="_blank" rel="noopener noreferrer">Claro (PQRS y Atención)</a> 
-                <span class="link-desc">- portal oficial y radicación de PQRS en Mi Claro</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.tigo.com.co/pqr" target="_blank" rel="noopener noreferrer">Tigo (PQRS)</a> 
-                <span class="link-desc">- centro de atención y radicación de solicitudes Tigo</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.movistar.co" target="_blank" rel="noopener noreferrer">Movistar (PQRS)</a> 
-                <span class="link-desc">- portal oficial para radicación de PQR y servicio al cliente</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.wom.co" target="_blank" rel="noopener noreferrer">WOM (Atención al Cliente)</a> 
-                <span class="link-desc">- portal oficial y centro de ayuda WOM</span>
-            </li>
-        </ul>
-    </div>
-</div>
-
-                <!-- TARJETA 4: Superintendencias de Colombia -->
-                <div class="card-item searchable-category" draggable="true">
-                    <div class="card-header">
-                        <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="9" cy="5" r="2"/>
-                            <circle cx="9" cy="12" r="2"/>
-                            <circle cx="9" cy="19" r="2"/>
-                            <circle cx="15" cy="5" r="2"/>
-                            <circle cx="15" cy="12" r="2"/>
-                            <circle cx="15" cy="19" r="2"/>
-                        </svg>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="8.5" cy="7" r="4"></circle>
-                            <polyline points="17 11 19 13 23 9"></polyline>
-                        </svg>
-                        <h3>Superintendencias de Colombia</h3>
-                    </div>
-                    <div class="national-links" style="padding-top: 10px;">
-                        <ul>
-                            <li class="searchable-item">
-                                <a href="https://www.supersalud.gov.co" target="_blank" rel="noopener noreferrer">Supersalud</a> 
-                                <span class="link-desc">- PQRS, reclamos contra EPS/IPS y trámites de salud</span>
-                            </li>
-                            <li class="searchable-item">
-                                <a href="https://www.superservicios.gov.co" target="_blank" rel="noopener noreferrer">Superservicios</a> 
-                                <span class="link-desc">- apelaciones y reclamos sobre servicios públicos domiciliarios</span>
-                            </li>
-                            <li class="searchable-item">
-                                <a href="https://www.supersociedades.gov.co" target="_blank" rel="noopener noreferrer">Supersociedades</a> 
-                                <span class="link-desc">- registro de empresas, insolvencia y asuntos societarios</span>
-                            </li>
-                            <li class="searchable-item">
-                                <a href="https://www.supertransporte.gov.co" target="_blank" rel="noopener noreferrer">Supertransporte</a> 
-                                <span class="link-desc">- quejas sobre aerolíneas, peajes, terminales y transporte</span>
-                            </li>
-                            <li class="searchable-item">
-                                <a href="https://www.supernotariado.gov.co" target="_blank" rel="noopener noreferrer">Supernotariado (SNR)</a> 
-                                <span class="link-desc">- certificados de libertad y tradición, registro de instrumentos públicos</span>
-                            </li>
-                            <li class="searchable-item">
-                                <a href="https://www.superfinanciera.gov.co" target="_blank" rel="noopener noreferrer">Superfinanciera</a> 
-                                <span class="link-desc">- vigilancia bancaria, financiera y de seguros</span>
-                            </li>
-                            <li class="searchable-item">
-                                <a href="https://www.sic.gov.co" target="_blank" rel="noopener noreferrer">Superintendencia de Industria y Comercio (SIC)</a> 
-                                <span class="link-desc">- marcas, patentes, datos personales y competencia</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- TARJETA 5: Clima en Tiempo Real -->
-                <div class="card-item searchable-category" draggable="true">
-                    <div class="card-header">
-                        <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="9" cy="5" r="2"/>
-                            <circle cx="9" cy="12" r="2"/>
-                            <circle cx="9" cy="19" r="2"/>
-                            <circle cx="15" cy="5" r="2"/>
-                            <circle cx="15" cy="12" r="2"/>
-                            <circle cx="15" cy="19" r="2"/>
-                        </svg>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
-                        </svg>
-                        <h3>Clima</h3>
-                    </div>
-                    <div style="padding: 12px 15px; text-align: center;">
-                        <div id="weatherTemp" style="font-size: 26px; font-weight: 700; margin-bottom: 4px;">
-                            --°C
-                        </div>
-                        <div id="weatherCity" style="font-size: 11px; color: var(--text-secondary, #666); margin-bottom: 10px;">
-                            Selecciona una ciudad
-                        </div>
-
-                        <!-- Campo de búsqueda integrado -->
-                        <div style="position: relative; text-align: left;">
-                            <input type="text" id="weatherSearchInput" placeholder="Buscar municipio..." autocomplete="off" 
-                                   style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline: none;">
-                            
-                            <ul id="weatherSearchResults" 
-                                style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 0 0 4px 4px; list-style: none; margin: 0; padding: 0; z-index: 1000; max-height: 150px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TARJETA 6: Líneas de Emergencia -->
-                <div class="card-item searchable-category" draggable="true">
-                    <details>
-                        <summary class="card-header" style="cursor: pointer;">
-                            <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <circle cx="9" cy="5" r="2"/>
-                                <circle cx="9" cy="12" r="2"/>
-                                <circle cx="9" cy="19" r="2"/>
-                                <circle cx="15" cy="5" r="2"/>
-                                <circle cx="15" cy="12" r="2"/>
-                                <circle cx="15" cy="19" r="2"/>
-                            </svg>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                            </svg>
-                            <h3>Líneas de Emergencia Nacional</h3>
-                            <span class="category-desc" style="margin-left: 6px;">- Policía, Bomberos, Ambulancia, Defensa Civil</span>
-                        </summary>
-                        <div class="national-links" style="padding-top: 10px;">
-                            <ul>
-                                <li class="searchable-item"><a href="tel:123"><strong>123</strong> - Emergencias Generales / Policía</a> <span class="link-desc">(Atención inmediata a nivel nacional)</span></li>
-                                <li class="searchable-item"><a href="tel:112"><strong>112</strong> - Policía Nacional</a> <span class="link-desc">(Atención directa a cuadrantes)</span></li>
-                                <li class="searchable-item"><a href="tel:119"><strong>119</strong> - Cuerpo de Bomberos</a> <span class="link-desc">(Incendios y rescates)</span></li>
-                                <li class="searchable-item"><a href="tel:125"><strong>125</strong> - Ambulancias / Red de Salud</a> <span class="link-desc">(Urgencias médicas)</span></li>
-                                <li class="searchable-item"><a href="tel:155"><strong>155</strong> - Orientación a Mujeres Víctimas de Violencia</a> <span class="link-desc">(Línea 155 confidencial)</span></li>
-                                <li class="searchable-item"><a href="tel:144"><strong>144</strong> - Defensa Civil Colombiana</a> <span class="link-desc">(Atención de desastres y emergencias)</span></li>
-                                <li class="searchable-item"><a href="tel:165"><strong>165</strong> - GAULA (Anti-secuestro y Extorsión)</a> <span class="link-desc">(Yo no pago, yo denuncio)</span></li>
-                            </ul>
-                        </div>
-                    </details>
-                </div>
-
-                <!-- TARJETA 7: Impuestos Regionales -->
-                <div class="card-item searchable-category" draggable="true">
-                    <details>
-                        <summary class="card-header" style="cursor: pointer;">
-                            <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <circle cx="9" cy="5" r="2"/>
-                                <circle cx="9" cy="12" r="2"/>
-                                <circle cx="9" cy="19" r="2"/>
-                                <circle cx="15" cy="5" r="2"/>
-                                <circle cx="15" cy="12" r="2"/>
-                                <circle cx="15" cy="19" r="2"/>
-                            </svg>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                            <h3>Impuestos Regionales</h3>
-                            <span class="category-desc" style="margin-left: 6px;">- Vehículos, Predial, Licorera</span>
-                        </summary>
-                        <div class="cities-menu" data-category="impuestos" data-show-dept="true"></div>
-                    </details>
-                </div>
-
-                <!-- TARJETA 8: Servicios Públicos y Alcaldías -->
-                <div class="card-item searchable-category" draggable="true">
-                    <details>
-                        <summary class="card-header" style="cursor: pointer;">
-                            <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <circle cx="9" cy="5" r="2"/>
-                                <circle cx="9" cy="12" r="2"/>
-                                <circle cx="9" cy="19" r="2"/>
-                                <circle cx="15" cy="5" r="2"/>
-                                <circle cx="15" cy="12" r="2"/>
-                                <circle cx="15" cy="19" r="2"/>
-                            </svg>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="20" x2="18" y2="10"></line>
-                                <line x1="12" y1="20" x2="12" y2="4"></line>
-                                <line x1="6" y1="20" x2="6" y2="14"></line>
-                                <path d="M3 20h18"></path>
-                            </svg>
-                            <h3>Servicios Públicos y Alcaldías</h3>
-                            <span class="category-desc" style="margin-left: 6px;">- Agua, Luz, Gas y Pagos Municipales</span>
-                        </summary>
-                        <div class="cities-menu" data-category="hogar"></div>
-                    </details>
-                </div>
-
-                <!-- TARJETA 9: Movilidad y Tránsito Local -->
-                <div class="card-item searchable-category" draggable="true">
-                    <details>
-                        <summary class="card-header" style="cursor: pointer;">
-                            <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <circle cx="9" cy="5" r="2"/>
-                                <circle cx="9" cy="12" r="2"/>
-                                <circle cx="9" cy="19" r="2"/>
-                                <circle cx="15" cy="5" r="2"/>
-                                <circle cx="15" cy="12" r="2"/>
-                                <circle cx="15" cy="19" r="2"/>
-                            </svg>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="1" y="3" width="15" height="13"></rect>
-                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                            </svg>
-                            <h3>Movilidad y Tránsito Local</h3>
-                            <span class="category-desc" style="margin-left: 6px;">- Pico y Placa, Zonas Azules, Patios</span>
-                        </summary>
-                        <div class="cities-menu" data-category="movilidad"></div>
-                    </details>
-                </div>
-
-            </div>
-
+            <section class="categories-section">
+                <h2 class="categories-title">Directorio de Servicios</h2>
+                
+                <ul class="categories-list">
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-national">
+                            <span class="btn-icon">🏛️</span>
+                            <span class="btn-text">Trámites Nacionales</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-trm">
+                            <span class="btn-icon">💵</span>
+                            <span class="btn-text">Dólar HOY (TRM Colombia)</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-consumer">
+                            <span class="btn-icon">🛡️</span>
+                            <span class="btn-text">Protección al Consumidor y Reclamos</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-supers">
+                            <span class="btn-icon">🏢</span>
+                            <span class="btn-text">Superintendencias de Colombia</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-weather">
+                            <span class="btn-icon">🌤️</span>
+                            <span class="btn-text">Clima por Municipio</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-emergency">
+                            <span class="btn-icon">🚨</span>
+                            <span class="btn-text">Líneas de Emergencia Nacional</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-taxes">
+                            <span class="btn-icon">📑</span>
+                            <span class="btn-text">Impuestos Regionales</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-utilities">
+                            <span class="btn-icon">💧</span>
+                            <span class="btn-text">Servicios Públicos y Alcaldías</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-mobility">
+                            <span class="btn-icon">🚗</span>
+                            <span class="btn-text">Movilidad y Tránsito Local</span>
+                            <span class="btn-arrow">&rarr;</span>
+                        </button>
+                    </li>
+                </ul>
+            </section>
         </main>
     </div>
+    <!-- FIN: LISTA DE CATEGORÍAS -->
+
+    <!-- INICIO: MODALES DE CONTENIDO EN DETALLE -->
+
+    <!-- MODAL 1: Trámites Nacionales -->
+    <dialog id="modal-national" class="category-modal">
+        <div class="modal-header">
+            <h3>🏛️ Trámites Nacionales</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ul class="national-links-list">
+                <li class="searchable-item"><a href="https://www.dian.gov.co" target="_blank" rel="noopener noreferrer">DIAN / RUT</a> <span class="link-desc">- copia de RUT, firma electrónica, declaración de renta</span></li>
+                <li class="searchable-item"><a href="https://www.dian.gov.co/Paginas/CalendarioTributario.aspx" target="_blank" rel="noopener noreferrer">Calendario Tributario DIAN</a> <span class="link-desc">- fechas límite para declaración de renta e impuestos</span></li>
+                <li class="searchable-item"><a href="https://www.registraduria.gov.co" target="_blank" rel="noopener noreferrer">Registraduría Nacional</a> <span class="link-desc">- duplicado de cédula digital, registro civil, citas</span></li>
+                <li class="searchable-item"><a href="https://www.cancilleria.gov.co/tramites_servicios/pasaporte" target="_blank" rel="noopener noreferrer">Cancillería</a> <span class="link-desc">- agendamiento de citas y trámite de pasaporte</span></li>
+                <li class="searchable-item"><a href="https://antecedentes.policia.gov.co:7005/WebJudicial/" target="_blank" rel="noopener noreferrer">Antecedentes Policía</a> <span class="link-desc">- consulta de antecedentes judiciales y certificado en línea</span></li>
+                <li class="searchable-item"><a href="https://redam.gov.co" target="_blank" rel="noopener noreferrer">REDAM</a> <span class="link-desc">- certificado de deudores alimentarios morosos</span></li>
+                <li class="searchable-item"><a href="https://procesos.ramajudicial.gov.co/procesosvms/" target="_blank" rel="noopener noreferrer">Rama Judicial (Consulta y Radicación)</a> <span class="link-desc">- radicación de tutelas, demandas y consulta de procesos</span></li>
+                <li class="searchable-item"><a href="https://www.fiscalia.gov.co/colombia/servicios-informacion-ciudadano/denuncie/" target="_blank" rel="noopener noreferrer">Fiscalía / Denuncie</a> <span class="link-desc">- consulta de estado de denuncias y denuncias virtuales (A Denunciar)</span></li>
+                <li class="searchable-item"><a href="https://www.runt.gov.co" target="_blank" rel="noopener noreferrer">RUNT / SIMIT</a> <span class="link-desc">- consulta de vehículos, licencias de conducción y comparendos</span></li>
+                <li class="searchable-item"><a href="https://www.invias.gov.co" target="_blank" rel="noopener noreferrer">INVIAS</a> <span class="link-desc">- estado de vías, peajes, permisos de carga y trámites de infraestructura</span></li>
+                <li class="searchable-item"><a href="https://www.adres.gov.co" target="_blank" rel="noopener noreferrer">ADRES / BDUA</a> <span class="link-desc">- estado de afiliación a EPS</span></li>
+                <li class="searchable-item"><a href="https://web.icetex.gov.co" target="_blank" rel="noopener noreferrer">ICETEX</a> <span class="link-desc">- créditos educativos, becas, renovación y pagos</span></li>
+                <li class="searchable-item"><a href="https://www.icbf.gov.co" target="_blank" rel="noopener noreferrer">ICBF</a> <span class="link-desc">- trámites, certificado de antecedentes y protección infantil</span></li>
+            </ul>
+        </div>
+    </dialog>
+
+    <!-- MODAL 2: Dólar TRM -->
+    <dialog id="modal-trm" class="category-modal">
+        <div class="modal-header">
+            <h3>💵 Dólar HOY (TRM Colombia)</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 20px 10px;">
+            <div id="trmRate" style="font-size: 32px; font-weight: 700; color: var(--ok-color, #2e7d32); margin-bottom: 8px;">
+                Cargando...
+            </div>
+            <div id="trmUpdate" style="font-size: 13px; color: var(--text-secondary, #666);">
+                Consultando tasa en tiempo real...
+            </div>
+        </div>
+    </dialog>
+
+    <!-- MODAL 3: Protección al Consumidor -->
+    <dialog id="modal-consumer" class="category-modal">
+        <div class="modal-header">
+            <h3>🛡️ Protección al Consumidor y Reclamos</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ul class="national-links-list">
+                <li class="searchable-item">
+                    <a href="https://www.sic.gov.co/funciones-jurisdiccionales" target="_blank" rel="noopener noreferrer">SIC (Funciones Jurisdiccionales)</a> 
+                    <span class="link-desc">- demandas de protección al consumidor y competencia desleal</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.superfinanciera.gov.co/inicio/atencion-al-ciudadano/funciones-jurisdiccionales-61128" target="_blank" rel="noopener noreferrer">Superfinanciera (SIF Jurisdiccional)</a> 
+                    <span class="link-desc">- demandas contra bancos, aseguradoras y fiducias</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.defensoria.gov.co" target="_blank" rel="noopener noreferrer">Defensoría del Pueblo</a> 
+                    <span class="link-desc">- orientación jurídica gratuita, solicitudes de amparo y derechos humanos</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.claro.com.co" target="_blank" rel="noopener noreferrer">Claro (PQRS y Atención)</a> 
+                    <span class="link-desc">- portal oficial y radicación de PQRS en Mi Claro</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.tigo.com.co/pqr" target="_blank" rel="noopener noreferrer">Tigo (PQRS)</a> 
+                    <span class="link-desc">- centro de atención y radicación de solicitudes Tigo</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.movistar.co" target="_blank" rel="noopener noreferrer">Movistar (PQRS)</a> 
+                    <span class="link-desc">- portal oficial para radicación de PQR y servicio al cliente</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.wom.co" target="_blank" rel="noopener noreferrer">WOM (Atención al Cliente)</a> 
+                    <span class="link-desc">- portal oficial y centro de ayuda WOM</span>
+                </li>
+            </ul>
+        </div>
+    </dialog>
+
+    <!-- MODAL 4: Superintendencias -->
+    <dialog id="modal-supers" class="category-modal">
+        <div class="modal-header">
+            <h3>🏢 Superintendencias de Colombia</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ul class="national-links-list">
+                <li class="searchable-item">
+                    <a href="https://www.supersalud.gov.co" target="_blank" rel="noopener noreferrer">Supersalud</a> 
+                    <span class="link-desc">- PQRS, reclamos contra EPS/IPS y trámites de salud</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.superservicios.gov.co" target="_blank" rel="noopener noreferrer">Superservicios</a> 
+                    <span class="link-desc">- apelaciones y reclamos sobre servicios públicos domiciliarios</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.supersociedades.gov.co" target="_blank" rel="noopener noreferrer">Supersociedades</a> 
+                    <span class="link-desc">- registro de empresas, insolvencia y asuntos societarios</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.supertransporte.gov.co" target="_blank" rel="noopener noreferrer">Supertransporte</a> 
+                    <span class="link-desc">- quejas sobre aerolíneas, peajes, terminales y transporte</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.supernotariado.gov.co" target="_blank" rel="noopener noreferrer">Supernotariado (SNR)</a> 
+                    <span class="link-desc">- certificados de libertad y tradición, registro de instrumentos públicos</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.superfinanciera.gov.co" target="_blank" rel="noopener noreferrer">Superfinanciera</a> 
+                    <span class="link-desc">- vigilancia bancaria, financiera y de seguros</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.sic.gov.co" target="_blank" rel="noopener noreferrer">Superintendencia de Industria y Comercio (SIC)</a> 
+                    <span class="link-desc">- marcas, patentes, datos personales y competencia</span>
+                </li>
+            </ul>
+        </div>
+    </dialog>
+
+    <!-- MODAL 5: Clima -->
+    <dialog id="modal-weather" class="category-modal">
+        <div class="modal-header">
+            <h3>🌤️ Clima por Municipio</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 10px;">
+            <div id="weatherTemp" style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">
+                --°C
+            </div>
+            <div id="weatherCity" style="font-size: 12px; color: var(--text-secondary, #666); margin-bottom: 15px;">
+                Selecciona una ciudad
+            </div>
+
+            <!-- Campo de búsqueda integrado para municipios -->
+            <div style="position: relative; text-align: left; max-width: 300px; margin: 0 auto;">
+                <input type="text" id="weatherSearchInput" placeholder="Buscar municipio..." autocomplete="off" 
+                       style="width: 100%; padding: 8px 12px; font-size: 13px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; outline: none;">
+                
+                <ul id="weatherSearchResults" 
+                    style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 0 0 6px 6px; list-style: none; margin: 0; padding: 0; z-index: 1000; max-height: 150px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                </ul>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- MODAL 6: Líneas de Emergencia -->
+    <dialog id="modal-emergency" class="category-modal">
+        <div class="modal-header">
+            <h3>🚨 Líneas de Emergencia Nacional</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ul class="national-links-list">
+                <li class="searchable-item"><a href="tel:123"><strong>123</strong> - Emergencias Generales / Policía</a> <span class="link-desc">(Atención inmediata a nivel nacional)</span></li>
+                <li class="searchable-item"><a href="tel:112"><strong>112</strong> - Policía Nacional</a> <span class="link-desc">(Atención directa a cuadrantes)</span></li>
+                <li class="searchable-item"><a href="tel:119"><strong>119</strong> - Cuerpo de Bomberos</a> <span class="link-desc">(Incendios y rescates)</span></li>
+                <li class="searchable-item"><a href="tel:125"><strong>125</strong> - Ambulancias / Red de Salud</a> <span class="link-desc">(Urgencias médicas)</span></li>
+                <li class="searchable-item"><a href="tel:155"><strong>155</strong> - Orientación a Mujeres Víctimas de Violencia</a> <span class="link-desc">(Línea 155 confidencial)</span></li>
+                <li class="searchable-item"><a href="tel:144"><strong>144</strong> - Defensa Civil Colombiana</a> <span class="link-desc">(Atención de desastres y emergencias)</span></li>
+                <li class="searchable-item"><a href="tel:165"><strong>165</strong> - GAULA (Anti-secuestro y Extorsión)</a> <span class="link-desc">(Yo no pago, yo denuncio)</span></li>
+            </ul>
+        </div>
+    </dialog>
+
+    <!-- MODAL 7: Impuestos Regionales -->
+    <dialog id="modal-taxes" class="category-modal">
+        <div class="modal-header">
+            <h3>📑 Impuestos Regionales</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="category-desc" style="margin-bottom: 10px; font-size: 13px; color: var(--text-secondary,#666);">Vehículos, Predial, Licorera</p>
+            <div class="cities-menu" data-category="impuestos" data-show-dept="true"></div>
+        </div>
+    </dialog>
+
+    <!-- MODAL 8: Servicios Públicos -->
+    <dialog id="modal-utilities" class="category-modal">
+        <div class="modal-header">
+            <h3>💧 Servicios Públicos y Alcaldías</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="category-desc" style="margin-bottom: 10px; font-size: 13px; color: var(--text-secondary,#666);">Agua, Luz, Gas y Pagos Municipales</p>
+            <div class="cities-menu" data-category="hogar"></div>
+        </div>
+    </dialog>
+
+    <!-- MODAL 9: Movilidad -->
+    <dialog id="modal-mobility" class="category-modal">
+        <div class="modal-header">
+            <h3>🚗 Movilidad y Tránsito Local</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="category-desc" style="margin-bottom: 10px; font-size: 13px; color: var(--text-secondary,#666);">Pico y Placa, Zonas Azules, Patios</p>
+            <div class="cities-menu" data-category="movilidad"></div>
+        </div>
+    </dialog>
+
+    <!-- FIN: MODALES DE CONTENIDO -->
 
     <footer class="site-footer">
         <div class="footer-content">
@@ -436,7 +394,7 @@
         </div>
     </footer>
 
-    <!-- MODAL 1: Bienvenida -->
+    <!-- MODAL INFORMATIVO 1: Bienvenida -->
     <dialog id="welcomeModal" class="modal-welcome">
         <div class="modal-header">
             <h3>¡Bienvenido a 24col!</h3>
@@ -475,7 +433,7 @@
         <button id="closeWelcomeModalBtn" class="modal-action-btn">Entendido, vamos p'alante</button>
     </dialog>
 
-    <!-- MODAL 2: Reporte -->
+    <!-- MODAL INFORMATIVO 2: Reporte -->
     <dialog id="reportModal" style="max-width: 420px; width: 90%;">
         <div class="modal-header">
             <h3 style="font-size: 16px;">Reportar o Sugerir</h3>
@@ -527,13 +485,13 @@
                 let creditHTML = '';
 
                 if (hour >= 6 && hour < 12) {
-                    timeTheme = 'morning';   // Mañana: 6:00 AM - 11:59 AM
+                    timeTheme = 'morning';
                     creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/vista-superior-de-sombreros-para-el-sol-marrones-y-blancos-QkOy8LbWtdg?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Ricardo Gomez Angel (Unsplash)</a>';
                 } else if (hour >= 12 && hour < 18) {
-                    timeTheme = 'afternoon'; // Tarde: 12:00 PM - 5:59 PM
+                    timeTheme = 'afternoon';
                     creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/loro-rojo-verde-y-azul-en-la-rama-marron-del-arbol-durante-el-dia-57SHaZUAOtQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Camilo Guarin P (Unsplash)</a>';
                 } else {
-                    timeTheme = 'night';     // Noche: 6:00 PM - 5:59 AM
+                    timeTheme = 'night';
                     creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/rascador-de-la-ciudad-por-la-noche-03gVOLHq9ec?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Saravia (Unsplash)</a>';
                 }
 
@@ -544,7 +502,6 @@
             }
 
             updateTimeTheme();
-            // Actualización automática por si cambia de jornada mientras navega
             setInterval(updateTimeTheme, 15 * 60 * 1000);
 
             // --- Cargar TRM Dólar a COP ---
@@ -607,13 +564,43 @@
                 });
             }
 
-            // --- Modales ---
+            // --- Manejo de Modales de Categoría ---
+            const triggerBtns = document.querySelectorAll('.category-trigger-btn');
+            const categoryModals = document.querySelectorAll('.category-modal');
+
+            triggerBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-modal-target');
+                    const targetModal = document.getElementById(targetId);
+                    if (targetModal && typeof targetModal.showModal === 'function') {
+                        targetModal.showModal();
+                    }
+                });
+            });
+
+            categoryModals.forEach(modal => {
+                const closeBtn = modal.querySelector('.modal-close-btn');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => modal.close());
+                }
+                modal.addEventListener('click', (e) => {
+                    const rect = modal.getBoundingClientRect();
+                    if (
+                        e.clientX < rect.left ||
+                        e.clientX > rect.right ||
+                        e.clientY < rect.top ||
+                        e.clientY > rect.bottom
+                    ) {
+                        modal.close();
+                    }
+                });
+            });
+
+            // --- Modales Informativos (Bienvenida y Reporte) ---
             const welcomeModal = document.getElementById('welcomeModal');
             const openWelcomeBtn = document.getElementById('openWelcomeModal');
             const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
             const closeWelcomeCross = document.getElementById('closeWelcomeModalCross');
-            const footerWelcomeBtn = document.getElementById('footerWelcomeBtn');
-            const footerReportBtn = document.getElementById('footerReportBtn');
             const reportModal = document.getElementById('reportModal');
             const openReportBtn = document.getElementById('openReportModal');
             const closeReportBtn = document.getElementById('closeReportModal');
@@ -639,20 +626,6 @@
             if (openWelcomeBtn) {
                 openWelcomeBtn.addEventListener('click', () => {
                     if (welcomeModal) welcomeModal.showModal();
-                });
-            }
-
-            if (footerWelcomeBtn) {
-                footerWelcomeBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (welcomeModal) welcomeModal.showModal();
-                });
-            }
-
-            if (footerReportBtn) {
-                footerReportBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (reportModal) reportModal.showModal();
                 });
             }
 
