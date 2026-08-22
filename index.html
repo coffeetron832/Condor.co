@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>24col - Tu guía de confianza</title>
     
-    <!-- Políticas de Seguridad (CSP) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com;">
+    <!-- Políticas de Seguridad (CSP) actualizadas con SearXNG -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://searx.be;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Frame-Options" content="DENY">
     
@@ -77,15 +77,19 @@
 
             <p class="hero-subtitle">El portal web de los colombianos.</p>
 
-            <!-- Buscador Integrado -->
+            <!-- Buscador Libre Integrado con SearXNG -->
             <div class="search-container">
                 <form id="searchForm" onsubmit="event.preventDefault();">
-                    <div class="search-box">
+                    <div class="search-box" style="position: relative;">
                         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                        <input type="text" id="searchInput" class="search-input" placeholder="Busca por trámite, ciudad o entidad (ej. RUT, Medellín, Pasaporte, Emergencias)..." autocomplete="off" maxlength="100">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Busca en la web libre o filtra por entidad..." autocomplete="off" maxlength="100">
+                        
+                        <!-- Desplegable dinámico de resultados web -->
+                        <ul id="webSearchResults" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg, #fff); border: 1px solid var(--card-border, #ccc); border-radius: 0 0 8px 8px; list-style: none; margin: 0; padding: 0; z-index: 2000; max-height: 320px; overflow-y: auto; box-shadow: 0 6px 16px rgba(0,0,0,0.15); text-align: left;">
+                        </ul>
                     </div>
                 </form>
             </div>
@@ -168,54 +172,54 @@
                 </div>
 
                 <!-- TARJETA 3: Protección al Consumidor y Reclamos -->
-<div class="card-item searchable-category" draggable="true">
-    <div class="card-header">
-        <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="9" cy="5" r="2"/>
-            <circle cx="9" cy="12" r="2"/>
-            <circle cx="9" cy="19" r="2"/>
-            <circle cx="15" cy="5" r="2"/>
-            <circle cx="15" cy="12" r="2"/>
-            <circle cx="15" cy="19" r="2"/>
-        </svg>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-        </svg>
-        <h3>Protección al Consumidor y Reclamos</h3>
-    </div>
-    <div class="national-links" style="padding-top: 10px;">
-        <ul>
-            <li class="searchable-item">
-                <a href="https://www.sic.gov.co/funciones-jurisdiccionales" target="_blank" rel="noopener noreferrer">SIC (Funciones Jurisdiccionales)</a> 
-                <span class="link-desc">- demandas de protección al consumidor y competencia desleal</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.superfinanciera.gov.co/inicio/atencion-al-ciudadano/funciones-jurisdiccionales-61128" target="_blank" rel="noopener noreferrer">Superfinanciera (SIF Jurisdiccional)</a> 
-                <span class="link-desc">- demandas contra bancos, aseguradoras y fiducias</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.defensoria.gov.co" target="_blank" rel="noopener noreferrer">Defensoría del Pueblo</a> 
-                <span class="link-desc">- orientación jurídica gratuita, solicitudes de amparo y derechos humanos</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.claro.com.co" target="_blank" rel="noopener noreferrer">Claro (PQRS y Atención)</a> 
-                <span class="link-desc">- portal oficial y radicación de PQRS en Mi Claro</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.tigo.com.co/pqr" target="_blank" rel="noopener noreferrer">Tigo (PQRS)</a> 
-                <span class="link-desc">- centro de atención y radicación de solicitudes Tigo</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.movistar.co" target="_blank" rel="noopener noreferrer">Movistar (PQRS)</a> 
-                <span class="link-desc">- portal oficial para radicación de PQR y servicio al cliente</span>
-            </li>
-            <li class="searchable-item">
-                <a href="https://www.wom.co" target="_blank" rel="noopener noreferrer">WOM (Atención al Cliente)</a> 
-                <span class="link-desc">- portal oficial y centro de ayuda WOM</span>
-            </li>
-        </ul>
-    </div>
-</div>
+                <div class="card-item searchable-category" draggable="true">
+                    <div class="card-header">
+                        <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="9" cy="5" r="2"/>
+                            <circle cx="9" cy="12" r="2"/>
+                            <circle cx="9" cy="19" r="2"/>
+                            <circle cx="15" cy="5" r="2"/>
+                            <circle cx="15" cy="12" r="2"/>
+                            <circle cx="15" cy="19" r="2"/>
+                        </svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <h3>Protección al Consumidor y Reclamos</h3>
+                    </div>
+                    <div class="national-links" style="padding-top: 10px;">
+                        <ul>
+                            <li class="searchable-item">
+                                <a href="https://www.sic.gov.co/funciones-jurisdiccionales" target="_blank" rel="noopener noreferrer">SIC (Funciones Jurisdiccionales)</a> 
+                                <span class="link-desc">- demandas de protección al consumidor y competencia desleal</span>
+                            </li>
+                            <li class="searchable-item">
+                                <a href="https://www.superfinanciera.gov.co/inicio/atencion-al-ciudadano/funciones-jurisdiccionales-61128" target="_blank" rel="noopener noreferrer">Superfinanciera (SIF Jurisdiccional)</a> 
+                                <span class="link-desc">- demandas contra bancos, aseguradoras y fiducias</span>
+                            </li>
+                            <li class="searchable-item">
+                                <a href="https://www.defensoria.gov.co" target="_blank" rel="noopener noreferrer">Defensoría del Pueblo</a> 
+                                <span class="link-desc">- orientación jurídica gratuita, solicitudes de amparo y derechos humanos</span>
+                            </li>
+                            <li class="searchable-item">
+                                <a href="https://www.claro.com.co" target="_blank" rel="noopener noreferrer">Claro (PQRS y Atención)</a> 
+                                <span class="link-desc">- portal oficial y radicación de PQRS en Mi Claro</span>
+                            </li>
+                            <li class="searchable-item">
+                                <a href="https://www.tigo.com.co/pqr" target="_blank" rel="noopener noreferrer">Tigo (PQRS)</a> 
+                                <span class="link-desc">- centro de atención y radicación de solicitudes Tigo</span>
+                            </li>
+                            <li class="searchable-item">
+                                <a href="https://www.movistar.co" target="_blank" rel="noopener noreferrer">Movistar (PQRS)</a> 
+                                <span class="link-desc">- portal oficial para radicación de PQR y servicio al cliente</span>
+                            </li>
+                            <li class="searchable-item">
+                                <a href="https://www.wom.co" target="_blank" rel="noopener noreferrer">WOM (Atención al Cliente)</a> 
+                                <span class="link-desc">- portal oficial y centro de ayuda WOM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
                 <!-- TARJETA 4: Superintendencias de Colombia -->
                 <div class="card-item searchable-category" draggable="true">
@@ -511,6 +515,85 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Script de Búsqueda Libre Integrada (SearXNG) ---
+            const searchInput = document.getElementById('searchInput');
+            const resultsContainer = document.getElementById('webSearchResults');
+            let debounceTimer;
+            const SEARX_INSTANCE = 'https://searx.be/search';
+
+            if (searchInput && resultsContainer) {
+                searchInput.addEventListener('input', function() {
+                    const query = searchInput.value.trim();
+                    clearTimeout(debounceTimer);
+
+                    if (query.length < 3) {
+                        resultsContainer.style.display = 'none';
+                        resultsContainer.innerHTML = '';
+                        return;
+                    }
+
+                    resultsContainer.innerHTML = `
+                        <li style="padding: 12px; text-align: center; font-size: 12px; color: var(--text-secondary, #666);">
+                            Buscando en la web libre...
+                        </li>
+                    `;
+                    resultsContainer.style.display = 'block';
+
+                    debounceTimer = setTimeout(() => {
+                        const searchUrl = `${SEARX_INSTANCE}?q=${encodeURIComponent(query)}&format=json`;
+
+                        fetch(searchUrl)
+                            .then(response => {
+                                if (!response.ok) throw new Error('Error de conexión');
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.results && data.results.length > 0) {
+                                    resultsContainer.innerHTML = data.results.slice(0, 6).map(item => `
+                                        <li style="border-bottom: 1px solid var(--border-color, #eee);">
+                                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 10px 14px; text-decoration: none; color: var(--text-color, #333);">
+                                                <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: 600; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span>${escapeHtml(item.title)}</span>
+                                                    <span style="font-size: 9px; background: rgba(0,0,0,0.05); padding: 2px 5px; border-radius: 3px; color: #666;">${item.engine || 'web'}</span>
+                                                </div>
+                                                <div style="font-size: 11px; color: var(--text-secondary, #666); line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                    ${escapeHtml(item.content || 'Sin descripción.')}
+                                                </div>
+                                                <div style="font-size: 10px; color: #16a34a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                    ${escapeHtml(item.url)}
+                                                </div>
+                                            </a>
+                                        </li>
+                                    `).join('');
+                                } else {
+                                    resultsContainer.innerHTML = `
+                                        <li style="padding: 12px; text-align: center; font-size: 12px; color: var(--text-secondary, #666);">
+                                            No se encontraron páginas web.
+                                        </li>
+                                    `;
+                                }
+                            })
+                            .catch(error => {
+                                resultsContainer.innerHTML = `
+                                    <li style="padding: 12px; text-align: center; font-size: 12px; color: #dc2626;">
+                                        Error de conexión al buscar.
+                                    </li>
+                                `;
+                            });
+                    }, 400);
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                        resultsContainer.style.display = 'none';
+                    }
+                });
+            }
+
+            function escapeHtml(str) {
+                return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;") : '';
+            }
+
             // --- Fondo Dinámico y Créditos según Hora del Día ---
             function updateTimeTheme() {
                 const hour = new Date().getHours();
@@ -519,13 +602,13 @@
                 let creditHTML = '';
 
                 if (hour >= 6 && hour < 12) {
-                    timeTheme = 'morning';   // Mañana: 6:00 AM - 11:59 AM
+                    timeTheme = 'morning';
                     creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/vista-superior-de-sombreros-para-el-sol-marrones-y-blancos-QkOy8LbWtdg?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Ricardo Gomez Angel (Unsplash)</a>';
                 } else if (hour >= 12 && hour < 18) {
-                    timeTheme = 'afternoon'; // Tarde: 12:00 PM - 5:59 PM
+                    timeTheme = 'afternoon';
                     creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/loro-rojo-verde-y-azul-en-la-rama-marron-del-arbol-durante-el-dia-57SHaZUAOtQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Camilo Guarin P (Unsplash)</a>';
                 } else {
-                    timeTheme = 'night';     // Noche: 6:00 PM - 5:59 AM
+                    timeTheme = 'night';
                     creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/rascador-de-la-ciudad-por-la-noche-03gVOLHq9ec?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Saravia (Unsplash)</a>';
                 }
 
@@ -536,7 +619,6 @@
             }
 
             updateTimeTheme();
-            // Actualización automática por si cambia de jornada mientras navega
             setInterval(updateTimeTheme, 15 * 60 * 1000);
 
             // --- Cargar TRM Dólar a COP ---
