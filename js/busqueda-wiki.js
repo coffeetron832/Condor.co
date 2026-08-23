@@ -1,10 +1,11 @@
 /*
- * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
- * Extrae de forma 100% dinámica el sitio web oficial vía Wikidata (Propiedad P856)
- * con filtrado estricto de enlaces secundarios.
+ * 24col - Módulo de Búsqueda Externa y Sugerencias en Tiempo Real
+ * Incluye Autocompletado dinámico (Opensearch) y Renderizado de Tarjetas Oficiales.
  */
 
 window.WikiSearchModule = (function () {
+
+    let debounceTimer = null;
 
     function renderNoResults(container) {
         if (!container) return;
@@ -15,7 +16,6 @@ window.WikiSearchModule = (function () {
         `;
     }
 
-    // Clasificación dinámica de badges según la URL o dominio devuelto
     function getBadgeConfig(url, isWikiPage = false, isExternalFallback = false) {
         if (isWikiPage || url.includes('wikipedia.org')) {
             return { text: 'Artículo Enciclopedia', bg: '#e2e8f0', color: '#334155' };
@@ -42,7 +42,6 @@ window.WikiSearchModule = (function () {
         return { text: 'Sitio Web Oficial', bg: '#dbeafe', color: '#1e40af' };
     }
 
-    // Consulta la propiedad P856 (Sitio web oficial) en Wikidata
     async function fetchOfficialUrlFromWikidata(wikiItemId) {
         if (!wikiItemId) return null;
         try {
@@ -63,7 +62,69 @@ window.WikiSearchModule = (function () {
         return null;
     }
 
+    /**
+     * Novedad: Obtiene lista de sugerencias en tiempo real mientras el usuario escribe
+     */
+    function handleLiveSuggestions(rawQuery, inputElement, resultsContainer, escapeHtml, onSelectCallback) {
+        clearTimeout(debounceTimer);
+
+        const trimmedQuery = rawQuery.trim();
+
+        if (trimmedQuery.length < 2) {
+            resultsContainer.style.display = 'none';
+            resultsContainer.innerHTML = '';
+            return;
+        }
+
+        // Debounce de 300ms para cuidar la red
+        debounceTimer = setTimeout(async () => {
+            try {
+                const suggestEndpoint = `https://es.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(trimmedQuery)}&limit=5&namespace=0&format=json&origin=*`;
+                const res = await fetch(suggestEndpoint);
+                const data = await res.json();
+
+                const suggestions = data[1] || []; // Títulos coincidentes
+
+                if (suggestions.length === 0) {
+                    resultsContainer.style.display = 'none';
+                    return;
+                }
+
+                const suggestionsHtml = suggestions.map(title => `
+                    <li class="wiki-suggestion-item" style="padding: 10px 14px; border-bottom: 1px solid var(--border-color, #eee); cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.5;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span style="font-weight: 500; color: var(--text-color, #333);">${escapeHtml(title)}</span>
+                    </li>
+                `).join('');
+
+                resultsContainer.innerHTML = suggestionsHtml;
+                resultsContainer.style.display = 'block';
+
+                // Añadir evento click a cada sugerencia para ejecutar la búsqueda completa
+                const items = resultsContainer.querySelectorAll('.wiki-suggestion-item');
+                items.forEach((item, index) => {
+                    item.addEventListener('click', () => {
+                        const selectedTitle = suggestions[index];
+                        if (inputElement) inputElement.value = selectedTitle;
+                        if (typeof onSelectCallback === 'function') {
+                            onSelectCallback(selectedTitle);
+                        } else {
+                            searchOfficialLinks(selectedTitle, resultsContainer, escapeHtml);
+                        }
+                    });
+                });
+
+            } catch (err) {
+                console.warn('Error al obtener sugerencias:', err);
+            }
+        }, 300);
+    }
+
+    /**
+     * Búsqueda Completa (Tarjetas, Conceptos y Enlaces Oficiales)
+     */
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml) {
+        clearTimeout(debounceTimer);
         if (!resultsContainer) return;
 
         const trimmedQuery = rawQuery.trim();
@@ -85,7 +146,7 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Obtener Tarjeta de Concepto / Resumen principal
+            // 1. Tarjeta de Concepto / Resumen principal
             try {
                 const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
                 const summaryRes = await fetch(summaryEndpoint);
@@ -123,7 +184,7 @@ window.WikiSearchModule = (function () {
                 console.warn('No se pudo obtener el resumen de concepto:', err);
             }
 
-            // 2. Búsqueda de páginas relevantes en Wikipedia
+            // 2. Resultados de búsqueda profunda y Wikidata
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
             const searchData = await searchRes.json();
@@ -146,12 +207,10 @@ window.WikiSearchModule = (function () {
                     const pageObj = pages[pageKey];
                     const wikibaseItemId = pageObj.pageprops?.wikibase_item;
 
-                    // Método A: Wikidata P856 (Página oficial verificado)
                     if (wikibaseItemId) {
                         externalUrl = await fetchOfficialUrlFromWikidata(wikibaseItemId);
                     }
 
-                    // Método B: Filtrado avanzado sobre extlinks para ignorar prensa y repositorios
                     if (!externalUrl && pageObj.extlinks) {
                         const links = pageObj.extlinks.map(l => l['*']);
                         
@@ -200,7 +259,7 @@ window.WikiSearchModule = (function () {
                 }
             }
 
-            // 3. Renderizado de la lista
+            // 3. Renderizado de lista
             if (validResults.length > 0) {
                 const listHtml = validResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
@@ -240,6 +299,7 @@ window.WikiSearchModule = (function () {
     }
 
     return {
+        handleLiveSuggestions,
         searchOfficialLinks
     };
 
