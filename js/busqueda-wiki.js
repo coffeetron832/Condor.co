@@ -152,7 +152,8 @@ window.WikiSearchModule = (function () {
             }
 
             // 2. Búsqueda de páginas en Wikipedia
-            const fetchLimit = isDropdown ? 5 : targetLimit;
+            // En modo dropdown consultamos hasta 3 candidatos para encontrar rápidamente el 1er enlace válido sin hacer fetch innecesario
+            const fetchLimit = isDropdown ? 3 : targetLimit;
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
             const searchData = await searchRes.json();
@@ -161,7 +162,7 @@ window.WikiSearchModule = (function () {
             const topCandidates = candidates.slice(0, fetchLimit);
 
             for (const candidate of topCandidates) {
-                // Verificar si hay una nueva búsqueda en curso o si ya alcanzamos el límite
+                // Verificar si hay una nueva búsqueda en curso o si ya se alcanzó el límite requerido
                 if (searchId !== currentSearchId) return;
                 if (validResults.length >= targetLimit) break;
 
@@ -231,15 +232,18 @@ window.WikiSearchModule = (function () {
                         });
                     }
                 }
+
+                // Evaluar la interrupción inmediata para prevenir la adición de más resultados
+                if (validResults.length >= targetLimit) break;
             }
 
             // Si se inició otra búsqueda mientras terminaba esta, descartamos renderizar
             if (searchId !== currentSearchId) return;
 
-            // 3. Renderizado controlado por targetLimit
-            if (validResults.length > 0) {
-                const displayResults = validResults.slice(0, targetLimit);
+            // 3. Renderizado estrictamente limitado según targetLimit
+            const displayResults = validResults.slice(0, targetLimit);
 
+            if (displayResults.length > 0) {
                 let listHtml = displayResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     const faviconUrl = getFaviconUrl(item.url, item.isWikiPage);
