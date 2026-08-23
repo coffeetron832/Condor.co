@@ -1,6 +1,6 @@
 /*
- * 24col - Módulo de Búsqueda Externa y Sugerencias en Tiempo Real
- * Incluye Autocompletado dinámico (Opensearch) y Renderizado de Tarjetas Oficiales.
+ * 24col - Módulo de Búsqueda Externa, Servicios y Autocompletado
+ * Versión optimizada con control silencioso de 404 en la API REST de Wikipedia
  */
 
 window.WikiSearchModule = (function () {
@@ -16,6 +16,90 @@ window.WikiSearchModule = (function () {
         `;
     }
 
+    // 1. Sugerencias rápidas para el autocompletado (action=opensearch)
+    async function fetchAutocompleteSuggestions(query) {
+        const cleanQuery = query.trim().replace(/[^\w\sÁÉÍÓÚáéíóúÑñ]/gi, '');
+        if (!cleanQuery || cleanQuery.length < 2) return [];
+
+        try {
+            const endpoint = `https://es.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(cleanQuery)}&limit=6&namespace=0&format=json&origin=*`;
+            const res = await fetch(endpoint);
+            if (!res.ok) return [];
+            const data = await res.json();
+            return data[1] || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    // 2. Renderizado del menú desplegable de autocompletado
+    function renderSuggestions(suggestions, dropdownContainer, inputElement, onSelectCallback, escapeHtml) {
+        if (!dropdownContainer) return;
+
+        if (suggestions.length === 0) {
+            dropdownContainer.style.display = 'none';
+            dropdownContainer.innerHTML = '';
+            return;
+        }
+
+        const html = suggestions.map((term, index) => `
+            <li class="wiki-autocomplete-item" data-index="${index}" style="padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--text-color, #1e293b); border-bottom: 1px solid var(--border-color, #f1f5f9); transition: background 0.15s ease;">
+                <span style="color: var(--text-secondary, #94a3b8); margin-right: 6px;">🔍</span> ${escapeHtml(term)}
+            </li>
+        `).join('');
+
+        dropdownContainer.innerHTML = html;
+        dropdownContainer.style.display = 'block';
+
+        dropdownContainer.querySelectorAll('.wiki-autocomplete-item').forEach((item, idx) => {
+            item.addEventListener('mouseenter', () => item.style.background = 'var(--bg-hover, #f8fafc)');
+            item.addEventListener('mouseleave', () => item.style.background = 'transparent');
+            item.addEventListener('click', () => {
+                const selectedText = suggestions[idx];
+                inputElement.value = selectedText;
+                dropdownContainer.style.display = 'none';
+                if (typeof onSelectCallback === 'function') {
+                    onSelectCallback(selectedText);
+                }
+            });
+        });
+    }
+
+    // 3. Método para adjuntar la lógica de autocompletado a un Input
+    function attachAutocomplete(inputElement, dropdownContainer, onSelectCallback, escapeHtml) {
+        if (!inputElement || !dropdownContainer) return;
+
+        inputElement.addEventListener('input', (e) => {
+            const query = e.target.value;
+
+            clearTimeout(debounceTimer);
+
+            if (query.trim().length < 2) {
+                dropdownContainer.style.display = 'none';
+                dropdownContainer.innerHTML = '';
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                const suggestions = await fetchAutocompleteSuggestions(query);
+                renderSuggestions(suggestions, dropdownContainer, inputElement, onSelectCallback, escapeHtml);
+            }, 250);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!inputElement.contains(e.target) && !dropdownContainer.contains(e.target)) {
+                dropdownContainer.style.display = 'none';
+            }
+        });
+
+        inputElement.addEventListener('focus', () => {
+            if (dropdownContainer.children.length > 0) {
+                dropdownContainer.style.display = 'block';
+            }
+        });
+    }
+
+    // Clasificación dinámica de badges
     function getBadgeConfig(url, isWikiPage = false, isExternalFallback = false) {
         if (isWikiPage || url.includes('wikipedia.org')) {
             return { text: 'Artículo Enciclopedia', bg: '#e2e8f0', color: '#334155' };
@@ -47,6 +131,7 @@ window.WikiSearchModule = (function () {
         try {
             const wikidataUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${wikiItemId}&props=claims&format=json&origin=*`;
             const res = await fetch(wikidataUrl);
+            if (!res.ok) return null;
             const data = await res.json();
             
             const claims = data.entities?.[wikiItemId]?.claims;
@@ -57,79 +142,18 @@ window.WikiSearchModule = (function () {
                 if (rawUrl) return rawUrl;
             }
         } catch (e) {
-            console.warn('Error al consultar Wikidata (P856):', e);
+            // Silencioso en caso de error
         }
         return null;
     }
 
-    /**
-     * Novedad: Obtiene lista de sugerencias en tiempo real mientras el usuario escribe
-     */
-    function handleLiveSuggestions(rawQuery, inputElement, resultsContainer, escapeHtml, onSelectCallback) {
-        clearTimeout(debounceTimer);
-
-        const trimmedQuery = rawQuery.trim();
-
-        if (trimmedQuery.length < 2) {
-            resultsContainer.style.display = 'none';
-            resultsContainer.innerHTML = '';
-            return;
-        }
-
-        // Debounce de 300ms para cuidar la red
-        debounceTimer = setTimeout(async () => {
-            try {
-                const suggestEndpoint = `https://es.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(trimmedQuery)}&limit=5&namespace=0&format=json&origin=*`;
-                const res = await fetch(suggestEndpoint);
-                const data = await res.json();
-
-                const suggestions = data[1] || []; // Títulos coincidentes
-
-                if (suggestions.length === 0) {
-                    resultsContainer.style.display = 'none';
-                    return;
-                }
-
-                const suggestionsHtml = suggestions.map(title => `
-                    <li class="wiki-suggestion-item" style="padding: 10px 14px; border-bottom: 1px solid var(--border-color, #eee); cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.5;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <span style="font-weight: 500; color: var(--text-color, #333);">${escapeHtml(title)}</span>
-                    </li>
-                `).join('');
-
-                resultsContainer.innerHTML = suggestionsHtml;
-                resultsContainer.style.display = 'block';
-
-                // Añadir evento click a cada sugerencia para ejecutar la búsqueda completa
-                const items = resultsContainer.querySelectorAll('.wiki-suggestion-item');
-                items.forEach((item, index) => {
-                    item.addEventListener('click', () => {
-                        const selectedTitle = suggestions[index];
-                        if (inputElement) inputElement.value = selectedTitle;
-                        if (typeof onSelectCallback === 'function') {
-                            onSelectCallback(selectedTitle);
-                        } else {
-                            searchOfficialLinks(selectedTitle, resultsContainer, escapeHtml);
-                        }
-                    });
-                });
-
-            } catch (err) {
-                console.warn('Error al obtener sugerencias:', err);
-            }
-        }, 300);
-    }
-
-    /**
-     * Búsqueda Completa (Tarjetas, Conceptos y Enlaces Oficiales)
-     */
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml) {
-        clearTimeout(debounceTimer);
         if (!resultsContainer) return;
 
-        const trimmedQuery = rawQuery.trim();
+        // Sanitización previa del término a buscar
+        const cleanQuery = rawQuery.trim().replace(/[^\w\sÁÉÍÓÚáéíóúÑñ]/gi, '');
 
-        if (trimmedQuery.length < 3) {
+        if (cleanQuery.length < 2) {
             resultsContainer.style.display = 'none';
             resultsContainer.innerHTML = '';
             return;
@@ -146,11 +170,12 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Tarjeta de Concepto / Resumen principal
+            // 1. Intentar obtener el resumen principal (Manejo seguro de 404)
             try {
-                const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
+                const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanQuery)}?redirect=true`;
                 const summaryRes = await fetch(summaryEndpoint);
 
+                // Solo procesamos si responde 200 OK (evita lanzar excepciones en 404)
                 if (summaryRes.ok) {
                     const summaryData = await summaryRes.json();
                     if (summaryData.type === 'standard' && summaryData.extract) {
@@ -181,85 +206,71 @@ window.WikiSearchModule = (function () {
                     }
                 }
             } catch (err) {
-                console.warn('No se pudo obtener el resumen de concepto:', err);
+                // Silenciamos fallos de red puntuales
             }
 
-            // 2. Resultados de búsqueda profunda y Wikidata
-            const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
+            // 2. Búsqueda profunda vía API de Query
+            const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
-            const searchData = await searchRes.json();
-            const candidates = searchData.query?.search || [];
+            
+            if (searchRes.ok) {
+                const searchData = await searchRes.json();
+                const candidates = searchData.query?.search || [];
 
-            const topCandidates = candidates.slice(0, 5);
+                for (const candidate of candidates.slice(0, 5)) {
+                    const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=pageprops|extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
+                    const pageRes = await fetch(pageEndpoint);
+                    
+                    if (!pageRes.ok) continue;
+                    
+                    const pageData = await pageRes.json();
+                    const pages = pageData.query?.pages || {};
+                    const pageKey = Object.keys(pages)[0];
 
-            for (const candidate of topCandidates) {
-                const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=pageprops|extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
-                const pageRes = await fetch(pageEndpoint);
-                const pageData = await pageRes.json();
+                    let externalUrl = null;
+                    let isFallback = false;
 
-                const pages = pageData.query?.pages || {};
-                const pageKey = Object.keys(pages)[0];
+                    if (pageKey !== "-1") {
+                        const pageObj = pages[pageKey];
+                        const wikibaseItemId = pageObj.pageprops?.wikibase_item;
 
-                let externalUrl = null;
-                let isFallback = false;
+                        if (wikibaseItemId) {
+                            externalUrl = await fetchOfficialUrlFromWikidata(wikibaseItemId);
+                        }
 
-                if (pageKey !== "-1") {
-                    const pageObj = pages[pageKey];
-                    const wikibaseItemId = pageObj.pageprops?.wikibase_item;
+                        if (!externalUrl && pageObj.extlinks) {
+                            const links = pageObj.extlinks.map(l => l['*']);
+                            const ignoredDomains = [
+                                'archive.org', 'wikimedia.org', 'wikipedia.org', 'doi.org', 'w3.org',
+                                'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com',
+                                'eltiempo.com', 'elespectador.com', 'semana.com', 'caracol.com.co', 'rcnradio.com',
+                                'bbc.com', 'nytimes.com', 'google.com', 'github.com', 'issuu.com'
+                            ];
 
-                    if (wikibaseItemId) {
-                        externalUrl = await fetchOfficialUrlFromWikidata(wikibaseItemId);
+                            const cleanLink = links.find(url => !ignoredDomains.some(domain => url.toLowerCase().includes(domain)));
+                            if (cleanLink) {
+                                externalUrl = cleanLink;
+                                isFallback = true;
+                            }
+                        }
                     }
 
-                    if (!externalUrl && pageObj.extlinks) {
-                        const links = pageObj.extlinks.map(l => l['*']);
-                        
-                        const ignoredDomains = [
-                            'archive.org', 'wikimedia.org', 'wikipedia.org', 'doi.org', 'w3.org',
-                            'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com',
-                            'eltiempo.com', 'elespectador.com', 'semana.com', 'caracol.com.co', 'rcnradio.com',
-                            'bbc.com', 'nytimes.com', 'google.com', 'github.com', 'issuu.com', 'dialnet.unirioja.es'
-                        ];
+                    const cleanSnippet = candidate.snippet.replace(/<\/?[^>]+(>|$)/g, "");
 
-                        const cleanLink = links.find(url => {
-                            const lower = url.toLowerCase();
-                            return !ignoredDomains.some(domain => lower.includes(domain));
-                        });
-
-                        if (cleanLink) {
-                            externalUrl = cleanLink;
-                            isFallback = true;
+                    if (externalUrl) {
+                        if (!validResults.some(r => r.url === externalUrl)) {
+                            validResults.push({ title: candidate.title, snippet: cleanSnippet, url: externalUrl, isWikiPage: false, isFallback });
+                        }
+                    } else {
+                        const wikiArticleUrl = `https://es.wikipedia.org/wiki/${encodeURIComponent(candidate.title)}`;
+                        if (!validResults.some(r => r.url === wikiArticleUrl)) {
+                            validResults.push({ title: candidate.title, snippet: cleanSnippet, url: wikiArticleUrl, isWikiPage: true, isFallback: false });
                         }
                     }
                 }
-
-                const cleanSnippet = candidate.snippet.replace(/<\/?[^>]+(>|$)/g, "");
-
-                if (externalUrl) {
-                    if (!validResults.some(r => r.url === externalUrl)) {
-                        validResults.push({
-                            title: candidate.title,
-                            snippet: cleanSnippet,
-                            url: externalUrl,
-                            isWikiPage: false,
-                            isFallback: isFallback
-                        });
-                    }
-                } else {
-                    const wikiArticleUrl = `https://es.wikipedia.org/wiki/${encodeURIComponent(candidate.title)}`;
-                    if (!validResults.some(r => r.url === wikiArticleUrl)) {
-                        validResults.push({
-                            title: candidate.title,
-                            snippet: cleanSnippet,
-                            url: wikiArticleUrl,
-                            isWikiPage: true,
-                            isFallback: false
-                        });
-                    }
-                }
             }
 
-            // 3. Renderizado de lista
+            // 3. Renderizado final
             if (validResults.length > 0) {
                 const listHtml = validResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
@@ -289,17 +300,12 @@ window.WikiSearchModule = (function () {
             }
 
         } catch (error) {
-            console.error('Error buscando información:', error);
-            resultsContainer.innerHTML = `
-                <li style="padding: 12px; text-align: center; font-size: 12px; color: #dc2626;">
-                    No se pudo realizar la búsqueda web.
-                </li>
-            `;
+            renderNoResults(resultsContainer);
         }
     }
 
     return {
-        handleLiveSuggestions,
+        attachAutocomplete,
         searchOfficialLinks
     };
 
