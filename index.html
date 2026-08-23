@@ -6,7 +6,7 @@
     <title>24col - El portal web de los colombianos</title>
     
     <!-- Políticas de Seguridad (CSP) permitiendo Lucide Icons -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://es.wikipedia.org;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://es.wikipedia.org https://www.datos.gov.co;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Frame-Options" content="DENY">
     
@@ -48,7 +48,7 @@
         </div>
     </header>
 
-    <!-- WRAPPER PRINCIPAL (Agrupa Hero + Directorio para un centrado perfecto) -->
+    <!-- WRAPPER PRINCIPAL -->
     <div class="container">
         <main class="main-content">
 
@@ -60,6 +60,19 @@
                     </div>
 
                     <p id="dynamicGreeting" class="hero-subtitle">¡Te damos la bienvenida!</p>
+
+                    <!-- Widget Sutil: TRM y Clima -->
+                    <div id="heroWidgetBar" class="hero-widget-bar">
+                        <span class="widget-item" id="heroTrmItem" title="Tasa Representativa del Mercado">
+                            <i data-lucide="dollar-sign" class="widget-icon"></i>
+                            <span id="heroTrmText">TRM: Cargando...</span>
+                        </span>
+                        <span class="widget-divider">•</span>
+                        <span class="widget-item" id="heroWeatherItem" title="Clima actual">
+                            <span id="heroWeatherEmoji">🌤️</span>
+                            <span id="heroWeatherText">Clima: Cargando...</span>
+                        </span>
+                    </div>
 
                     <div class="search-container">
                         <form id="searchForm" onsubmit="event.preventDefault();">
