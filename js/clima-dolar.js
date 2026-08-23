@@ -143,175 +143,241 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!disclaimerEl && trmRateEl) {
                 disclaimerEl = document.createElement('small');
                 disclaimerEl.id = 'trmDisclaimer';
-                disclaimerEl.style.cssText = 'display: block; font-size: 10px; color: #757575; margin-top: 6px; line-height: 1.2;';
-                
-                const parentContainer = trmRateEl.closest('.card-item') || trmRateEl.parentElement;
-                if (parentContainer) parentContainer.appendChild(disclaimerEl);
+                disclaimerEl.style.cssText = 'display:block; margin-top:6px; font-size:10px; color:#777;';
+                if (trmRateEl.parentNode) {
+                    trmRateEl.parentNode.appendChild(disclaimerEl);
+                }
             }
-
             if (disclaimerEl) {
-                disclaimerEl.textContent = `* Datos oficiales vía ${trmData.source}. Se actualiza de lunes a viernes en días hábiles.`;
+                disclaimerEl.textContent = `Fuente: ${trmData.source}`;
             }
 
+            // Calculadora TRM (si existen los inputs en el DOM)
             if (usdInput && copInput) {
-                usdInput.value = 1;
-                copInput.value = Math.round(currentRate);
-
                 usdInput.addEventListener('input', () => {
-                    const usdVal = parseFloat(usdInput.value) || 0;
-                    copInput.value = Math.round(usdVal * currentRate);
+                    const val = parseFloat(usdInput.value);
+                    if (!isNaN(val) && currentRate) {
+                        copInput.value = Math.round(val * currentRate);
+                    } else {
+                        copInput.value = '';
+                    }
                 });
 
                 copInput.addEventListener('input', () => {
-                    const copVal = parseFloat(copInput.value) || 0;
-                    usdInput.value = (copVal / currentRate).toFixed(2);
+                    const val = parseFloat(copInput.value);
+                    if (!isNaN(val) && currentRate) {
+                        usdInput.value = (val / currentRate).toFixed(2);
+                    } else {
+                        usdInput.value = '';
+                    }
                 });
             }
 
-        } catch (err) {
-            console.error('24col: Error al consultar TRM:', err);
+        } catch (error) {
+            console.error('24col Error TRM:', error);
             if (trmRateEl) trmRateEl.textContent = 'No disponible';
-            if (trmUpdateEl) trmUpdateEl.textContent = 'Intenta nuevamente más tarde';
         }
     }
+
     fetchTRM();
 
-    // --- Theme Switcher ---
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeToggleText = document.getElementById('themeToggleText');
-    const iconSun = document.getElementById('themeIconSun');
-    const iconMoon = document.getElementById('themeIconMoon');
+    // ==========================================
+    // 4. MÓDULO DE CLIMA Y BÚSQUEDA DINÁMICA
+    // ==========================================
+    function getWeatherInterpretation(code) {
+        const codes = {
+            0: { desc: 'Despejado', icon: '☀️' },
+            1: { desc: 'Mayormente despejado', icon: '🌤️' },
+            2: { desc: 'Parcialmente nublado', icon: '⛅' },
+            3: { desc: 'Nublado', icon: '☁️' },
+            45: { desc: 'Niebla', icon: '🌫️' },
+            48: { desc: 'Niebla con escarcha', icon: '🌫️' },
+            51: { desc: 'Llovizna ligera', icon: '🌦️' },
+            53: { desc: 'Llovizna moderada', icon: '🌦️' },
+            55: { desc: 'Llovizna densa', icon: '🌧️' },
+            61: { desc: 'Lluvia ligera', icon: '🌧️' },
+            63: { desc: 'Lluvia moderada', icon: '🌧️' },
+            65: { desc: 'Lluvia fuerte', icon: '🌧️' },
+            80: { desc: 'Chubascos ligeros', icon: '🌦️' },
+            81: { desc: 'Chubascos moderados', icon: '🌧️' },
+            82: { desc: 'Chubascos violentos', icon: '⛈️' },
+            95: { desc: 'Tormenta eléctrica', icon: '⛈️' },
+            96: { desc: 'Tormenta con granizo ligero', icon: '⛈️' },
+            99: { desc: 'Tormenta con granizo fuerte', icon: '⛈️' }
+        };
+        return codes[code] || { desc: 'Clima variable', icon: '🌡️' };
+    }
 
-    function updateThemeUI(theme) {
-        if (theme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            if (themeToggleText) themeToggleText.textContent = 'Modo Claro';
-            if (iconSun) iconSun.style.display = 'inline-block';
-            if (iconMoon) iconMoon.style.display = 'none';
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-            if (themeToggleText) themeToggleText.textContent = 'Modo Oscuro';
-            if (iconSun) iconSun.style.display = 'none';
-            if (iconMoon) iconMoon.style.display = 'inline-block';
+    async function fetchWeatherData(lat, lon) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`;
+            const response = await fetch(url, {
+                signal: controller.signal,
+                headers: { 'Accept': 'application/json' }
+            });
+
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            return {
+                temperature: data.current.temperature_2m,
+                weathercode: data.current.weather_code
+            };
+        } catch (err) {
+            clearTimeout(timeoutId);
+            throw err;
         }
     }
 
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-    updateThemeUI(currentTheme);
+    async function searchCitiesApi(query) {
+        if (!query || query.trim().length < 2) return [];
 
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const newTheme = isDark ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            updateThemeUI(newTheme);
-        });
-    }
+        try {
+            const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=8&language=es&format=json&country_code=CO`;
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' }
+            });
 
-    // --- Manejo de Modales de Categoría ---
-    const triggerBtns = document.querySelectorAll('.category-trigger-btn');
-    const categoryModals = document.querySelectorAll('.category-modal');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    triggerBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.getAttribute('data-modal-target');
-            const targetModal = document.getElementById(targetId);
-            if (targetModal && typeof targetModal.showModal === 'function') {
-                targetModal.showModal();
+            const data = await response.json();
+            if (data && Array.isArray(data.results)) {
+                return data.results.map(item => ({
+                    name: item.name,
+                    admin1: item.admin1 || '',
+                    lat: item.latitude,
+                    lon: item.longitude
+                }));
             }
-        });
-    });
-
-    categoryModals.forEach(modal => {
-        const closeBtn = modal.querySelector('.modal-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => modal.close());
+        } catch (err) {
+            console.warn('24col: Error consultando Geocoding API:', err);
         }
-        modal.addEventListener('click', (e) => {
-            const rect = modal.getBoundingClientRect();
-            if (
-                e.clientX < rect.left ||
-                e.clientX > rect.right ||
-                e.clientY < rect.top ||
-                e.clientY > rect.bottom
-            ) {
-                modal.close();
-            }
-        });
-    });
-
-    // --- Modales Informativos (Bienvenida y Reporte) ---
-    const welcomeModal = document.getElementById('welcomeModal');
-    const openWelcomeBtn = document.getElementById('openWelcomeModal');
-    const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
-    const closeWelcomeCross = document.getElementById('closeWelcomeModalCross');
-    const reportModal = document.getElementById('reportModal');
-    const openReportBtn = document.getElementById('openReportModal');
-    const closeReportBtn = document.getElementById('closeReportModal');
-
-    if (!localStorage.getItem('welcomeShown')) {
-        setTimeout(() => {
-            if (welcomeModal && typeof welcomeModal.showModal === 'function') {
-                welcomeModal.showModal();
-            }
-        }, 400);
+        return [];
     }
 
-    function closeWelcome() {
-        if (welcomeModal) {
-            welcomeModal.close();
-            localStorage.setItem('welcomeShown', 'true');
+    async function updateWeatherUI(cityName, lat, lon) {
+        const tempEl = document.getElementById('weatherTemp');
+        const cityEl = document.getElementById('weatherCity');
+
+        if (!tempEl || !cityEl) return;
+
+        const validLat = parseFloat(lat);
+        const validLon = parseFloat(lon);
+
+        if (isNaN(validLat) || isNaN(validLon)) {
+            tempEl.textContent = '⚠️ Sin coords';
+            cityEl.textContent = `${cityName} (Sin ubicación)`;
+            return;
+        }
+
+        tempEl.textContent = '...';
+        cityEl.textContent = cityName;
+
+        try {
+            const weather = await fetchWeatherData(validLat, validLon);
+            const info = getWeatherInterpretation(weather.weathercode);
+
+            tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
+            cityEl.textContent = `${cityName} • ${info.desc}`;
+
+            localStorage.setItem('24col_last_city', JSON.stringify({ name: cityName, lat: validLat, lon: validLon }));
+        } catch (err) {
+            tempEl.textContent = '⚠️ Error';
+            cityEl.textContent = `${cityName} (Sin datos)`;
         }
     }
 
-    if (closeWelcomeBtn) closeWelcomeBtn.addEventListener('click', closeWelcome);
-    if (closeWelcomeCross) closeWelcomeCross.addEventListener('click', closeWelcome);
+    function setupWeatherSearch() {
+        const weatherSearchInput = document.getElementById('weatherSearchInput');
+        const weatherResultsContainer = document.getElementById('weatherSearchResults');
 
-    if (openWelcomeBtn) {
-        openWelcomeBtn.addEventListener('click', () => {
-            if (welcomeModal) welcomeModal.showModal();
+        if (!weatherSearchInput || !weatherResultsContainer) return;
+
+        let weatherDebounceTimer = null;
+
+        weatherSearchInput.addEventListener('input', function () {
+            const query = this.value.trim();
+            clearTimeout(weatherDebounceTimer);
+
+            if (query.length < 2) {
+                weatherResultsContainer.style.display = 'none';
+                weatherResultsContainer.innerHTML = '';
+                return;
+            }
+
+            weatherDebounceTimer = setTimeout(async () => {
+                const cities = await searchCitiesApi(query);
+                weatherResultsContainer.innerHTML = '';
+
+                if (cities.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'No se encontraron resultados';
+                    li.style.padding = '6px 10px';
+                    li.style.fontSize = '11px';
+                    li.style.color = '#888';
+                    weatherResultsContainer.appendChild(li);
+                } else {
+                    cities.forEach(city => {
+                        const li = document.createElement('li');
+                        const label = city.admin1 ? `${city.name}, ${city.admin1}` : city.name;
+
+                        li.textContent = label;
+                        li.style.padding = '6px 10px';
+                        li.style.fontSize = '12px';
+                        li.style.cursor = 'pointer';
+                        li.style.borderBottom = '1px solid #eee';
+                        li.style.color = '#333';
+
+                        li.addEventListener('mouseenter', () => li.style.backgroundColor = '#f4f4f4');
+                        li.addEventListener('mouseleave', () => li.style.backgroundColor = '#fff');
+
+                        li.addEventListener('click', () => {
+                            weatherSearchInput.value = '';
+                            weatherResultsContainer.style.display = 'none';
+                            updateWeatherUI(label, city.lat, city.lon);
+                        });
+
+                        weatherResultsContainer.appendChild(li);
+                    });
+                }
+                weatherResultsContainer.style.display = 'block';
+            }, 350);
         });
-    }
 
-    if (openReportBtn) {
-        openReportBtn.addEventListener('click', () => {
-            if (reportModal) reportModal.showModal();
-        });
-    }
-
-    if (closeReportBtn) {
-        closeReportBtn.addEventListener('click', () => {
-            if (reportModal) reportModal.close();
-        });
-    }
-
-    if (welcomeModal) {
-        welcomeModal.addEventListener('click', (e) => {
-            const rect = welcomeModal.getBoundingClientRect();
-            if (
-                e.clientX < rect.left ||
-                e.clientX > rect.right ||
-                e.clientY < rect.top ||
-                e.clientY > rect.bottom
-            ) {
-                closeWelcome();
+        document.addEventListener('click', function (e) {
+            if (!weatherSearchInput.contains(e.target) && !weatherResultsContainer.contains(e.target)) {
+                weatherResultsContainer.style.display = 'none';
             }
         });
     }
 
-    if (reportModal) {
-        reportModal.addEventListener('click', (e) => {
-            const rect = reportModal.getBoundingClientRect();
-            if (
-                e.clientX < rect.left ||
-                e.clientX > rect.right ||
-                e.clientY < rect.top ||
-                e.clientY > rect.bottom
-            ) {
-                reportModal.close();
-            }
-        });
+    function initMainWeatherCard() {
+        setupWeatherSearch();
+
+        const tempEl = document.getElementById('weatherTemp');
+        const cityEl = document.getElementById('weatherCity');
+
+        const savedCity = localStorage.getItem('24col_last_city');
+        if (savedCity) {
+            try {
+                const parsed = JSON.parse(savedCity);
+                if (parsed.name && parsed.lat && parsed.lon) {
+                    updateWeatherUI(parsed.name, parsed.lat, parsed.lon);
+                    return;
+                }
+            } catch (e) {}
+        }
+
+        if (tempEl && cityEl) {
+            tempEl.textContent = '--°C';
+            cityEl.textContent = 'Selecciona una ciudad';
+        }
     }
+
+    initMainWeatherCard();
+
 });
