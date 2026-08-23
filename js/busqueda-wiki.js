@@ -6,6 +6,9 @@
 
 window.WikiSearchModule = (function () {
 
+    // Variable para rastrear la última búsqueda y descartar respuestas obsoletas
+    let currentSearchId = 0;
+
     function renderNoResults(container) {
         if (!container) return;
         container.innerHTML = `
@@ -86,8 +89,9 @@ window.WikiSearchModule = (function () {
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
 
+        const searchId = ++currentSearchId; // Identificador único para esta ejecución
         const isDropdown = options.isDropdown || false;
-        const limit = isDropdown ? 1 : (options.limit || 12);
+        const targetLimit = isDropdown ? 1 : (options.limit || 12);
         const trimmedQuery = rawQuery.trim();
 
         if (trimmedQuery.length < 2) {
@@ -148,7 +152,7 @@ window.WikiSearchModule = (function () {
             }
 
             // 2. Búsqueda de páginas en Wikipedia
-            const fetchLimit = isDropdown ? 5 : limit;
+            const fetchLimit = isDropdown ? 5 : targetLimit;
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
             const searchData = await searchRes.json();
@@ -157,11 +161,15 @@ window.WikiSearchModule = (function () {
             const topCandidates = candidates.slice(0, fetchLimit);
 
             for (const candidate of topCandidates) {
-                if (isDropdown && validResults.length >= 1) break;
+                // Verificar si hay una nueva búsqueda en curso o si ya alcanzamos el límite
+                if (searchId !== currentSearchId) return;
+                if (validResults.length >= targetLimit) break;
 
                 const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=pageprops|extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
                 const pageRes = await fetch(pageEndpoint);
                 const pageData = await pageRes.json();
+
+                if (searchId !== currentSearchId) return;
 
                 const pages = pageData.query?.pages || {};
                 const pageKey = Object.keys(pages)[0];
@@ -225,9 +233,12 @@ window.WikiSearchModule = (function () {
                 }
             }
 
-            // 3. Renderizado con Favicon incluido
+            // Si se inició otra búsqueda mientras terminaba esta, descartamos renderizar
+            if (searchId !== currentSearchId) return;
+
+            // 3. Renderizado controlado por targetLimit
             if (validResults.length > 0) {
-                const displayResults = isDropdown ? validResults.slice(0, 1) : validResults;
+                const displayResults = validResults.slice(0, targetLimit);
 
                 let listHtml = displayResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
@@ -272,6 +283,7 @@ window.WikiSearchModule = (function () {
             }
 
         } catch (error) {
+            if (searchId !== currentSearchId) return;
             console.error('Error buscando información:', error);
             resultsContainer.innerHTML = `
                 <li style="padding: 12px; text-align: center; font-size: 12px; color: #dc2626; font-family: Arial, Helvetica, sans-serif;">
