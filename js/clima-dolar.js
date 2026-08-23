@@ -56,25 +56,97 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGreeting();
     }, 15 * 60 * 1000);
 
-    // --- Cargar TRM Dólar a COP ---
+    // --- Cargar TRM Dólar a COP (Datos Abiertos Colombia + Fallback) ---
     async function fetchTRM() {
         const trmRateEl = document.getElementById('trmRate');
         const trmUpdateEl = document.getElementById('trmUpdate');
-        try {
-            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-            const data = await response.json();
-            if (data && data.rates && data.rates.COP) {
-                const rateFormatted = new Intl.NumberFormat('es-CO', {
-                    style: 'currency',
-                    currency: 'COP',
-                    maximumFractionDigits: 2
-                }).format(data.rates.COP);
+        const trmDisclaimerEl = document.getElementById('trmDisclaimer');
 
-                trmRateEl.textContent = `${rateFormatted} COP`;
-                trmUpdateEl.textContent = `Actualizado: ${data.date || 'Hoy'}`;
-            } else {
-                throw new Error('Formato inválido');
+        const copFormatter = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            maximumFractionDigits: 2
+        });
+
+        // Fuente 1: Superintendencia Financiera (datos.gov.co)
+        async function getTRMOficial() {
+            const response = await fetch('https://www.datos.gov.co/resource/32sa-823r.json?$order=vigenciadesde%20DESC&$limit=2');
+            if (!response.ok) throw new Error('Error Datos Gov');
+            const data = await response.json();
+
+            if (data && data.length > 0) {
+                const todayRate = parseFloat(data[0].valor);
+                const yesterdayRate = data[1] ? parseFloat(data[1].valor) : todayRate;
+                const dateStr = data[0].vigenciadesde ? data[0].vigenciadesde.split('T')[0] : 'Hoy';
+
+                return {
+                    rate: todayRate,
+                    date: dateStr,
+                    change: todayRate - yesterdayRate,
+                    source: 'SFC'
+                };
             }
+            throw new Error('Sin datos en API Oficial');
+        }
+
+        // Fuente 2: API de respaldo
+        async function getTRMFallback() {
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            if (!response.ok) throw new Error('Error ExchangeRate API');
+            const data = await response.json();
+
+            if (data && data.rates && data.rates.COP) {
+                return {
+                    rate: data.rates.COP,
+                    date: data.date || 'Hoy',
+                    change: 0,
+                    source: 'Fallback'
+                };
+            }
+            throw new Error('Sin datos en API Fallback');
+        }
+
+        try {
+            let trmData;
+            try {
+                trmData = await getTRMOficial();
+            } catch (e) {
+                trmData = await getTRMFallback();
+            }
+
+            if (trmRateEl) {
+                trmRateEl.textContent = `${copFormatter.format(trmData.rate)} COP`;
+            }
+
+            if (trmUpdateEl) {
+                let changeBadge = '';
+                if (trmData.change > 0) {
+                    changeBadge = ` <span style="color: #2e7d32; font-weight: 600;">(▲ +$${trmData.change.toFixed(2)})</span>`;
+                } else if (trmData.change < 0) {
+                    changeBadge = ` <span style="color: #c62828; font-weight: 600;">(▼ -$${Math.abs(trmData.change).toFixed(2)})</span>`;
+                }
+
+                trmUpdateEl.innerHTML = `Vigencia: ${trmData.date}${changeBadge}`;
+            }
+
+            // Inserción automática del disclaimer en la tarjeta si existe la barra/contenedor
+            let disclaimerContainer = trmDisclaimerEl;
+            if (!disclaimerContainer && trmUpdateEl && trmUpdateEl.parentNode) {
+                disclaimerContainer = document.createElement('div');
+                disclaimerContainer.id = 'trmDisclaimer';
+                disclaimerContainer.style.fontSize = '10px';
+                disclaimerContainer.style.opacity = '0.75';
+                disclaimerContainer.style.marginTop = '4px';
+                disclaimerContainer.style.lineHeight = '1.2';
+                trmUpdateEl.parentNode.appendChild(disclaimerContainer);
+            }
+
+            if (disclaimerContainer) {
+                disclaimerContainer.innerHTML = trmData.source === 'SFC'
+                    ? 'ℹ️ <em>Oficial Superfinanciera (datos.gov.co). Se actualiza en días hábiles.</em>'
+                    : 'ℹ️ <em>Tasa de cambio de referencia general (ExchangeRate API).</em>';
+            }
+
         } catch (err) {
             if (trmRateEl) trmRateEl.textContent = 'No disponible';
             if (trmUpdateEl) trmUpdateEl.textContent = 'Intenta nuevamente más tarde';
