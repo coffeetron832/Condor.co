@@ -111,7 +111,7 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Obtener Tarjeta de Concepto (Solo si NO es dropdown)
+            // 1. Obtener Tarjeta de Concepto (Estrictamente deshabilitada si es dropdown)
             if (!isDropdown) {
                 try {
                     const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
@@ -161,7 +161,7 @@ window.WikiSearchModule = (function () {
             const topCandidates = candidates.slice(0, fetchLimit);
 
             for (const candidate of topCandidates) {
-                // Verificar si hay una nueva búsqueda en curso o si ya alcanzamos el límite
+                // Interrupción inmediata si ya alcanzamos el límite exacto requerido
                 if (searchId !== currentSearchId) return;
                 if (validResults.length >= targetLimit) break;
 
@@ -231,15 +231,18 @@ window.WikiSearchModule = (function () {
                         });
                     }
                 }
+
+                // Salir inmediatamente al encontrar el primer resultado cuando se especifica targetLimit (1 para dropdown)
+                if (validResults.length >= targetLimit) break;
             }
 
             // Si se inició otra búsqueda mientras terminaba esta, descartamos renderizar
             if (searchId !== currentSearchId) return;
 
-            // 3. Renderizado controlado por targetLimit
-            if (validResults.length > 0) {
-                const displayResults = validResults.slice(0, targetLimit);
+            // 3. Renderizado estrictamente cortado a targetLimit
+            const displayResults = validResults.slice(0, targetLimit);
 
+            if (displayResults.length > 0) {
                 let listHtml = displayResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     const faviconUrl = getFaviconUrl(item.url, item.isWikiPage);
@@ -275,8 +278,8 @@ window.WikiSearchModule = (function () {
                     `;
                 }
 
-                resultsContainer.innerHTML = conceptCardHtml + listHtml;
-            } else if (conceptCardHtml) {
+                resultsContainer.innerHTML = (isDropdown ? '' : conceptCardHtml) + listHtml;
+            } else if (conceptCardHtml && !isDropdown) {
                 resultsContainer.innerHTML = conceptCardHtml;
             } else {
                 renderNoResults(resultsContainer);
