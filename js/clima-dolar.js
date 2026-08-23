@@ -56,39 +56,66 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGreeting();
     }, 15 * 60 * 1000);
 
-    // --- LÓGICA DE CONTROL DE MODALES ---
+    // --- LÓGICA DE CONTROL PARA ELEMENTOS <dialog> (MODALES) ---
     function setupModals() {
-        const openButtons = document.querySelectorAll('[data-modal-target]');
-        const closeButtons = document.querySelectorAll('[data-modal-close], .modal-close');
-        const overlays = document.querySelectorAll('.modal-overlay, .modal');
-
-        openButtons.forEach(btn => {
+        // 1. Abrir modales desde botones del directorio con data-modal-target
+        const triggerBtns = document.querySelectorAll('[data-modal-target]');
+        triggerBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = btn.getAttribute('data-modal-target');
                 const modal = document.getElementById(targetId);
-                if (modal) {
-                    modal.classList.add('active');
-                    document.body.style.overflow = 'hidden';
+                if (modal && typeof modal.showModal === 'function') {
+                    modal.showModal();
                 }
             });
         });
 
-        closeButtons.forEach(btn => {
+        // 2. Abrir modal de la TRM y del Clima desde el Hero Bar
+        const heroTrmItem = document.getElementById('heroTrmItem');
+        const heroWeatherItem = document.getElementById('heroWeatherItem');
+        
+        if (heroTrmItem) {
+            heroTrmItem.style.cursor = 'pointer';
+            heroTrmItem.addEventListener('click', () => {
+                const modal = document.getElementById('modal-trm');
+                if (modal) modal.showModal();
+            });
+        }
+
+        if (heroWeatherItem) {
+            heroWeatherItem.style.cursor = 'pointer';
+            heroWeatherItem.addEventListener('click', () => {
+                const modal = document.getElementById('modal-weather');
+                if (modal) modal.showModal();
+            });
+        }
+
+        // 3. Abrir Modal de Bienvenida ("¿Cómo funciona?")
+        const openWelcomeBtn = document.getElementById('openWelcomeModal');
+        const welcomeModal = document.getElementById('welcomeModal');
+        if (openWelcomeBtn && welcomeModal) {
+            openWelcomeBtn.addEventListener('click', () => welcomeModal.showModal());
+        }
+
+        // 4. Cerrar modales con los botones 'x' o botones de acción
+        const closeBtns = document.querySelectorAll('.modal-close-btn, #closeWelcomeModalBtn, #closeWelcomeModalCross');
+        closeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                const modal = btn.closest('.modal') || btn.closest('.modal-overlay');
-                if (modal) {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
+                const modal = btn.closest('dialog');
+                if (modal) modal.close();
             });
         });
 
-        overlays.forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.classList.remove('active');
-                    document.body.style.overflow = '';
+        // 5. Cerrar haciendo clic en el fondo oscuro del <dialog>
+        const allDialogs = document.querySelectorAll('dialog');
+        allDialogs.forEach(dialog => {
+            dialog.addEventListener('click', (e) => {
+                const rect = dialog.getBoundingClientRect();
+                const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+                  rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
+                if (!isInDialog) {
+                    dialog.close();
                 }
             });
         });
@@ -96,47 +123,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupModals();
 
-    // --- Cargar TRM Dólar a COP (API Antigua + Lógica Convertidor Modal) ---
+    // --- Cargar TRM Dólar a COP (API Antigua) ---
     async function fetchTRM() {
         const trmRateEl = document.getElementById('trmRate');
         const trmUpdateEl = document.getElementById('trmUpdate');
-        const usdInput = document.getElementById('trmUsdInput');
-        const copInput = document.getElementById('trmCopInput');
-        let currentRate = null;
-
+        const heroTrmText = document.getElementById('heroTrmText');
+        
         try {
             const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
             const data = await response.json();
             
             if (data && data.rates && data.rates.COP) {
-                currentRate = data.rates.COP;
                 const rateFormatted = new Intl.NumberFormat('es-CO', {
                     style: 'currency',
                     currency: 'COP',
                     maximumFractionDigits: 2
-                }).format(currentRate);
+                }).format(data.rates.COP);
 
                 if (trmRateEl) trmRateEl.textContent = `${rateFormatted} COP`;
                 if (trmUpdateEl) trmUpdateEl.textContent = `Actualizado: ${data.date || 'Hoy'}`;
-
-                // Eventos para el convertidor dentro del modal
-                if (usdInput && copInput) {
-                    usdInput.addEventListener('input', () => {
-                        const val = parseFloat(usdInput.value);
-                        copInput.value = (!isNaN(val) && currentRate) ? Math.round(val * currentRate) : '';
-                    });
-
-                    copInput.addEventListener('input', () => {
-                        const val = parseFloat(copInput.value);
-                        usdInput.value = (!isNaN(val) && currentRate) ? (val / currentRate).toFixed(2) : '';
-                    });
-                }
+                if (heroTrmText) heroTrmText.textContent = `TRM: ${rateFormatted}`;
             } else {
                 throw new Error('Formato inválido');
             }
         } catch (err) {
             if (trmRateEl) trmRateEl.textContent = 'No disponible';
             if (trmUpdateEl) trmUpdateEl.textContent = 'Intenta nuevamente más tarde';
+            if (heroTrmText) heroTrmText.textContent = 'TRM: No disponible';
         }
     }
 
@@ -255,6 +268,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function updateWeatherUI(cityName, lat, lon) {
         const tempEl = document.getElementById('weatherTemp');
         const cityEl = document.getElementById('weatherCity');
+        const heroWeatherEmoji = document.getElementById('heroWeatherEmoji');
+        const heroWeatherText = document.getElementById('heroWeatherText');
 
         if (!tempEl || !cityEl) return;
 
@@ -276,6 +291,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             tempEl.textContent = `${info.icon} ${Math.round(weather.temperature)}°C`;
             cityEl.textContent = `${cityName} • ${info.desc}`;
+
+            if (heroWeatherEmoji) heroWeatherEmoji.textContent = info.icon;
+            if (heroWeatherText) heroWeatherText.textContent = `${cityName.split(',')[0]}: ${Math.round(weather.temperature)}°C`;
 
             localStorage.setItem('24col_last_city', JSON.stringify({ name: cityName, lat: validLat, lon: validLon }));
         } catch (err) {
