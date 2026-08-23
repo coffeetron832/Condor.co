@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados de búsqueda - 24col</title>
+    <!-- Importación de la fuente Archivo Black desde Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+
+    <!-- Actualización de la CSP para permitir la nueva fuente de Google Fonts -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://commons.wikimedia.org; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://es.wikipedia.org https://www.wikidata.org https://www.datos.gov.co https://commons.wikimedia.org;">
+    
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -30,8 +37,24 @@
 
         .search-header {
             display: flex;
-            gap: 10px;
+            align-items: center; /* Alinea verticalmente el logo con el input */
+            gap: 16px;
             margin-bottom: 20px;
+        }
+
+        /* Estilos para el elemento de marca/logo */
+        .header-brand {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 24px;
+            color: var(--text-color);
+            text-decoration: none;
+            line-height: 1;
+            white-space: nowrap;
+            transition: color 0.2s ease;
+        }
+
+        .header-brand:hover {
+            color: var(--accent-color);
         }
 
         .search-input {
@@ -164,6 +187,10 @@
 
     <div class="search-container">
         <form class="search-header" id="search-form">
+            <!-- Brand Logo integrado antes del input -->
+            <a href="#" class="header-brand">
+                <span>24col</span>
+            </a>
             <input type="text" id="query-input" class="search-input" placeholder="Buscar entidades, portales o información..." required>
             <button type="submit" class="search-button">Buscar</button>
         </form>
@@ -202,7 +229,7 @@
             const viewAll = document.getElementById('view-all');
             const viewImages = document.getElementById('view-images');
 
-            let imagesLoaded = false; // Flag para cargar imágenes solo cuando se abra la pestaña
+            let imagesLoaded = false;
 
             const escapeHtml = (str) => {
                 if (!str) return '';
@@ -215,7 +242,6 @@
                 })[m]);
             };
 
-            // Función para alternar entre pestañas
             const switchTab = (tab) => {
                 if (tab === 'all') {
                     tabAll.classList.add('active');
@@ -237,7 +263,6 @@
             tabAll.addEventListener('click', () => switchTab('all'));
             tabImages.addEventListener('click', () => switchTab('images'));
 
-            // Búsqueda de imágenes vía Wikimedia Commons API
             async function fetchImages(searchQuery) {
                 imagesContainer.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 20px; font-size: 13px; color: var(--text-muted);">
@@ -288,7 +313,6 @@
                 }
             }
 
-            // Ejecución inicial de búsqueda web
             if (query) {
                 input.value = query;
                 title.textContent = `Resultados para: "${query}"`;
