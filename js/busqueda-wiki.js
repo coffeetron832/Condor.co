@@ -15,6 +15,19 @@ window.WikiSearchModule = (function () {
         `;
     }
 
+    // Helper para obtener la URL del favicon según el dominio o si es Wikipedia
+    function getFaviconUrl(url, isWikiPage = false) {
+        if (isWikiPage || url.includes('wikipedia.org')) {
+            return 'https://en.wikipedia.org/static/favicon/wikipedia.ico';
+        }
+        try {
+            const domain = new URL(url).hostname;
+            return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+        } catch (e) {
+            return 'https://en.wikipedia.org/static/favicon/wikipedia.ico';
+        }
+    }
+
     // Clasificación dinámica de badges según la URL o dominio devuelto
     function getBadgeConfig(url, isWikiPage = false, isExternalFallback = false) {
         if (isWikiPage || url.includes('wikipedia.org')) {
@@ -73,7 +86,6 @@ window.WikiSearchModule = (function () {
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
 
-        // Si es dropdown debajo del buscador, limitamos a 1 resultado principal
         const isDropdown = options.isDropdown || false;
         const limit = isDropdown ? 1 : (options.limit || 12);
         const trimmedQuery = rawQuery.trim();
@@ -84,7 +96,6 @@ window.WikiSearchModule = (function () {
             return;
         }
 
-        // Mensaje de carga
         resultsContainer.innerHTML = `
             <li style="padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b); font-family: Arial, Helvetica, sans-serif;">
                 Buscando "${escapeHtml(trimmedQuery)}"...
@@ -96,7 +107,7 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Obtener Tarjeta de Concepto (Solo si NO es un dropdown rápido para la barra)
+            // 1. Obtener Tarjeta de Concepto (Solo si NO es dropdown)
             if (!isDropdown) {
                 try {
                     const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
@@ -137,7 +148,6 @@ window.WikiSearchModule = (function () {
             }
 
             // 2. Búsqueda de páginas en Wikipedia
-            // Traemos hasta 5 candidatos para asegurar encontrar al menos 1 con URL válida
             const fetchLimit = isDropdown ? 5 : limit;
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
@@ -147,7 +157,6 @@ window.WikiSearchModule = (function () {
             const topCandidates = candidates.slice(0, fetchLimit);
 
             for (const candidate of topCandidates) {
-                // Si es dropdown y ya tenemos 1 resultado, salimos del bucle inmediatamente
                 if (isDropdown && validResults.length >= 1) break;
 
                 const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=pageprops|extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
@@ -164,12 +173,10 @@ window.WikiSearchModule = (function () {
                     const pageObj = pages[pageKey];
                     const wikibaseItemId = pageObj.pageprops?.wikibase_item;
 
-                    // Método A: Wikidata P856 (Sitio oficial)
                     if (wikibaseItemId) {
                         externalUrl = await fetchOfficialUrlFromWikidata(wikibaseItemId);
                     }
 
-                    // Método B: Enlaces externos
                     if (!externalUrl && pageObj.extlinks) {
                         const links = pageObj.extlinks.map(l => l['*']);
                         
@@ -218,18 +225,22 @@ window.WikiSearchModule = (function () {
                 }
             }
 
-            // 3. Renderizado de resultados
+            // 3. Renderizado con Favicon incluido
             if (validResults.length > 0) {
-                // Si es un dropdown de 1 solo resultado, solo usamos el primero
                 const displayResults = isDropdown ? validResults.slice(0, 1) : validResults;
 
                 let listHtml = displayResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
+                    const faviconUrl = getFaviconUrl(item.url, item.isWikiPage);
+
                     return `
                         <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
                             <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 10px 12px; text-decoration: none; color: var(--text-color, #1e293b);">
                                 <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: bold; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center;">
-                                    <span>${escapeHtml(item.title)}</span>
+                                    <span style="display: inline-flex; align-items: center; gap: 8px;">
+                                        <img src="${faviconUrl}" alt="" style="width: 16px; height: 16px; border-radius: 2px; flex-shrink: 0;" onError="this.style.display='none';" />
+                                        ${escapeHtml(item.title)}
+                                    </span>
                                     <span style="font-size: 9px; font-weight: bold; background: ${badge.bg}; color: ${badge.color}; padding: 2px 6px; border-radius: 4px;">${badge.text}</span>
                                 </div>
                                 <div style="font-size: 11px; color: var(--text-secondary, #64748b); line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
@@ -243,7 +254,6 @@ window.WikiSearchModule = (function () {
                     `;
                 }).join('');
 
-                // Si es modo dropdown, agregamos un botón inferior para ir a resultados.html
                 if (isDropdown) {
                     listHtml += `
                         <li style="text-align: center; background: var(--bg-hover, #f8fafc); border-top: 1px solid var(--border-color, #e2e8f0); font-family: Arial, Helvetica, sans-serif;">
@@ -271,7 +281,6 @@ window.WikiSearchModule = (function () {
         }
     }
 
-    // Inicialidador de formulario y manejo del evento input (Dropdown debajo de la barra)
     function initSearchFormListener() {
         const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
@@ -280,7 +289,6 @@ window.WikiSearchModule = (function () {
         if (searchInput && webSearchResults) {
             let debounceTimer = null;
 
-            // Escuchar la escritura del usuario en la barra de búsqueda
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(debounceTimer);
                 const query = e.target.value.trim();
@@ -291,7 +299,6 @@ window.WikiSearchModule = (function () {
                     return;
                 }
 
-                // Debounce de 350ms para evitar saturate llamadas a la API
                 debounceTimer = setTimeout(() => {
                     searchOfficialLinks(query, webSearchResults, (text => text), { isDropdown: true });
                 }, 350);
@@ -310,7 +317,6 @@ window.WikiSearchModule = (function () {
         }
     }
 
-    // Registrar escuchador cuando el DOM esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initSearchFormListener);
     } else {
