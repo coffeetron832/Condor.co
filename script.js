@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 4. MÓDULO DE CLIMA Y BÚSQUEDA DINÁMICA
+    // 4. MÓDULO DE CLIMA Y WIDGET HERO
     // ==========================================
     function getWeatherInterpretation(code) {
         const codes = {
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
             96: { desc: 'Tormenta con granizo ligero', icon: '⛈️' },
             99: { desc: 'Tormenta con granizo fuerte', icon: '⛈️' }
         };
-        return codes[code] || { desc: 'Clima variable', icon: '🌡️' };
+        return codes[code] || { desc: 'Variable', icon: '🌡️' };
     }
 
     async function fetchWeatherData(lat, lon) {
@@ -521,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (isNaN(validLat) || isNaN(validLon)) {
             tempEl.textContent = '⚠️ Sin coords';
-            cityEl.textContent = `${cityName} (Sin ubicación)`;
+            cityEl.textContent = `${cityName}`;
             return;
         }
 
@@ -538,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem('24col_last_city', JSON.stringify({ name: cityName, lat: validLat, lon: validLon }));
         } catch (err) {
             tempEl.textContent = '⚠️ Error';
-            cityEl.textContent = `${cityName} (Sin datos)`;
+            cityEl.textContent = `${cityName}`;
         }
     }
 
@@ -609,9 +609,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function initMainWeatherCard() {
         setupWeatherSearch();
 
-        const tempEl = document.getElementById('weatherTemp');
-        const cityEl = document.getElementById('weatherCity');
-
         const savedCity = localStorage.getItem('24col_last_city');
         if (savedCity) {
             try {
@@ -623,10 +620,8 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (e) {}
         }
 
-        if (tempEl && cityEl) {
-            tempEl.textContent = '--°C';
-            cityEl.textContent = 'Selecciona una ciudad';
-        }
+        // Carga Bogotá D.C. por defecto si no hay ciudad guardada
+        updateWeatherUI('Bogotá D.C.', 4.6097, -74.0817);
     }
 
     initMainWeatherCard();
