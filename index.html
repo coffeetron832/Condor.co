@@ -108,6 +108,13 @@
                             </button>
                         </li>
                         <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-trm">
+                                <i data-lucide="dollar-sign" class="btn-icon"></i>
+                                <span class="btn-text">Dólar HOY (TRM Colombia)</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
                             <button class="category-trigger-btn" data-modal-target="modal-consumer">
                                 <i data-lucide="shield-check" class="btn-icon"></i>
                                 <span class="btn-text">Protección al Consumidor y Reclamos</span>
@@ -118,6 +125,13 @@
                             <button class="category-trigger-btn" data-modal-target="modal-supers">
                                 <i data-lucide="building-2" class="btn-icon"></i>
                                 <span class="btn-text">Superintendencias de Colombia</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-trigger-btn" data-modal-target="modal-weather">
+                                <i data-lucide="cloud-sun" class="btn-icon"></i>
+                                <span class="btn-text">Clima por Municipio</span>
                                 <i data-lucide="chevron-right" class="btn-arrow"></i>
                             </button>
                         </li>
@@ -183,7 +197,23 @@
         </div>
     </dialog>
 
-    <!-- MODAL 2: Protección al Consumidor -->
+    <!-- MODAL 2: Dólar TRM -->
+    <dialog id="modal-trm" class="category-modal">
+        <div class="modal-header">
+            <h3><i data-lucide="dollar-sign" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Dólar HOY (TRM Colombia)</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 20px 10px;">
+            <div id="trmRate" style="font-size: 32px; font-weight: 700; color: var(--ok-color, #2e7d32); margin-bottom: 8px;">
+                Cargando...
+            </div>
+            <div id="trmUpdate" style="font-size: 13px; color: var(--text-secondary, #666);">
+                Consultando tasa en tiempo real...
+            </div>
+        </div>
+    </dialog>
+
+    <!-- MODAL 3: Protección al Consumidor -->
     <dialog id="modal-consumer" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="shield-check" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Protección al Consumidor y Reclamos</h3>
@@ -223,7 +253,7 @@
         </div>
     </dialog>
 
-    <!-- MODAL 3: Superintendencias -->
+    <!-- MODAL 4: Superintendencias -->
     <dialog id="modal-supers" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="building-2" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Superintendencias de Colombia</h3>
@@ -263,7 +293,32 @@
         </div>
     </dialog>
 
-    <!-- MODAL 4: Líneas de Emergencia -->
+    <!-- MODAL 5: Clima -->
+    <dialog id="modal-weather" class="category-modal">
+        <div class="modal-header">
+            <h3><i data-lucide="cloud-sun" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Clima por Municipio</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 10px;">
+            <div id="weatherTemp" style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">
+                --°C
+            </div>
+            <div id="weatherCity" style="font-size: 12px; color: var(--text-secondary, #666); margin-bottom: 15px;">
+                Selecciona una ciudad
+            </div>
+
+            <div style="position: relative; text-align: left; max-width: 300px; margin: 0 auto;">
+                <input type="text" id="weatherSearchInput" placeholder="Buscar municipio..." autocomplete="off" 
+                       style="width: 100%; padding: 8px 12px; font-size: 13px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; outline: none;">
+                
+                <ul id="weatherSearchResults" 
+                    style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 0 0 6px 6px; list-style: none; margin: 0; padding: 0; z-index: 1000; max-height: 150px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                </ul>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- MODAL 6: Líneas de Emergencia -->
     <dialog id="modal-emergency" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="siren" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Líneas de Emergencia Nacional</h3>
@@ -282,7 +337,7 @@
         </div>
     </dialog>
 
-    <!-- MODAL 5: Impuestos Regionales -->
+    <!-- MODAL 7: Impuestos Regionales -->
     <dialog id="modal-taxes" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="file-text" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Impuestos Regionales</h3>
@@ -294,7 +349,7 @@
         </div>
     </dialog>
 
-    <!-- MODAL 6: Servicios Públicos -->
+    <!-- MODAL 8: Servicios Públicos -->
     <dialog id="modal-utilities" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="droplet" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Servicios Públicos y Alcaldías</h3>
@@ -306,7 +361,7 @@
         </div>
     </dialog>
 
-    <!-- MODAL 7: Movilidad -->
+    <!-- MODAL 9: Movilidad -->
     <dialog id="modal-mobility" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="car" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Movilidad y Tránsito Local</h3>
