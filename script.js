@@ -422,10 +422,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 noResultsMsg.style.display = (nationalVisibleCount === 0 && regionalVisibleCount === 0) ? 'block' : 'none';
             }
 
-            // 3. LLAMADA AL MÓDULO EXTERNO DE WIKIPEDIA
+            // 3. LLAMADA AL MÓDULO EXTERNO DE WIKIPEDIA (MODIFICADO)
             if (window.WikiSearchModule) {
                 searchDebounceTimer = setTimeout(() => {
-                    window.WikiSearchModule.searchOfficialLinks(rawQuery, resultsContainer, escapeHtml);
+                    window.WikiSearchModule.searchOfficialLinks(rawQuery, resultsContainer, escapeHtml, { isDropdown: true });
                 }, 400);
             }
         });
