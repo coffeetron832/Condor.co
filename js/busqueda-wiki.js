@@ -1,7 +1,6 @@
 /*
  * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
- * Extrae de forma 100% dinámica el sitio web oficial vía Wikidata (Propiedad P856)
- * con filtrado estricto de enlaces secundarios.
+ * Renderizado de resultados para resultados.html
  */
 
 window.WikiSearchModule = (function () {
@@ -9,7 +8,7 @@ window.WikiSearchModule = (function () {
     function renderNoResults(container) {
         if (!container) return;
         container.innerHTML = `
-            <li style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b);">
+            <li style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b); font-family: Arial, Helvetica, sans-serif;">
                 No se encontraron resultados para esta búsqueda.
             </li>
         `;
@@ -64,11 +63,7 @@ window.WikiSearchModule = (function () {
     }
 
     /**
-     * Búsqueda de enlaces y conceptos para la página de resultados completa.
-     * @param {string} rawQuery - Término a buscar
-     * @param {HTMLElement} resultsContainer - Elemento contenedor (UL o DIV)
-     * @param {Function} escapeHtml - Función escapadora de caracteres HTML
-     * @param {Object} options - Opciones adicionales ({ limit: 12 })
+     * Búsqueda de enlaces y conceptos ejecutada exclusivamente en resultados.html
      */
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
@@ -82,8 +77,9 @@ window.WikiSearchModule = (function () {
             return;
         }
 
+        // Estado inicial de carga
         resultsContainer.innerHTML = `
-            <li style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b);">
+            <li style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b); font-family: Arial, Helvetica, sans-serif;">
                 Cargando todos los resultados para "${escapeHtml(trimmedQuery)}"...
             </li>
         `;
@@ -107,18 +103,18 @@ window.WikiSearchModule = (function () {
                             : '';
 
                         conceptCardHtml = `
-                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 8px; border-radius: 8px;">
+                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 8px; border-radius: 8px; font-family: Arial, Helvetica, sans-serif;">
                                 <div style="display: flex; align-items: flex-start;">
                                     ${thumbnail}
                                     <div style="flex-grow: 1;">
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                            <span style="font-size: 14px; font-weight: 700; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
-                                            <span style="font-size: 10px; font-weight: 600; background: #e0e7ff; color: #3730a3; padding: 3px 8px; border-radius: 4px;">Concepto / Definición</span>
+                                            <span style="font-size: 14px; font-weight: bold; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
+                                            <span style="font-size: 10px; font-weight: bold; background: #e0e7ff; color: #3730a3; padding: 3px 8px; border-radius: 4px;">Concepto / Definición</span>
                                         </div>
                                         <div style="font-size: 12px; color: var(--text-secondary, #475569); line-height: 1.4; margin-bottom: 8px;">
                                             ${escapeHtml(summaryData.extract)}
                                         </div>
-                                        <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; color: var(--link-color, #2563eb); font-weight: 600; text-decoration: none;">
+                                        <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; color: var(--link-color, #2563eb); font-weight: bold; text-decoration: none;">
                                             Ver artículo completo en Wikipedia &rarr;
                                         </a>
                                     </div>
@@ -213,11 +209,11 @@ window.WikiSearchModule = (function () {
                 const listHtml = validResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     return `
-                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 4px;">
+                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
                             <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 12px 14px; text-decoration: none; color: var(--text-color, #1e293b);">
-                                <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: 600; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: bold; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;">
                                     <span>${escapeHtml(item.title)}</span>
-                                    <span style="font-size: 9px; font-weight: 600; background: ${badge.bg}; color: ${badge.color}; padding: 2px 6px; border-radius: 4px;">${badge.text}</span>
+                                    <span style="font-size: 9px; font-weight: bold; background: ${badge.bg}; color: ${badge.color}; padding: 2px 6px; border-radius: 4px;">${badge.text}</span>
                                 </div>
                                 <div style="font-size: 11px; color: var(--text-secondary, #64748b); line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                     ${escapeHtml(item.snippet)}...
@@ -240,7 +236,7 @@ window.WikiSearchModule = (function () {
         } catch (error) {
             console.error('Error buscando información:', error);
             resultsContainer.innerHTML = `
-                <li style="padding: 12px; text-align: center; font-size: 12px; color: #dc2626;">
+                <li style="padding: 12px; text-align: center; font-size: 12px; color: #dc2626; font-family: Arial, Helvetica, sans-serif;">
                     No se pudo realizar la búsqueda web.
                 </li>
             `;
