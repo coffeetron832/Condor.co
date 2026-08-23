@@ -64,16 +64,18 @@ window.WikiSearchModule = (function () {
     }
 
     /**
-     * Búsqueda de enlaces y conceptos para la página de resultados completa (resultados.html).
+     * Búsqueda de enlaces y conceptos.
      * @param {string} rawQuery - Término a buscar
-     * @param {HTMLElement} resultsContainer - Elemento contenedor UL o DIV en resultados.html
+     * @param {HTMLElement} resultsContainer - Elemento contenedor UL o DIV
      * @param {Function} escapeHtml - Función escapadora de caracteres HTML
-     * @param {Object} options - Opciones adicionales ({ limit: 12 })
+     * @param {Object} options - Opciones: { limit: 12, isDropdown: false }
      */
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
 
-        const limit = options.limit || 12;
+        // Si es dropdown debajo del buscador, limitamos a 1 resultado principal
+        const isDropdown = options.isDropdown || false;
+        const limit = isDropdown ? 1 : (options.limit || 12);
         const trimmedQuery = rawQuery.trim();
 
         if (trimmedQuery.length < 2) {
@@ -82,10 +84,10 @@ window.WikiSearchModule = (function () {
             return;
         }
 
-        // Mensaje de carga mientras descarga los datos en resultados.html
+        // Mensaje de carga
         resultsContainer.innerHTML = `
-            <li style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b); font-family: Arial, Helvetica, sans-serif;">
-                Cargando todos los resultados para "${escapeHtml(trimmedQuery)}"...
+            <li style="padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b); font-family: Arial, Helvetica, sans-serif;">
+                Buscando "${escapeHtml(trimmedQuery)}"...
             </li>
         `;
         resultsContainer.style.display = 'block';
@@ -94,53 +96,60 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Obtener Tarjeta de Concepto / Resumen principal
-            try {
-                const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
-                const summaryRes = await fetch(summaryEndpoint);
+            // 1. Obtener Tarjeta de Concepto (Solo si NO es un dropdown rápido para la barra)
+            if (!isDropdown) {
+                try {
+                    const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
+                    const summaryRes = await fetch(summaryEndpoint);
 
-                if (summaryRes.ok) {
-                    const summaryData = await summaryRes.json();
-                    if (summaryData.type === 'standard' && summaryData.extract) {
-                        const wikiUrl = summaryData.content_urls?.desktop?.page || `https://es.wikipedia.org/wiki/${encodeURIComponent(summaryData.title)}`;
-                        const thumbnail = summaryData.thumbnail?.source 
-                            ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 6px; margin-right: 14px; flex-shrink: 0;" />` 
-                            : '';
+                    if (summaryRes.ok) {
+                        const summaryData = await summaryRes.json();
+                        if (summaryData.type === 'standard' && summaryData.extract) {
+                            const wikiUrl = summaryData.content_urls?.desktop?.page || `https://es.wikipedia.org/wiki/${encodeURIComponent(summaryData.title)}`;
+                            const thumbnail = summaryData.thumbnail?.source 
+                                ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 6px; margin-right: 14px; flex-shrink: 0;" />` 
+                                : '';
 
-                        conceptCardHtml = `
-                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 12px; border-radius: 8px; font-family: Arial, Helvetica, sans-serif;">
-                                <div style="display: flex; align-items: flex-start;">
-                                    ${thumbnail}
-                                    <div style="flex-grow: 1;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                            <span style="font-size: 14px; font-weight: bold; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
-                                            <span style="font-size: 10px; font-weight: bold; background: #e0e7ff; color: #3730a3; padding: 3px 8px; border-radius: 4px;">Concepto / Definición</span>
+                            conceptCardHtml = `
+                                <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 12px; border-radius: 8px; font-family: Arial, Helvetica, sans-serif;">
+                                    <div style="display: flex; align-items: flex-start;">
+                                        ${thumbnail}
+                                        <div style="flex-grow: 1;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                                <span style="font-size: 14px; font-weight: bold; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
+                                                <span style="font-size: 10px; font-weight: bold; background: #e0e7ff; color: #3730a3; padding: 3px 8px; border-radius: 4px;">Concepto / Definición</span>
+                                            </div>
+                                            <div style="font-size: 12px; color: var(--text-secondary, #475569); line-height: 1.4; margin-bottom: 8px;">
+                                                ${escapeHtml(summaryData.extract)}
+                                            </div>
+                                            <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; color: var(--link-color, #2563eb); font-weight: bold; text-decoration: none;">
+                                                Ver artículo completo en Wikipedia &rarr;
+                                            </a>
                                         </div>
-                                        <div style="font-size: 12px; color: var(--text-secondary, #475569); line-height: 1.4; margin-bottom: 8px;">
-                                            ${escapeHtml(summaryData.extract)}
-                                        </div>
-                                        <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; color: var(--link-color, #2563eb); font-weight: bold; text-decoration: none;">
-                                            Ver artículo completo en Wikipedia &rarr;
-                                        </a>
                                     </div>
-                                </div>
-                            </li>
-                        `;
+                                </li>
+                            `;
+                        }
                     }
+                } catch (err) {
+                    console.warn('No se pudo obtener el resumen de concepto:', err);
                 }
-            } catch (err) {
-                console.warn('No se pudo obtener el resumen de concepto:', err);
             }
 
-            // 2. Búsqueda de páginas relevantes en Wikipedia
+            // 2. Búsqueda de páginas en Wikipedia
+            // Traemos hasta 5 candidatos para asegurar encontrar al menos 1 con URL válida
+            const fetchLimit = isDropdown ? 5 : limit;
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
             const searchData = await searchRes.json();
             const candidates = searchData.query?.search || [];
 
-            const topCandidates = candidates.slice(0, limit);
+            const topCandidates = candidates.slice(0, fetchLimit);
 
             for (const candidate of topCandidates) {
+                // Si es dropdown y ya tenemos 1 resultado, salimos del bucle inmediatamente
+                if (isDropdown && validResults.length >= 1) break;
+
                 const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=pageprops|extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
                 const pageRes = await fetch(pageEndpoint);
                 const pageData = await pageRes.json();
@@ -155,12 +164,12 @@ window.WikiSearchModule = (function () {
                     const pageObj = pages[pageKey];
                     const wikibaseItemId = pageObj.pageprops?.wikibase_item;
 
-                    // Método A: Wikidata P856 (Página oficial verificada)
+                    // Método A: Wikidata P856 (Sitio oficial)
                     if (wikibaseItemId) {
                         externalUrl = await fetchOfficialUrlFromWikidata(wikibaseItemId);
                     }
 
-                    // Método B: Filtrado avanzado sobre extlinks
+                    // Método B: Enlaces externos
                     if (!externalUrl && pageObj.extlinks) {
                         const links = pageObj.extlinks.map(l => l['*']);
                         
@@ -209,14 +218,17 @@ window.WikiSearchModule = (function () {
                 }
             }
 
-            // 3. Renderizado total de los resultados dentro de resultados.html
+            // 3. Renderizado de resultados
             if (validResults.length > 0) {
-                const listHtml = validResults.map(item => {
+                // Si es un dropdown de 1 solo resultado, solo usamos el primero
+                const displayResults = isDropdown ? validResults.slice(0, 1) : validResults;
+
+                let listHtml = displayResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     return `
-                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 8px; font-family: Arial, Helvetica, sans-serif;">
-                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 12px 14px; text-decoration: none; color: var(--text-color, #1e293b);">
-                                <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: bold; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;">
+                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 10px 12px; text-decoration: none; color: var(--text-color, #1e293b);">
+                                <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: bold; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center;">
                                     <span>${escapeHtml(item.title)}</span>
                                     <span style="font-size: 9px; font-weight: bold; background: ${badge.bg}; color: ${badge.color}; padding: 2px 6px; border-radius: 4px;">${badge.text}</span>
                                 </div>
@@ -230,6 +242,17 @@ window.WikiSearchModule = (function () {
                         </li>
                     `;
                 }).join('');
+
+                // Si es modo dropdown, agregamos un botón inferior para ir a resultados.html
+                if (isDropdown) {
+                    listHtml += `
+                        <li style="text-align: center; background: var(--bg-hover, #f8fafc); border-top: 1px solid var(--border-color, #e2e8f0); font-family: Arial, Helvetica, sans-serif;">
+                            <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="display: block; padding: 10px; font-size: 12px; font-weight: bold; color: var(--link-color, #2563eb); text-decoration: none;">
+                                Ver todos los resultados para "${escapeHtml(trimmedQuery)}" &rarr;
+                            </a>
+                        </li>
+                    `;
+                }
 
                 resultsContainer.innerHTML = conceptCardHtml + listHtml;
             } else if (conceptCardHtml) {
@@ -248,10 +271,32 @@ window.WikiSearchModule = (function () {
         }
     }
 
-    // Inicializador para escuchar el submit en el formulario de la landing page
+    // Inicialidador de formulario y manejo del evento input (Dropdown debajo de la barra)
     function initSearchFormListener() {
         const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
+        const webSearchResults = document.getElementById('webSearchResults');
+
+        if (searchInput && webSearchResults) {
+            let debounceTimer = null;
+
+            // Escuchar la escritura del usuario en la barra de búsqueda
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                const query = e.target.value.trim();
+
+                if (query.length < 2) {
+                    webSearchResults.style.display = 'none';
+                    webSearchResults.innerHTML = '';
+                    return;
+                }
+
+                // Debounce de 350ms para evitar saturate llamadas a la API
+                debounceTimer = setTimeout(() => {
+                    searchOfficialLinks(query, webSearchResults, (text => text), { isDropdown: true });
+                }, 350);
+            });
+        }
 
         if (searchForm && searchInput) {
             searchForm.addEventListener('submit', (e) => {
@@ -259,26 +304,13 @@ window.WikiSearchModule = (function () {
                 const query = searchInput.value.trim();
 
                 if (query.length >= 2) {
-                    const noResultsMsg = document.getElementById('noResultsMsg');
-                    const webSearchResults = document.getElementById('webSearchResults');
-                    
-                    if (noResultsMsg) {
-                        noResultsMsg.textContent = `Buscando "${query}"...`;
-                        noResultsMsg.style.display = 'block';
-                    }
-                    if (webSearchResults) {
-                        webSearchResults.style.display = 'none';
-                    }
-
-                    setTimeout(() => {
-                        window.location.href = `resultados.html?q=${encodeURIComponent(query)}`;
-                    }, 200);
+                    window.location.href = `resultados.html?q=${encodeURIComponent(query)}`;
                 }
             });
         }
     }
 
-    // Registrar escuchador cuando el DOM esté completamente cargado
+    // Registrar escuchador cuando el DOM esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initSearchFormListener);
     } else {
