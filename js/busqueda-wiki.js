@@ -1,7 +1,7 @@
 /*
  * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
  * Extrae de forma 100% dinámica el sitio web oficial vía Wikidata (Propiedad P856)
- * con filtrado estricto de enlaces secundarios.
+ * con filtrado estricto de enlaces secundarios y manejo de redirecciones.
  */
 
 window.WikiSearchModule = (function () {
@@ -246,6 +246,43 @@ window.WikiSearchModule = (function () {
                 </li>
             `;
         }
+    }
+
+    // Inicializador para escuchar el submit en el formulario de la landing page
+    function initSearchFormListener() {
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+
+        if (searchForm && searchInput) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+
+                if (query.length >= 2) {
+                    const noResultsMsg = document.getElementById('noResultsMsg');
+                    const webSearchResults = document.getElementById('webSearchResults');
+                    
+                    if (noResultsMsg) {
+                        noResultsMsg.textContent = `Buscando "${query}"...`;
+                        noResultsMsg.style.display = 'block';
+                    }
+                    if (webSearchResults) {
+                        webSearchResults.style.display = 'none';
+                    }
+
+                    setTimeout(() => {
+                        window.location.href = `resultados.html?q=${encodeURIComponent(query)}`;
+                    }, 200);
+                }
+            });
+        }
+    }
+
+    // Registrar escuchador cuando el DOM esté completamente cargado
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSearchFormListener);
+    } else {
+        initSearchFormListener();
     }
 
     return {
