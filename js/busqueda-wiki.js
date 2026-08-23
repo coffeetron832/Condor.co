@@ -64,21 +64,19 @@ window.WikiSearchModule = (function () {
     }
 
     /**
-     * Búsqueda de enlaces y conceptos.
+     * Búsqueda de enlaces y conceptos para la página de resultados completa.
      * @param {string} rawQuery - Término a buscar
      * @param {HTMLElement} resultsContainer - Elemento contenedor (UL o DIV)
      * @param {Function} escapeHtml - Función escapadora de caracteres HTML
-     * @param {Object} options - Opciones adicionales ({ limit: 3, isDropdown: true })
+     * @param {Object} options - Opciones adicionales ({ limit: 12 })
      */
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
 
-        // Si es desplegable / búsqueda en inicio, se limita a 3 resultados por defecto
-        const limit = options.limit || (options.isDropdown ? 3 : 10);
-        const isDropdown = options.isDropdown !== undefined ? options.isDropdown : true;
+        const limit = options.limit || 12;
         const trimmedQuery = rawQuery.trim();
 
-        if (trimmedQuery.length < 3) {
+        if (trimmedQuery.length < 2) {
             resultsContainer.style.display = 'none';
             resultsContainer.innerHTML = '';
             return;
@@ -86,7 +84,7 @@ window.WikiSearchModule = (function () {
 
         resultsContainer.innerHTML = `
             <li style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b);">
-                Buscando información y enlaces...
+                Cargando todos los resultados para "${escapeHtml(trimmedQuery)}"...
             </li>
         `;
         resultsContainer.style.display = 'block';
@@ -105,23 +103,23 @@ window.WikiSearchModule = (function () {
                     if (summaryData.type === 'standard' && summaryData.extract) {
                         const wikiUrl = summaryData.content_urls?.desktop?.page || `https://es.wikipedia.org/wiki/${encodeURIComponent(summaryData.title)}`;
                         const thumbnail = summaryData.thumbnail?.source 
-                            ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; margin-right: 12px; flex-shrink: 0;" />` 
+                            ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 6px; margin-right: 14px; flex-shrink: 0;" />` 
                             : '';
 
                         conceptCardHtml = `
-                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 14px;">
+                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 8px; border-radius: 8px;">
                                 <div style="display: flex; align-items: flex-start;">
                                     ${thumbnail}
                                     <div style="flex-grow: 1;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                            <span style="font-size: 13px; font-weight: 700; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
-                                            <span style="font-size: 9px; font-weight: 600; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px;">Concepto / Definición</span>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                            <span style="font-size: 14px; font-weight: 700; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
+                                            <span style="font-size: 10px; font-weight: 600; background: #e0e7ff; color: #3730a3; padding: 3px 8px; border-radius: 4px;">Concepto / Definición</span>
                                         </div>
-                                        <div style="font-size: 11px; color: var(--text-secondary, #475569); line-height: 1.4; margin-bottom: 6px;">
+                                        <div style="font-size: 12px; color: var(--text-secondary, #475569); line-height: 1.4; margin-bottom: 8px;">
                                             ${escapeHtml(summaryData.extract)}
                                         </div>
-                                        <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 10px; color: var(--link-color, #2563eb); font-weight: 600; text-decoration: none;">
-                                            Ver más detalles en Wikipedia &rarr;
+                                        <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; color: var(--link-color, #2563eb); font-weight: 600; text-decoration: none;">
+                                            Ver artículo completo en Wikipedia &rarr;
                                         </a>
                                     </div>
                                 </div>
@@ -210,12 +208,12 @@ window.WikiSearchModule = (function () {
                 }
             }
 
-            // 3. Renderizado de resultados
+            // 3. Renderizado total de los resultados
             if (validResults.length > 0) {
-                const listHtml = validResults.slice(0, limit).map(item => {
+                const listHtml = validResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     return `
-                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0);">
+                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 4px;">
                             <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 12px 14px; text-decoration: none; color: var(--text-color, #1e293b);">
                                 <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: 600; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;">
                                     <span>${escapeHtml(item.title)}</span>
@@ -232,28 +230,9 @@ window.WikiSearchModule = (function () {
                     `;
                 }).join('');
 
-                let footerHtml = '';
-                // Botón al final para redirigir a la página completa de resultados
-                if (isDropdown) {
-                    footerHtml = `
-                        <li style="background: var(--bg-hover, #f8fafc); text-align: center; padding: 12px;">
-                            <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="display: block; font-size: 12px; font-weight: 600; color: var(--accent-color, #2563eb); text-decoration: none;">
-                                Ver todos los resultados &rarr;
-                            </a>
-                        </li>
-                    `;
-                }
-
-                resultsContainer.innerHTML = conceptCardHtml + listHtml + footerHtml;
+                resultsContainer.innerHTML = conceptCardHtml + listHtml;
             } else if (conceptCardHtml) {
-                let footerHtml = isDropdown ? `
-                    <li style="background: var(--bg-hover, #f8fafc); text-align: center; padding: 12px;">
-                        <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="display: block; font-size: 12px; font-weight: 600; color: var(--accent-color, #2563eb); text-decoration: none;">
-                            Ver todos los resultados &rarr;
-                        </a>
-                    </li>
-                ` : '';
-                resultsContainer.innerHTML = conceptCardHtml + footerHtml;
+                resultsContainer.innerHTML = conceptCardHtml;
             } else {
                 renderNoResults(resultsContainer);
             }
