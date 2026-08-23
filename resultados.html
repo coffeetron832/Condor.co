@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados de búsqueda - 24col</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://es.wikipedia.org https://www.wikidata.org https://www.datos.gov.co;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://commons.wikimedia.org; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://es.wikipedia.org https://www.wikidata.org https://www.datos.gov.co https://commons.wikimedia.org;">
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -31,7 +31,7 @@
         .search-header {
             display: flex;
             gap: 10px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .search-input {
@@ -56,6 +56,37 @@
             cursor: pointer;
         }
 
+        /* Sistema de Pestañas */
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        /* Listas y Tarjetas de Resultados Web */
         .results-list {
             list-style: none;
             padding: 0;
@@ -86,6 +117,47 @@
             border-radius: 4px;
             margin-left: 8px;
         }
+
+        /* Grid Galería de Imágenes */
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 14px;
+        }
+
+        .image-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            display: block;
+            background-color: #f1f5f9;
+        }
+
+        .image-card-caption {
+            padding: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
@@ -97,7 +169,22 @@
         </form>
 
         <h2 id="search-title" style="font-size: 18px; margin-bottom: 16px; font-family: Arial, Helvetica, sans-serif;"></h2>
-        <ul id="results-container" class="results-list"></ul>
+
+        <!-- Navegación de Pestañas -->
+        <div class="tabs-container">
+            <button type="button" class="tab-btn active" id="tab-all">Todo</button>
+            <button type="button" class="tab-btn" id="tab-images">Imágenes</button>
+        </div>
+
+        <!-- Vista 1: Resultados Web / Conceptos -->
+        <div id="view-all">
+            <ul id="results-container" class="results-list"></ul>
+        </div>
+
+        <!-- Vista 2: Galería de Imágenes -->
+        <div id="view-images" style="display: none;">
+            <div id="images-container" class="images-grid"></div>
+        </div>
     </div>
 
     <script src="js/busqueda-wiki.js"></script>
@@ -106,26 +193,106 @@
             const urlParams = new URLSearchParams(window.location.search);
             const query = urlParams.get('q');
             const input = document.getElementById('query-input');
-            const container = document.getElementById('results-container');
+            const webContainer = document.getElementById('results-container');
+            const imagesContainer = document.getElementById('images-container');
             const title = document.getElementById('search-title');
 
+            const tabAll = document.getElementById('tab-all');
+            const tabImages = document.getElementById('tab-images');
+            const viewAll = document.getElementById('view-all');
+            const viewImages = document.getElementById('view-images');
+
+            let imagesLoaded = false; // Flag para cargar imágenes solo cuando se abra la pestaña
+
+            const escapeHtml = (str) => {
+                if (!str) return '';
+                return str.replace(/[&<>"']/g, (m) => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                })[m]);
+            };
+
+            // Función para alternar entre pestañas
+            const switchTab = (tab) => {
+                if (tab === 'all') {
+                    tabAll.classList.add('active');
+                    tabImages.classList.remove('active');
+                    viewAll.style.display = 'block';
+                    viewImages.style.display = 'none';
+                } else if (tab === 'images') {
+                    tabImages.classList.add('active');
+                    tabAll.classList.remove('active');
+                    viewAll.style.display = 'none';
+                    viewImages.style.display = 'block';
+
+                    if (!imagesLoaded && query) {
+                        fetchImages(query);
+                    }
+                }
+            };
+
+            tabAll.addEventListener('click', () => switchTab('all'));
+            tabImages.addEventListener('click', () => switchTab('images'));
+
+            // Búsqueda de imágenes vía Wikimedia Commons API
+            async function fetchImages(searchQuery) {
+                imagesContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 20px; font-size: 13px; color: var(--text-muted);">
+                        Buscando imágenes relativas a "${escapeHtml(searchQuery)}"...
+                    </div>
+                `;
+
+                try {
+                    const endpoint = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchQuery)}&gsrnamespace=6&prop=imageinfo&iiprop=url|mime&iiurlwidth=400&format=json&origin=*`;
+                    const res = await fetch(endpoint);
+                    const data = await res.json();
+
+                    const pages = data.query?.pages || {};
+                    const items = Object.values(pages)
+                        .filter(page => page.imageinfo && page.imageinfo[0])
+                        .map(page => ({
+                            title: page.title.replace(/^Archivo:|^File:/i, ''),
+                            url: page.imageinfo[0].descriptionurl,
+                            thumb: page.imageinfo[0].thumburl || page.imageinfo[0].url,
+                            mime: page.imageinfo[0].mime
+                        }))
+                        .filter(item => item.mime && item.mime.startsWith('image/'));
+
+                    if (items.length === 0) {
+                        imagesContainer.innerHTML = `
+                            <div style="grid-column: 1/-1; text-align: center; padding: 20px; font-size: 13px; color: var(--text-muted);">
+                                No se encontraron imágenes relativas a esta búsqueda.
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    imagesLoaded = true;
+                    imagesContainer.innerHTML = items.slice(0, 16).map(item => `
+                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="image-card" title="${escapeHtml(item.title)}">
+                            <img src="${item.thumb}" alt="${escapeHtml(item.title)}" loading="lazy" />
+                            <div class="image-card-caption">${escapeHtml(item.title)}</div>
+                        </a>
+                    `).join('');
+
+                } catch (err) {
+                    console.error('Error cargando imágenes:', err);
+                    imagesContainer.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 20px; font-size: 12px; color: #dc2626;">
+                            Ocurrió un error al cargar las imágenes.
+                        </div>
+                    `;
+                }
+            }
+
+            // Ejecución inicial de búsqueda web
             if (query) {
                 input.value = query;
                 title.textContent = `Resultados para: "${query}"`;
-                
-                // Función utilitaria básica para escapar HTML de forma segura
-                const escapeHtml = (str) => {
-                    if (!str) return '';
-                    return str.replace(/[&<>"']/g, (m) => ({
-                        '&': '&amp;',
-                        '<': '&lt;',
-                        '>': '&gt;',
-                        '"': '&quot;',
-                        "'": '&#39;'
-                    })[m]);
-                };
-
-                WikiSearchModule.searchOfficialLinks(query, container, escapeHtml);
+                WikiSearchModule.searchOfficialLinks(query, webContainer, escapeHtml);
             }
 
             document.getElementById('search-form').addEventListener('submit', (e) => {
