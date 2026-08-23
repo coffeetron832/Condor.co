@@ -89,7 +89,7 @@ html, body {
 }
 
 body {
-    font-family: Arial, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-color);
     background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), var(--bg-image);
     background-size: cover;
