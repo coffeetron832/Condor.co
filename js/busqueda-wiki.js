@@ -1,7 +1,7 @@
 /*
  * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
- * Garantiza la extracción de links directos para sitios oficiales,
- * entidades gubernamentales y plataformas masivas (Facebook, YouTube, etc.).
+ * Extrae de forma 100% dinámica el sitio web oficial vía Wikidata (Propiedad P856)
+ * sin depender de listas ni URLs hardcodeadas.
  */
 
 window.WikiSearchModule = (function () {
@@ -15,22 +15,7 @@ window.WikiSearchModule = (function () {
         `;
     }
 
-    // Mapeo directo para plataformas masivas populares (Fallback inmediato)
-    const DIRECT_PLATFORMS = {
-        'facebook': 'https://www.facebook.com',
-        'instagram': 'https://www.instagram.com',
-        'twitter': 'https://www.x.com',
-        'x': 'https://www.x.com',
-        'youtube': 'https://www.youtube.com',
-        'linkedin': 'https://www.linkedin.com',
-        'whatsapp': 'https://www.whatsapp.com',
-        'tiktok': 'https://www.tiktok.com',
-        'spotify': 'https://www.spotify.com',
-        'netflix': 'https://www.netflix.com',
-        'github': 'https://www.github.com'
-    };
-
-    // Clasificación dinámica de badges según dominio
+    // Clasificación dinámica de badges según la URL o dominio devuelto
     function getBadgeConfig(url, isWikiPage = false) {
         if (isWikiPage || url.includes('wikipedia.org')) {
             return { text: 'Artículo Enciclopedia', bg: '#e2e8f0', color: '#334155' };
@@ -41,10 +26,6 @@ window.WikiSearchModule = (function () {
         if (lowerUrl.includes('.gov.co') || lowerUrl.includes('.gov') || lowerUrl.includes('.mil.co')) {
             return { text: 'Sitio Oficial', bg: '#dcfce7', color: '#15803d' };
         }
-        
-        if (Object.values(DIRECT_PLATFORMS).some(p => lowerUrl.includes(p.replace('https://www.', '')))) {
-            return { text: 'Plataforma Oficial', bg: '#dbeafe', color: '#1e40af' };
-        }
 
         if (lowerUrl.includes('.edu.co') || lowerUrl.includes('.edu')) {
             return { text: 'Portal Educativo', bg: '#feefc3', color: '#b45309' };
@@ -54,7 +35,29 @@ window.WikiSearchModule = (function () {
             return { text: 'Organización', bg: '#e0f2fe', color: '#0369a1' };
         }
         
-        return { text: 'Sitio Oficial', bg: '#f3e8ff', color: '#6b21a8' };
+        return { text: 'Plataforma / Sitio Oficial', bg: '#dbeafe', color: '#1e40af' };
+    }
+
+    // Consulta la propiedad P856 (Sitio web oficial) en Wikidata usando el WikiItem ID de la página
+    async function fetchOfficialUrlFromWikidata(wikiItemId) {
+        if (!wikiItemId) return null;
+        try {
+            const wikidataUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${wikiItemId}&props=claims&format=json&origin=*`;
+            const res = await fetch(wikidataUrl);
+            const data = await res.json();
+            
+            const claims = data.entities?.[wikiItemId]?.claims;
+            // P856 representa "Sitio web oficial" en el esquema universal de Wikidata
+            const officialWebsiteClaim = claims?.P856;
+
+            if (officialWebsiteClaim && officialWebsiteClaim.length > 0) {
+                const rawUrl = officialWebsiteClaim[0].mainsnak?.datavalue?.value;
+                if (rawUrl) return rawUrl;
+            }
+        } catch (e) {
+            console.warn('Error al consultar Wikidata (P856):', e);
+        }
+        return null;
     }
 
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml) {
@@ -79,19 +82,7 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Detección inmediata si la búsqueda coincide con una plataforma masiva
-            const cleanQueryKey = trimmedQuery.toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (DIRECT_PLATFORMS[cleanQueryKey]) {
-                const officialUrl = DIRECT_PLATFORMS[cleanQueryKey];
-                validResults.push({
-                    title: trimmedQuery.charAt(0).toUpperCase() + trimmedQuery.slice(1) + " (Sitio Oficial)",
-                    snippet: `Acceso directo al portal web oficial de ${trimmedQuery}.`,
-                    url: officialUrl,
-                    isWikiPage: false
-                });
-            }
-
-            // 2. Obtención de resumen / Tarjeta principal de concepto
+            // 1. Obtener Tarjeta de Concepto / Resumen principal
             try {
                 const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
                 const summaryRes = await fetch(summaryEndpoint);
@@ -100,7 +91,9 @@ window.WikiSearchModule = (function () {
                     const summaryData = await summaryRes.json();
                     if (summaryData.type === 'standard' && summaryData.extract) {
                         const wikiUrl = summaryData.content_urls?.desktop?.page || `https://es.wikipedia.org/wiki/${encodeURIComponent(summaryData.title)}`;
-                        const thumbnail = summaryData.thumbnail?.source ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; margin-right: 10px; flex-shrink: 0;" />` : '';
+                        const thumbnail = summaryData.thumbnail?.source 
+                            ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; margin-right: 10px; flex-shrink: 0;" />` 
+                            : '';
 
                         conceptCardHtml = `
                             <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 12px 14px;">
@@ -127,7 +120,7 @@ window.WikiSearchModule = (function () {
                 console.warn('No se pudo obtener el resumen de concepto:', err);
             }
 
-            // 3. Búsqueda de candidatos y extracción de enlaces externos
+            // 2. Búsqueda de páginas relevantes en Wikipedia
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
             const searchData = await searchRes.json();
@@ -136,7 +129,8 @@ window.WikiSearchModule = (function () {
             const topCandidates = candidates.slice(0, 5);
 
             for (const candidate of topCandidates) {
-                const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
+                // Obtenemos los metadatos de la página, incluyendo pageprops (contiene el ID de Wikidata) y extlinks
+                const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=pageprops|extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
                 const pageRes = await fetch(pageEndpoint);
                 const pageData = await pageRes.json();
 
@@ -145,23 +139,31 @@ window.WikiSearchModule = (function () {
 
                 let externalUrl = null;
 
-                if (pageKey !== "-1" && pages[pageKey].extlinks) {
-                    const links = pages[pageKey].extlinks.map(l => l['*']);
+                if (pageKey !== "-1") {
+                    const pageObj = pages[pageKey];
+                    const wikibaseItemId = pageObj.pageprops?.wikibase_item;
 
-                    // Filtrar dominios no deseados
-                    externalUrl = links.find(url =>
-                        !url.includes('archive.org') &&
-                        !url.includes('wikimedia.org') &&
-                        !url.includes('wikipedia.org') &&
-                        !url.includes('doi.org') &&
-                        !url.includes('w3.org')
-                    );
+                    // A. MÉTODOD PRINCIPAL: Extraer URL oficial vía Wikidata P856
+                    if (wikibaseItemId) {
+                        externalUrl = await fetchOfficialUrlFromWikidata(wikibaseItemId);
+                    }
+
+                    // B. MÉTODOD SECUNDARIO: Si Wikidata no tiene registrada la P856, buscar en extlinks
+                    if (!externalUrl && pageObj.extlinks) {
+                        const links = pageObj.extlinks.map(l => l['*']);
+                        externalUrl = links.find(url =>
+                            !url.includes('archive.org') &&
+                            !url.includes('wikimedia.org') &&
+                            !url.includes('wikipedia.org') &&
+                            !url.includes('doi.org') &&
+                            !url.includes('w3.org')
+                        );
+                    }
                 }
 
                 const cleanSnippet = candidate.snippet.replace(/<\/?[^>]+(>|$)/g, "");
 
                 if (externalUrl) {
-                    // Evitar añadir duplicados
                     if (!validResults.some(r => r.url === externalUrl)) {
                         validResults.push({
                             title: candidate.title,
@@ -183,7 +185,7 @@ window.WikiSearchModule = (function () {
                 }
             }
 
-            // 4. Renderizado Final
+            // 3. Renderizado de la lista
             if (validResults.length > 0) {
                 const listHtml = validResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage);
