@@ -1,7 +1,7 @@
 /*
  * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
- * Extrae la tarjeta de concepto, sitios oficiales gubernamentales y 
- * enlaces oficiales directos a plataformas y servicios masivos (Facebook, YouTube, etc.).
+ * Garantiza la extracción de links directos para sitios oficiales,
+ * entidades gubernamentales y plataformas masivas (Facebook, YouTube, etc.).
  */
 
 window.WikiSearchModule = (function () {
@@ -15,14 +15,22 @@ window.WikiSearchModule = (function () {
         `;
     }
 
-    // Lista de servicios/plataformas populares donde SÍ queremos extraer su URL oficial si el usuario los busca
-    const KNOWN_SERVICES = [
-        'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 
-        'youtube.com', 'linkedin.com', 'whatsapp.com', 'tiktok.com',
-        'spotify.com', 'netflix.com', 'github.com', 'amazon.com'
-    ];
+    // Mapeo directo para plataformas masivas populares (Fallback inmediato)
+    const DIRECT_PLATFORMS = {
+        'facebook': 'https://www.facebook.com',
+        'instagram': 'https://www.instagram.com',
+        'twitter': 'https://www.x.com',
+        'x': 'https://www.x.com',
+        'youtube': 'https://www.youtube.com',
+        'linkedin': 'https://www.linkedin.com',
+        'whatsapp': 'https://www.whatsapp.com',
+        'tiktok': 'https://www.tiktok.com',
+        'spotify': 'https://www.spotify.com',
+        'netflix': 'https://www.netflix.com',
+        'github': 'https://www.github.com'
+    };
 
-    // Clasificación dinámica de badges
+    // Clasificación dinámica de badges según dominio
     function getBadgeConfig(url, isWikiPage = false) {
         if (isWikiPage || url.includes('wikipedia.org')) {
             return { text: 'Artículo Enciclopedia', bg: '#e2e8f0', color: '#334155' };
@@ -30,55 +38,23 @@ window.WikiSearchModule = (function () {
         
         const lowerUrl = url.toLowerCase();
         
-        // Sitios Gubernamentales
         if (lowerUrl.includes('.gov.co') || lowerUrl.includes('.gov') || lowerUrl.includes('.mil.co')) {
             return { text: 'Sitio Oficial', bg: '#dcfce7', color: '#15803d' };
         }
         
-        // Plataformas / Redes Masivas
-        if (KNOWN_SERVICES.some(domain => lowerUrl.includes(domain))) {
+        if (Object.values(DIRECT_PLATFORMS).some(p => lowerUrl.includes(p.replace('https://www.', '')))) {
             return { text: 'Plataforma Oficial', bg: '#dbeafe', color: '#1e40af' };
         }
 
-        // Educativos
         if (lowerUrl.includes('.edu.co') || lowerUrl.includes('.edu')) {
             return { text: 'Portal Educativo', bg: '#feefc3', color: '#b45309' };
         }
 
-        // Organizaciones
         if (lowerUrl.includes('.org')) {
             return { text: 'Organización', bg: '#e0f2fe', color: '#0369a1' };
         }
         
         return { text: 'Sitio Oficial', bg: '#f3e8ff', color: '#6b21a8' };
-    }
-
-    // Obtiene la URL oficial del servicio o empresa desde el Infobox de Wikipedia
-    async function fetchInfoboxOfficialUrl(pageTitle) {
-        try {
-            const url = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=revisions&rvprop=content&rvslots=main&format=json&origin=*`;
-            const res = await fetch(url);
-            const data = await res.json();
-            const pages = data.query?.pages || {};
-            const pageKey = Object.keys(pages)[0];
-
-            if (pageKey === "-1") return null;
-
-            const wikitext = pages[pageKey]?.revisions?.[0]?.slots?.main?.['*'] || '';
-            
-            // Busca patrones comunes de URL en el Infobox (sitio_web = {{URL|...}} o sitio_web = http...)
-            const urlMatch = wikitext.match(/sitio_web\s*=\s*(?:\{\{URL\|)?([^\s|<\}]+)/i);
-            if (urlMatch && urlMatch[1]) {
-                let cleanUrl = urlMatch[1].replace(/["'\}]/g, '').trim();
-                if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-                    cleanUrl = 'https://' + cleanUrl;
-                }
-                return cleanUrl;
-            }
-        } catch (e) {
-            console.warn('Error al extraer URL de infobox:', e);
-        }
-        return null;
     }
 
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml) {
@@ -101,10 +77,23 @@ window.WikiSearchModule = (function () {
 
         try {
             let conceptCardHtml = '';
+            const validResults = [];
 
-            // 1. OBTENER RESUMEN / TARJETA PRINCIPAL DE CONCEPTO
+            // 1. Detección inmediata si la búsqueda coincide con una plataforma masiva
+            const cleanQueryKey = trimmedQuery.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (DIRECT_PLATFORMS[cleanQueryKey]) {
+                const officialUrl = DIRECT_PLATFORMS[cleanQueryKey];
+                validResults.push({
+                    title: trimmedQuery.charAt(0).toUpperCase() + trimmedQuery.slice(1) + " (Sitio Oficial)",
+                    snippet: `Acceso directo al portal web oficial de ${trimmedQuery}.`,
+                    url: officialUrl,
+                    isWikiPage: false
+                });
+            }
+
+            // 2. Obtención de resumen / Tarjeta principal de concepto
             try {
-                const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}`;
+                const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
                 const summaryRes = await fetch(summaryEndpoint);
 
                 if (summaryRes.ok) {
@@ -138,17 +127,16 @@ window.WikiSearchModule = (function () {
                 console.warn('No se pudo obtener el resumen de concepto:', err);
             }
 
-            // 2. BÚSQUEDA DE CANDIDATOS Y EXTRACCIÓN DE ENLACES OFICIALES
+            // 3. Búsqueda de candidatos y extracción de enlaces externos
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
             const searchData = await searchRes.json();
             const candidates = searchData.query?.search || [];
 
-            const validResults = [];
             const topCandidates = candidates.slice(0, 5);
 
             for (const candidate of topCandidates) {
-                const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=extlinks&elexpandurl=1&format=json&origin=*`;
+                const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
                 const pageRes = await fetch(pageEndpoint);
                 const pageData = await pageRes.json();
 
@@ -160,42 +148,42 @@ window.WikiSearchModule = (function () {
                 if (pageKey !== "-1" && pages[pageKey].extlinks) {
                     const links = pages[pageKey].extlinks.map(l => l['*']);
 
-                    // A. Intentar encontrar un enlace oficial evitando páginas secundarias de referencia
+                    // Filtrar dominios no deseados
                     externalUrl = links.find(url =>
                         !url.includes('archive.org') &&
                         !url.includes('wikimedia.org') &&
                         !url.includes('wikipedia.org') &&
-                        !url.includes('doi.org')
+                        !url.includes('doi.org') &&
+                        !url.includes('w3.org')
                     );
-                }
-
-                // B. Si no se encontró en extlinks, buscar en el Infobox (caso común en empresas/plataformas)
-                if (!externalUrl) {
-                    externalUrl = await fetchInfoboxOfficialUrl(candidate.title);
                 }
 
                 const cleanSnippet = candidate.snippet.replace(/<\/?[^>]+(>|$)/g, "");
 
                 if (externalUrl) {
-                    validResults.push({
-                        title: candidate.title,
-                        snippet: cleanSnippet,
-                        url: externalUrl,
-                        isWikiPage: false
-                    });
+                    // Evitar añadir duplicados
+                    if (!validResults.some(r => r.url === externalUrl)) {
+                        validResults.push({
+                            title: candidate.title,
+                            snippet: cleanSnippet,
+                            url: externalUrl,
+                            isWikiPage: false
+                        });
+                    }
                 } else {
-                    // C. Si definitivamente no hay URL externa, se ofrece el artículo en Wikipedia
                     const wikiArticleUrl = `https://es.wikipedia.org/wiki/${encodeURIComponent(candidate.title)}`;
-                    validResults.push({
-                        title: candidate.title,
-                        snippet: cleanSnippet,
-                        url: wikiArticleUrl,
-                        isWikiPage: true
-                    });
+                    if (!validResults.some(r => r.url === wikiArticleUrl)) {
+                        validResults.push({
+                            title: candidate.title,
+                            snippet: cleanSnippet,
+                            url: wikiArticleUrl,
+                            isWikiPage: true
+                        });
+                    }
                 }
             }
 
-            // 3. RENDERIZADO DE RESULTADOS
+            // 4. Renderizado Final
             if (validResults.length > 0) {
                 const listHtml = validResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage);
