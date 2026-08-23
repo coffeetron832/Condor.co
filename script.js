@@ -10,6 +10,86 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
+    // Inicializar iconos de Lucide si existen
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // ==========================================
+    // 0. MÓDULO DE MODO OSCURO Y TEMAS
+    // ==========================================
+    const themeToggleBtn = document.getElementById('themeToggle') || document.getElementById('toggleTheme');
+    
+    function updateGreeting() {
+        const subtitleEl = document.querySelector('.hero-subtitle');
+        if (!subtitleEl) return;
+
+        const hour = new Date().getHours();
+        let greeting = '';
+
+        if (hour >= 5 && hour < 12) {
+            greeting = '¡Buenos días! Te damos la bienvenida a 24col.';
+        } else if (hour >= 12 && hour < 19) {
+            greeting = '¡Buenas tardes! Te damos la bienvenida a 24col.';
+        } else {
+            greeting = '¡Buenas noches! Te damos la bienvenida a 24col.';
+        }
+
+        subtitleEl.textContent = greeting;
+    }
+
+    function updateTimeTheme() {
+        const savedTheme = localStorage.getItem('24col_theme');
+        
+        // Si el usuario forzó un tema manualmente
+        if (savedTheme) {
+            document.body.setAttribute('data-theme', savedTheme);
+            return;
+        }
+
+        // Si no hay preferencia guardada, aplicar tema por hora
+        const hour = new Date().getHours();
+        const creditEl = document.getElementById('imageCredit');
+        let timeTheme = 'day';
+        let creditHTML = '';
+
+        if (hour >= 6 && hour < 12) {
+            timeTheme = 'morning';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/vista-superior-de-sombreros-para-el-sol-marrones-y-blancos-QkOy8LbWtdg" target="_blank" rel="noopener noreferrer">Ricardo Gomez Angel (Unsplash)</a>';
+        } else if (hour >= 12 && hour < 18) {
+            timeTheme = 'afternoon';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/loro-rojo-verde-y-azul-en-la-rama-marron-del-arbol-durante-el-dia-57SHaZUAOtQ" target="_blank" rel="noopener noreferrer">Juan Camilo Guarin P (Unsplash)</a>';
+        } else {
+            timeTheme = 'night';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/rascador-de-la-ciudad-por-la-noche-03gVOLHq9ec" target="_blank" rel="noopener noreferrer">Juan Saravia (Unsplash)</a>';
+        }
+
+        document.body.setAttribute('data-time', timeTheme);
+        if (creditEl && creditHTML) {
+            creditEl.innerHTML = creditHTML;
+        }
+    }
+
+    // Evento para alternar modo oscuro manualmente
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('24col_theme', newTheme);
+        });
+    }
+
+    updateGreeting();
+    updateTimeTheme();
+
+    setInterval(() => {
+        updateTimeTheme();
+        updateGreeting();
+    }, 15 * 60 * 1000);
+
+
     // ==========================================
     // AUXILIAR: Obtención unificada de ciudades
     // ==========================================
