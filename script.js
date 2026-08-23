@@ -236,59 +236,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ==========================================
-    // 3. BUSCADOR FILTRADO ESTRICTO
+    // 3. BÚSQUEDA MEDIANTE MÓDULO EXTERNO
     // ==========================================
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
-    const nationalTitle = document.getElementById('nationalSectionTitle');
-    const regionalTitle = document.getElementById('regionalSectionTitle');
-    const noResultsMsg = document.getElementById('noResultsMsg');
     const resultsContainer = document.getElementById('webSearchResults');
 
     if (searchForm) {
         searchForm.addEventListener('submit', (e) => e.preventDefault());
-    }
-
-    function normalizeText(text) {
-        if (!text) return '';
-        return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-
-    const keywordSynonyms = {
-        'hacienda': ['impuestos', 'predial', 'retencion', 'ica', 'dian'],
-        'impuestos': ['hacienda', 'predial', 'vehiculos', 'ica', 'dian'],
-        'predial': ['impuestos', 'hacienda', 'alcaldia'],
-        'vehiculos': ['vehiculo', 'movilidad', 'tránsito', 'transito', 'patios', 'runt', 'simit'],
-        'tránsito': ['transito', 'movilidad', 'vehiculos', 'simit', 'runt', 'fotomulta', 'patios'],
-        'agua': ['acueducto', 'veolia', 'eaab', 'epm', 'emcali', 'triple a', 'acuacar', 'empopasto', 'ibal', 'essmar'],
-        'luz': ['energia', 'electricidad', 'afinia', 'air-e', 'enel', 'epm', 'essa', 'celsia', 'chec', 'cens', 'cedenar', 'emsa'],
-        'gas': ['surtigas', 'vanti', 'gases', 'efigas', 'alcanos', 'llanogas', 'gasoriente'],
-        'soat': ['runt', 'simit', 'movilidad', 'tránsito', 'transito'],
-        'fotomulta': ['simit', 'runt', 'movilidad', 'tránsito', 'transito', 'datt'],
-        'fosyga': ['adres', 'bdua', 'eps', 'salud'],
-        'cedula': ['registraduria', 'duplicado', 'identificacion']
-    };
-
-    function getExpandedSearchTerms(query) {
-        const normQuery = normalizeText(query);
-        if (!normQuery) return [];
-
-        const terms = new Set([normQuery]);
-
-        Object.entries(keywordSynonyms).forEach(([key, synonyms]) => {
-            const normKey = normalizeText(key);
-            const normSynonyms = synonyms.map(s => normalizeText(s));
-
-            const matchesKey = normKey.includes(normQuery) || normQuery.includes(normKey);
-            const matchesSynonym = normSynonyms.some(s => s.includes(normQuery) || (normQuery.length >= 3 && s.includes(normQuery)));
-
-            if (matchesKey || matchesSynonym) {
-                terms.add(normKey);
-                normSynonyms.forEach(s => terms.add(s));
-            }
-        });
-
-        return Array.from(terms);
     }
 
     let searchDebounceTimer = null;
@@ -296,133 +251,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const rawQuery = this.value.trim();
-            const query = normalizeText(rawQuery);
-            const citiesList = getCitiesList();
 
             clearTimeout(searchDebounceTimer);
 
-            let nationalVisibleCount = 0;
-            let regionalVisibleCount = 0;
-
-            const searchTerms = getExpandedSearchTerms(query);
-
-            const isMatch = (textToTest) => {
-                if (!textToTest || searchTerms.length === 0) return false;
-                const normalizedTarget = normalizeText(textToTest);
-                return searchTerms.some(term => normalizedTarget.includes(term));
-            };
-
-            // 1. FILTRADO INDIVIDUAL EN TARJETAS NACIONALES
-            const allNationalCards = document.querySelectorAll('.card-item');
-
-            allNationalCards.forEach(card => {
-                const items = card.querySelectorAll('li, .searchable-item');
-                let cardHasMatches = false;
-
-                if (query === '') {
-                    card.style.display = '';
-                    items.forEach(item => item.style.display = '');
-                    nationalVisibleCount++;
-                } else {
-                    items.forEach(item => {
-                        const itemText = item.textContent || '';
-                        
-                        if (isMatch(itemText)) {
-                            item.style.display = '';
-                            cardHasMatches = true;
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-
-                    if (cardHasMatches) {
-                        card.style.display = '';
-                        nationalVisibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                }
-            });
-
-            // 2. FILTRADO INDIVIDUAL EN MENÚS REGIONALES POR CIUDAD
-            const categoryItems = document.querySelectorAll('.searchable-category');
-
-            categoryItems.forEach(item => {
-                const details = item.querySelector('details');
-                const cityWrappers = item.querySelectorAll('.city-link-wrapper');
-
-                if (query === '') {
-                    item.style.display = '';
-                    if (details) details.open = false;
-
-                    cityWrappers.forEach(wrapper => {
-                        wrapper.style.display = '';
-                        const tag = wrapper.querySelector('.matched-service-tag');
-                        if (tag) tag.style.display = 'none';
-                    });
-                    regionalVisibleCount++;
-                } else {
-                    let visibleWrappersCount = 0;
-
-                    cityWrappers.forEach(wrapper => {
-                        const link = wrapper.querySelector('a');
-                        const linkText = link ? link.textContent : '';
-                        const cityId = wrapper.dataset.cityId || '';
-                        const cityServices = wrapper.dataset.services || '';
-                        const cityObj = citiesList.find(c => c.id === cityId);
-                        const tag = wrapper.querySelector('.matched-service-tag');
-
-                        let matchedServiceName = '';
-                        const isCityMatch = isMatch(linkText) || (cityObj && (isMatch(cityObj.name) || isMatch(cityObj.dept)));
-
-                        if (cityServices) {
-                            const servicesList = cityServices.split(',').map(s => s.trim());
-                            const found = servicesList.find(service => isMatch(service));
-                            if (found) {
-                                matchedServiceName = found;
-                            }
-                        }
-
-                        if (isCityMatch || matchedServiceName !== '') {
-                            wrapper.style.display = '';
-                            visibleWrappersCount++;
-
-                            if (tag && matchedServiceName !== '') {
-                                tag.textContent = `(${matchedServiceName})`;
-                                tag.style.display = 'inline';
-                            } else if (tag) {
-                                tag.style.display = 'none';
-                            }
-                        } else {
-                            wrapper.style.display = 'none';
-                            if (tag) tag.style.display = 'none';
-                        }
-                    });
-
-                    if (visibleWrappersCount > 0) {
-                        item.style.display = '';
-                        if (details) details.open = true;
-                        regionalVisibleCount++;
-                    } else {
-                        item.style.display = 'none';
-                        if (details) details.open = false;
-                    }
-                }
-            });
-
-            if (query !== '') {
-                if (nationalTitle) nationalTitle.style.display = 'none';
-                if (regionalTitle) regionalTitle.style.display = 'none';
-            } else {
-                if (nationalTitle) nationalTitle.style.display = (nationalVisibleCount > 0) ? '' : 'none';
-                if (regionalTitle) regionalTitle.style.display = (regionalVisibleCount > 0) ? '' : 'none';
-            }
-
-            if (noResultsMsg) {
-                noResultsMsg.style.display = (nationalVisibleCount === 0 && regionalVisibleCount === 0) ? 'block' : 'none';
-            }
-
-            // 3. LLAMADA AL MÓDULO EXTERNO DE WIKIPEDIA (MODIFICADO)
             if (window.WikiSearchModule) {
                 searchDebounceTimer = setTimeout(() => {
                     window.WikiSearchModule.searchOfficialLinks(rawQuery, resultsContainer, escapeHtml, { isDropdown: true });
