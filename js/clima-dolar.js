@@ -138,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // Inyección/Actualización del Disclaimer Informativo en la tarjeta
             let disclaimerEl = document.getElementById('trmDisclaimer');
             if (!disclaimerEl && trmRateEl) {
                 disclaimerEl = document.createElement('small');
@@ -152,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 disclaimerEl.textContent = `Fuente: ${trmData.source}`;
             }
 
-            // Calculadora TRM (si existen los inputs en el DOM)
             if (usdInput && copInput) {
                 usdInput.addEventListener('input', () => {
                     const val = parseFloat(usdInput.value);
@@ -181,9 +179,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fetchTRM();
 
-    // ==========================================
-    // 4. MÓDULO DE CLIMA Y BÚSQUEDA DINÁMICA
-    // ==========================================
+    // --- Theme Switcher ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleText = document.getElementById('themeToggleText');
+    const iconSun = document.getElementById('themeIconSun');
+    const iconMoon = document.getElementById('themeIconMoon');
+
+    function updateThemeUI(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (themeToggleText) themeToggleText.textContent = 'Modo Claro';
+            if (iconSun) iconSun.style.display = 'inline-block';
+            if (iconMoon) iconMoon.style.display = 'none';
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            if (themeToggleText) themeToggleText.textContent = 'Modo Oscuro';
+            if (iconSun) iconSun.style.display = 'none';
+            if (iconMoon) iconMoon.style.display = 'inline-block';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    updateThemeUI(currentTheme);
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+        });
+    }
+
+    // --- MÓDULO DE CLIMA Y BÚSQUEDA DINÁMICA ---
     function getWeatherInterpretation(code) {
         const codes = {
             0: { desc: 'Despejado', icon: '☀️' },
