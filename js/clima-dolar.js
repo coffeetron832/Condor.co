@@ -56,24 +56,81 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGreeting();
     }, 15 * 60 * 1000);
 
-    // --- Cargar TRM Dólar a COP (API Antigua) ---
+    // --- LÓGICA DE CONTROL DE MODALES ---
+    function setupModals() {
+        const openButtons = document.querySelectorAll('[data-modal-target]');
+        const closeButtons = document.querySelectorAll('[data-modal-close], .modal-close');
+        const overlays = document.querySelectorAll('.modal-overlay, .modal');
+
+        openButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = btn.getAttribute('data-modal-target');
+                const modal = document.getElementById(targetId);
+                if (modal) {
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modal = btn.closest('.modal') || btn.closest('.modal-overlay');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        overlays.forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    }
+
+    setupModals();
+
+    // --- Cargar TRM Dólar a COP (API Antigua + Lógica Convertidor Modal) ---
     async function fetchTRM() {
         const trmRateEl = document.getElementById('trmRate');
         const trmUpdateEl = document.getElementById('trmUpdate');
-        
+        const usdInput = document.getElementById('trmUsdInput');
+        const copInput = document.getElementById('trmCopInput');
+        let currentRate = null;
+
         try {
             const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
             const data = await response.json();
             
             if (data && data.rates && data.rates.COP) {
+                currentRate = data.rates.COP;
                 const rateFormatted = new Intl.NumberFormat('es-CO', {
                     style: 'currency',
                     currency: 'COP',
                     maximumFractionDigits: 2
-                }).format(data.rates.COP);
+                }).format(currentRate);
 
                 if (trmRateEl) trmRateEl.textContent = `${rateFormatted} COP`;
                 if (trmUpdateEl) trmUpdateEl.textContent = `Actualizado: ${data.date || 'Hoy'}`;
+
+                // Eventos para el convertidor dentro del modal
+                if (usdInput && copInput) {
+                    usdInput.addEventListener('input', () => {
+                        const val = parseFloat(usdInput.value);
+                        copInput.value = (!isNaN(val) && currentRate) ? Math.round(val * currentRate) : '';
+                    });
+
+                    copInput.addEventListener('input', () => {
+                        const val = parseFloat(copInput.value);
+                        usdInput.value = (!isNaN(val) && currentRate) ? (val / currentRate).toFixed(2) : '';
+                    });
+                }
             } else {
                 throw new Error('Formato inválido');
             }
