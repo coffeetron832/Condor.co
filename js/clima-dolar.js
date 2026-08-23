@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Inicializar iconos de Lucide
+    // --- 1. Inicializar Iconos Lucide ---
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 
-    // --- Subtítulo Dinámico de Bienvenida ---
+    // --- 2. Subtítulo Dinámico de Bienvenida ---
     function updateGreeting() {
-        const subtitleEl = document.querySelector('.hero-subtitle');
+        const subtitleEl = document.getElementById('dynamicGreeting') || document.querySelector('.hero-subtitle');
         if (!subtitleEl) return;
 
         const hour = new Date().getHours();
@@ -23,10 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         subtitleEl.textContent = greeting;
     }
-
     updateGreeting();
 
-    // --- Fondo Dinámico y Créditos según Hora del Día ---
+    // --- 3. Fondo Dinámico y Créditos por Hora ---
     function updateTimeTheme() {
         const hour = new Date().getHours();
         const creditEl = document.getElementById('imageCredit');
@@ -45,9 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         document.body.setAttribute('data-time', timeTheme);
-        if (creditEl) {
-            creditEl.innerHTML = creditHTML;
-        }
+        if (creditEl) creditEl.innerHTML = creditHTML;
     }
 
     updateTimeTheme();
@@ -56,11 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGreeting();
     }, 15 * 60 * 1000);
 
-    // --- Cargar y Mejorar TRM Dólar a COP ---
+    // --- 4. Cargar TRM y Calculadora Dólar / COP ---
     async function fetchTRM() {
         const trmRateEl = document.getElementById('trmRate');
         const trmUpdateEl = document.getElementById('trmUpdate');
         const trmTrendEl = document.getElementById('trmTrend');
+        const heroTrmText = document.getElementById('heroTrmText');
         const usdInput = document.getElementById('trmUsdInput');
         const copInput = document.getElementById('trmCopInput');
 
@@ -72,7 +70,13 @@ document.addEventListener('DOMContentLoaded', function() {
             maximumFractionDigits: 2
         });
 
-        // 1. Fuente Primaria: Datos Abiertos Colombia (Superintendencia Financiera)
+        const copHeroFormatter = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            maximumFractionDigits: 0
+        });
+
+        // Fuente Primaria: Datos Abiertos Colombia
         async function getTRMOficial() {
             const response = await fetch('https://www.datos.gov.co/resource/32sa-823r.json?$order=vigenciadesde%20DESC&$limit=2');
             if (!response.ok) throw new Error('Error Datos Gov');
@@ -92,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             throw new Error('Sin datos en API Oficial');
         }
 
-        // 2. Fuente Secundaria: ExchangeRate-API (Fallback)
+        // Fuente Secundaria: ExchangeRate API (Fallback)
         async function getTRMFallback() {
             const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
             if (!response.ok) throw new Error('Error ExchangeRate API');
@@ -120,14 +124,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             currentRate = trmData.rate;
 
-            if (trmRateEl) {
-                trmRateEl.textContent = `${copFormatter.format(currentRate)} COP`;
+            // Actualizar Widget de la Tarjeta TRM
+            if (trmRateEl) trmRateEl.textContent = `${copFormatter.format(currentRate)} COP`;
+            if (trmUpdateEl) trmUpdateEl.textContent = `Vigencia: ${trmData.date}`;
+
+            // Actualizar Texto Hero
+            if (heroTrmText) {
+                const diff = trmData.change;
+                const trendIcon = diff > 0 ? '▲' : diff < 0 ? '▼' : '=';
+                heroTrmText.textContent = `TRM: ${copHeroFormatter.format(currentRate)} ${trendIcon}`;
             }
 
-            if (trmUpdateEl) {
-                trmUpdateEl.textContent = `Vigencia: ${trmData.date}`;
-            }
-
+            // Actualizar Tendencia de Cambio
             if (trmTrendEl && trmData.change !== undefined) {
                 if (trmData.change > 0) {
                     trmTrendEl.innerHTML = `<span style="color: #2e7d32; font-weight: bold;">▲ +$${trmData.change.toFixed(2)}</span>`;
@@ -138,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // Inyección/Actualización del Disclaimer Informativo en la tarjeta
+            // Disclaimer Informativo
             let disclaimerEl = document.getElementById('trmDisclaimer');
             if (!disclaimerEl && trmRateEl) {
                 disclaimerEl = document.createElement('small');
@@ -153,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 disclaimerEl.textContent = `* Datos oficiales vía ${trmData.source}. Se actualiza de lunes a viernes en días hábiles.`;
             }
 
+            // Calculadora bidireccional
             if (usdInput && copInput) {
                 usdInput.value = 1;
                 copInput.value = Math.round(currentRate);
@@ -172,11 +181,54 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('24col: Error al consultar TRM:', err);
             if (trmRateEl) trmRateEl.textContent = 'No disponible';
             if (trmUpdateEl) trmUpdateEl.textContent = 'Intenta nuevamente más tarde';
+            if (heroTrmText) heroTrmText.textContent = 'TRM: --';
         }
     }
     fetchTRM();
 
-    // --- Theme Switcher ---
+    // --- 5. Cargar Clima (Open-Meteo) ---
+    function getWeatherEmoji(code) {
+        if (code === 0) return '☀️';
+        if (code >= 1 && code <= 3) return '⛅';
+        if (code >= 45 && code <= 48) return '🌫️';
+        if (code >= 51 && code <= 67) return '🌧️';
+        if (code >= 80 && code <= 82) return '🌦️';
+        if (code >= 95) return '🌩️';
+        return '🌡️';
+    }
+
+    async function fetchHeroWeather(lat = 4.6097, lon = -74.0817, cityName = 'Bogotá') {
+        const weatherText = document.getElementById('heroWeatherText');
+        const weatherEmoji = document.getElementById('heroWeatherEmoji');
+        if (!weatherText) return;
+
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data?.current_weather) {
+                const temp = Math.round(data.current_weather.temperature);
+                const code = data.current_weather.weathercode;
+
+                if (weatherEmoji) weatherEmoji.textContent = getWeatherEmoji(code);
+                weatherText.textContent = `${cityName} ${temp}°C`;
+            }
+        } catch (err) {
+            weatherText.textContent = 'Clima: --°C';
+        }
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => fetchHeroWeather(pos.coords.latitude, pos.coords.longitude, 'Tu ubicación'),
+            () => fetchHeroWeather()
+        );
+    } else {
+        fetchHeroWeather();
+    }
+
+    // --- 6. Theme Switcher (Modo Claro / Oscuro) ---
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeToggleText = document.getElementById('themeToggleText');
     const iconSun = document.getElementById('themeIconSun');
@@ -210,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Manejo de Modales de Categoría ---
+    // --- 7. Modales de Categoría ---
     const triggerBtns = document.querySelectorAll('.category-trigger-btn');
     const categoryModals = document.querySelectorAll('.category-modal');
 
@@ -242,15 +294,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- Modales Informativos (Bienvenida y Reporte) ---
+    // --- 8. Modales Informativos (Bienvenida y Reporte) ---
     const welcomeModal = document.getElementById('welcomeModal');
     const openWelcomeBtn = document.getElementById('openWelcomeModal');
     const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
     const closeWelcomeCross = document.getElementById('closeWelcomeModalCross');
+    
     const reportModal = document.getElementById('reportModal');
     const openReportBtn = document.getElementById('openReportModal');
     const closeReportBtn = document.getElementById('closeReportModal');
 
+    // Apertura automática de Bienvenida la primera vez
     if (!localStorage.getItem('welcomeShown')) {
         setTimeout(() => {
             if (welcomeModal && typeof welcomeModal.showModal === 'function') {
@@ -271,13 +325,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (openWelcomeBtn) {
         openWelcomeBtn.addEventListener('click', () => {
-            if (welcomeModal) welcomeModal.showModal();
+            if (welcomeModal && typeof welcomeModal.showModal === 'function') {
+                welcomeModal.showModal();
+            }
         });
     }
 
     if (openReportBtn) {
         openReportBtn.addEventListener('click', () => {
-            if (reportModal) reportModal.showModal();
+            if (reportModal && typeof reportModal.showModal === 'function') {
+                reportModal.showModal();
+            }
         });
     }
 
@@ -287,31 +345,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (welcomeModal) {
-        welcomeModal.addEventListener('click', (e) => {
-            const rect = welcomeModal.getBoundingClientRect();
-            if (
-                e.clientX < rect.left ||
-                e.clientX > rect.right ||
-                e.clientY < rect.top ||
-                e.clientY > rect.bottom
-            ) {
-                closeWelcome();
-            }
-        });
-    }
-
-    if (reportModal) {
-        reportModal.addEventListener('click', (e) => {
-            const rect = reportModal.getBoundingClientRect();
-            if (
-                e.clientX < rect.left ||
-                e.clientX > rect.right ||
-                e.clientY < rect.top ||
-                e.clientY > rect.bottom
-            ) {
-                reportModal.close();
-            }
-        });
-    }
+    // Cierre al hacer clic fuera del contenido en modales de bienvenida y reporte
+    [welcomeModal, reportModal].forEach(modal => {
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                const rect = modal.getBoundingClientRect();
+                if (
+                    e.clientX < rect.left ||
+                    e.clientX > rect.right ||
+                    e.clientY < rect.top ||
+                    e.clientY > rect.bottom
+                ) {
+                    if (modal === welcomeModal) {
+                        closeWelcome();
+                    } else {
+                        modal.close();
+                    }
+                }
+            });
+        }
+    });
 });
