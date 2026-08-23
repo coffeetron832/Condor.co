@@ -1,7 +1,7 @@
 /*
  * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
  * Extrae de forma 100% dinámica el sitio web oficial vía Wikidata (Propiedad P856)
- * sin depender de listas ni URLs hardcodeadas.
+ * con filtrado estricto de enlaces secundarios.
  */
 
 window.WikiSearchModule = (function () {
@@ -16,7 +16,7 @@ window.WikiSearchModule = (function () {
     }
 
     // Clasificación dinámica de badges según la URL o dominio devuelto
-    function getBadgeConfig(url, isWikiPage = false) {
+    function getBadgeConfig(url, isWikiPage = false, isExternalFallback = false) {
         if (isWikiPage || url.includes('wikipedia.org')) {
             return { text: 'Artículo Enciclopedia', bg: '#e2e8f0', color: '#334155' };
         }
@@ -24,7 +24,7 @@ window.WikiSearchModule = (function () {
         const lowerUrl = url.toLowerCase();
         
         if (lowerUrl.includes('.gov.co') || lowerUrl.includes('.gov') || lowerUrl.includes('.mil.co')) {
-            return { text: 'Sitio Oficial', bg: '#dcfce7', color: '#15803d' };
+            return { text: 'Sitio Oficial Gub.', bg: '#dcfce7', color: '#15803d' };
         }
 
         if (lowerUrl.includes('.edu.co') || lowerUrl.includes('.edu')) {
@@ -34,11 +34,15 @@ window.WikiSearchModule = (function () {
         if (lowerUrl.includes('.org')) {
             return { text: 'Organización', bg: '#e0f2fe', color: '#0369a1' };
         }
+
+        if (isExternalFallback) {
+            return { text: 'Enlace Relacionado', bg: '#f1f5f9', color: '#475569' };
+        }
         
-        return { text: 'Plataforma / Sitio Oficial', bg: '#dbeafe', color: '#1e40af' };
+        return { text: 'Sitio Web Oficial', bg: '#dbeafe', color: '#1e40af' };
     }
 
-    // Consulta la propiedad P856 (Sitio web oficial) en Wikidata usando el WikiItem ID de la página
+    // Consulta la propiedad P856 (Sitio web oficial) en Wikidata
     async function fetchOfficialUrlFromWikidata(wikiItemId) {
         if (!wikiItemId) return null;
         try {
@@ -47,7 +51,6 @@ window.WikiSearchModule = (function () {
             const data = await res.json();
             
             const claims = data.entities?.[wikiItemId]?.claims;
-            // P856 representa "Sitio web oficial" en el esquema universal de Wikidata
             const officialWebsiteClaim = claims?.P856;
 
             if (officialWebsiteClaim && officialWebsiteClaim.length > 0) {
@@ -129,7 +132,6 @@ window.WikiSearchModule = (function () {
             const topCandidates = candidates.slice(0, 5);
 
             for (const candidate of topCandidates) {
-                // Obtenemos los metadatos de la página, incluyendo pageprops (contiene el ID de Wikidata) y extlinks
                 const pageEndpoint = `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(candidate.title)}&prop=pageprops|extlinks&elexpandurl=1&redirects=1&format=json&origin=*`;
                 const pageRes = await fetch(pageEndpoint);
                 const pageData = await pageRes.json();
@@ -138,26 +140,37 @@ window.WikiSearchModule = (function () {
                 const pageKey = Object.keys(pages)[0];
 
                 let externalUrl = null;
+                let isFallback = false;
 
                 if (pageKey !== "-1") {
                     const pageObj = pages[pageKey];
                     const wikibaseItemId = pageObj.pageprops?.wikibase_item;
 
-                    // A. MÉTODOD PRINCIPAL: Extraer URL oficial vía Wikidata P856
+                    // Método A: Wikidata P856 (Página oficial verificado)
                     if (wikibaseItemId) {
                         externalUrl = await fetchOfficialUrlFromWikidata(wikibaseItemId);
                     }
 
-                    // B. MÉTODOD SECUNDARIO: Si Wikidata no tiene registrada la P856, buscar en extlinks
+                    // Método B: Filtrado avanzado sobre extlinks para ignorar prensa y repositorios
                     if (!externalUrl && pageObj.extlinks) {
                         const links = pageObj.extlinks.map(l => l['*']);
-                        externalUrl = links.find(url =>
-                            !url.includes('archive.org') &&
-                            !url.includes('wikimedia.org') &&
-                            !url.includes('wikipedia.org') &&
-                            !url.includes('doi.org') &&
-                            !url.includes('w3.org')
-                        );
+                        
+                        const ignoredDomains = [
+                            'archive.org', 'wikimedia.org', 'wikipedia.org', 'doi.org', 'w3.org',
+                            'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com',
+                            'eltiempo.com', 'elespectador.com', 'semana.com', 'caracol.com.co', 'rcnradio.com',
+                            'bbc.com', 'nytimes.com', 'google.com', 'github.com', 'issuu.com', 'dialnet.unirioja.es'
+                        ];
+
+                        const cleanLink = links.find(url => {
+                            const lower = url.toLowerCase();
+                            return !ignoredDomains.some(domain => lower.includes(domain));
+                        });
+
+                        if (cleanLink) {
+                            externalUrl = cleanLink;
+                            isFallback = true;
+                        }
                     }
                 }
 
@@ -169,7 +182,8 @@ window.WikiSearchModule = (function () {
                             title: candidate.title,
                             snippet: cleanSnippet,
                             url: externalUrl,
-                            isWikiPage: false
+                            isWikiPage: false,
+                            isFallback: isFallback
                         });
                     }
                 } else {
@@ -179,7 +193,8 @@ window.WikiSearchModule = (function () {
                             title: candidate.title,
                             snippet: cleanSnippet,
                             url: wikiArticleUrl,
-                            isWikiPage: true
+                            isWikiPage: true,
+                            isFallback: false
                         });
                     }
                 }
@@ -188,7 +203,7 @@ window.WikiSearchModule = (function () {
             // 3. Renderizado de la lista
             if (validResults.length > 0) {
                 const listHtml = validResults.map(item => {
-                    const badge = getBadgeConfig(item.url, item.isWikiPage);
+                    const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     return `
                         <li style="border-bottom: 1px solid var(--border-color, #eee);">
                             <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 10px 14px; text-decoration: none; color: var(--text-color, #333);">
