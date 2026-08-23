@@ -56,124 +56,30 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGreeting();
     }, 15 * 60 * 1000);
 
-    // --- Cargar y Mejorar TRM Dólar a COP ---
+    // --- Cargar TRM Dólar a COP (API Antigua) ---
     async function fetchTRM() {
         const trmRateEl = document.getElementById('trmRate');
         const trmUpdateEl = document.getElementById('trmUpdate');
-        const trmTrendEl = document.getElementById('trmTrend');
-        const usdInput = document.getElementById('trmUsdInput');
-        const copInput = document.getElementById('trmCopInput');
-
-        let currentRate = null;
-
-        const copFormatter = new Intl.NumberFormat('es-CO', {
-            style: 'currency',
-            currency: 'COP',
-            maximumFractionDigits: 2
-        });
-
-        // 1. Fuente Primaria: Datos Abiertos Colombia (Superintendencia Financiera)
-        async function getTRMOficial() {
-            const response = await fetch('https://www.datos.gov.co/resource/32sa-823r.json?$order=vigenciadesde%20DESC&$limit=2');
-            if (!response.ok) throw new Error('Error Datos Gov');
-            const data = await response.json();
-            
-            if (data && data.length > 0) {
-                const todayRate = parseFloat(data[0].valor);
-                const yesterdayRate = data[1] ? parseFloat(data[1].valor) : todayRate;
-                
-                return {
-                    rate: todayRate,
-                    date: data[0].vigenciadesde ? data[0].vigenciadesde.split('T')[0] : 'Hoy',
-                    change: todayRate - yesterdayRate,
-                    source: 'Superintendencia Financiera de Colombia'
-                };
-            }
-            throw new Error('Sin datos en API Oficial');
-        }
-
-        // 2. Fuente Secundaria: ExchangeRate-API (Fallback)
-        async function getTRMFallback() {
+        
+        try {
             const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-            if (!response.ok) throw new Error('Error ExchangeRate API');
             const data = await response.json();
             
             if (data && data.rates && data.rates.COP) {
-                return {
-                    rate: data.rates.COP,
-                    date: data.date || 'Hoy',
-                    change: 0,
-                    source: 'ExchangeRate-API (Mercado)'
-                };
+                const rateFormatted = new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    maximumFractionDigits: 2
+                }).format(data.rates.COP);
+
+                if (trmRateEl) trmRateEl.textContent = `${rateFormatted} COP`;
+                if (trmUpdateEl) trmUpdateEl.textContent = `Actualizado: ${data.date || 'Hoy'}`;
+            } else {
+                throw new Error('Formato inválido');
             }
-            throw new Error('Sin datos en API Fallback');
-        }
-
-        try {
-            let trmData;
-            try {
-                trmData = await getTRMOficial();
-            } catch (e) {
-                console.warn('24col: Falló API oficial TRM, intentando respaldo...', e);
-                trmData = await getTRMFallback();
-            }
-
-            currentRate = trmData.rate;
-
-            if (trmRateEl) {
-                trmRateEl.textContent = `${copFormatter.format(currentRate)} COP`;
-            }
-
-            if (trmUpdateEl) {
-                trmUpdateEl.textContent = `Vigencia: ${trmData.date}`;
-            }
-
-            if (trmTrendEl && trmData.change !== undefined) {
-                if (trmData.change > 0) {
-                    trmTrendEl.innerHTML = `<span style="color: #2e7d32; font-weight: bold;">▲ +$${trmData.change.toFixed(2)}</span>`;
-                } else if (trmData.change < 0) {
-                    trmTrendEl.innerHTML = `<span style="color: #c62828; font-weight: bold;">▼ -$${Math.abs(trmData.change).toFixed(2)}</span>`;
-                } else {
-                    trmTrendEl.innerHTML = `<span style="color: #616161;">= Sin cambios</span>`;
-                }
-            }
-
-            let disclaimerEl = document.getElementById('trmDisclaimer');
-            if (!disclaimerEl && trmRateEl) {
-                disclaimerEl = document.createElement('small');
-                disclaimerEl.id = 'trmDisclaimer';
-                disclaimerEl.style.cssText = 'display:block; margin-top:6px; font-size:10px; color:#777;';
-                if (trmRateEl.parentNode) {
-                    trmRateEl.parentNode.appendChild(disclaimerEl);
-                }
-            }
-            if (disclaimerEl) {
-                disclaimerEl.textContent = `Fuente: ${trmData.source}`;
-            }
-
-            if (usdInput && copInput) {
-                usdInput.addEventListener('input', () => {
-                    const val = parseFloat(usdInput.value);
-                    if (!isNaN(val) && currentRate) {
-                        copInput.value = Math.round(val * currentRate);
-                    } else {
-                        copInput.value = '';
-                    }
-                });
-
-                copInput.addEventListener('input', () => {
-                    const val = parseFloat(copInput.value);
-                    if (!isNaN(val) && currentRate) {
-                        usdInput.value = (val / currentRate).toFixed(2);
-                    } else {
-                        usdInput.value = '';
-                    }
-                });
-            }
-
-        } catch (error) {
-            console.error('24col Error TRM:', error);
+        } catch (err) {
             if (trmRateEl) trmRateEl.textContent = 'No disponible';
+            if (trmUpdateEl) trmUpdateEl.textContent = 'Intenta nuevamente más tarde';
         }
     }
 
