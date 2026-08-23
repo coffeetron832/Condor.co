@@ -1,6 +1,7 @@
 /*
  * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
- * Renderizado de resultados para resultados.html
+ * Extrae de forma 100% dinámica el sitio web oficial vía Wikidata (Propiedad P856)
+ * con filtrado estricto de enlaces secundarios.
  */
 
 window.WikiSearchModule = (function () {
@@ -63,7 +64,11 @@ window.WikiSearchModule = (function () {
     }
 
     /**
-     * Búsqueda de enlaces y conceptos ejecutada exclusivamente en resultados.html
+     * Búsqueda de enlaces y conceptos para la página de resultados completa (resultados.html).
+     * @param {string} rawQuery - Término a buscar
+     * @param {HTMLElement} resultsContainer - Elemento contenedor UL o DIV en resultados.html
+     * @param {Function} escapeHtml - Función escapadora de caracteres HTML
+     * @param {Object} options - Opciones adicionales ({ limit: 12 })
      */
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
@@ -77,7 +82,7 @@ window.WikiSearchModule = (function () {
             return;
         }
 
-        // Estado inicial de carga
+        // Mensaje de carga mientras descarga los datos en resultados.html
         resultsContainer.innerHTML = `
             <li style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary, #64748b); font-family: Arial, Helvetica, sans-serif;">
                 Cargando todos los resultados para "${escapeHtml(trimmedQuery)}"...
@@ -103,7 +108,7 @@ window.WikiSearchModule = (function () {
                             : '';
 
                         conceptCardHtml = `
-                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 8px; border-radius: 8px; font-family: Arial, Helvetica, sans-serif;">
+                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 12px; border-radius: 8px; font-family: Arial, Helvetica, sans-serif;">
                                 <div style="display: flex; align-items: flex-start;">
                                     ${thumbnail}
                                     <div style="flex-grow: 1;">
@@ -204,12 +209,12 @@ window.WikiSearchModule = (function () {
                 }
             }
 
-            // 3. Renderizado total de los resultados
+            // 3. Renderizado total de los resultados dentro de resultados.html
             if (validResults.length > 0) {
                 const listHtml = validResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     return `
-                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
+                        <li style="border-bottom: 1px solid var(--border-color, #e2e8f0); margin-bottom: 8px; font-family: Arial, Helvetica, sans-serif;">
                             <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 12px 14px; text-decoration: none; color: var(--text-color, #1e293b);">
                                 <div style="font-size: 13px; color: var(--link-color, #2563eb); font-weight: bold; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;">
                                     <span>${escapeHtml(item.title)}</span>
