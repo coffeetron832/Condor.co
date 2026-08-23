@@ -246,9 +246,51 @@ body {
     font-size: 15px;
     color: #f1f5f9;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    margin: 0 0 20px 0;
+    margin: 0 0 12px 0;
     font-weight: 500;
     text-align: center;
+}
+
+/* Widget Sutil TRM + Clima */
+.hero-widget-bar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 8px auto 16px auto;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    font-size: 0.82rem;
+    color: var(--text-secondary, #555);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .hero-widget-bar {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #bbb;
+}
+
+.hero-widget-bar .widget-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.hero-widget-bar .widget-icon {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.2;
+    color: var(--ok-color, #2e7d32);
+}
+
+.hero-widget-bar .widget-divider {
+    opacity: 0.4;
+    font-size: 0.75rem;
 }
 
 /* Buscador Integrado */
