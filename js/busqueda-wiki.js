@@ -111,14 +111,31 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Obtener Tarjeta de Concepto/Significado
+            // 1. Obtener Tarjeta de Concepto/Significado (Filtro Estricto de Palabra/Definición)
             try {
                 const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
                 const summaryRes = await fetch(summaryEndpoint);
 
                 if (summaryRes.ok) {
                     const summaryData = await summaryRes.json();
-                    if (summaryData.type === 'standard' && summaryData.extract) {
+                    
+                    const queryLower = trimmedQuery.toLowerCase();
+                    const titleLower = (summaryData.title || '').toLowerCase();
+                    const descriptionLower = (summaryData.description || '').toLowerCase();
+
+                    // Lista de palabras clave que indican entidades NO conceptuales
+                    const nonConceptKeywords = [
+                        'película', 'film', 'canción', 'album', 'álbum', 'banda', 'grupo musical',
+                        'empresa', 'compañía', 'localidad', 'municipio', 'ciudad', 'distrito',
+                        'actor', 'actriz', 'cantante', 'personaje', 'videojuego', 'serie de televisión'
+                    ];
+
+                    const isNonConceptEntity = nonConceptKeywords.some(keyword => descriptionLower.includes(keyword));
+                    
+                    // Verificar coincidencia directa del término y que no sea una entidad comercial/multimedia/geográfica
+                    const isDirectWordMatch = titleLower === queryLower || titleLower.startsWith(queryLower + ' (');
+
+                    if (summaryData.type === 'standard' && summaryData.extract && isDirectWordMatch && !isNonConceptEntity) {
                         const wikiUrl = summaryData.content_urls?.desktop?.page || `https://es.wikipedia.org/wiki/${encodeURIComponent(summaryData.title)}`;
                         const thumbnail = summaryData.thumbnail?.source 
                             ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 6px; margin-right: 14px; flex-shrink: 0;" />` 
@@ -146,7 +163,7 @@ window.WikiSearchModule = (function () {
                     }
                 }
             } catch (err) {
-                console.warn('No se pudo obtener el resumen de concepto:', err);
+                console.warn('No se pudo obtener la definición del concepto:', err);
             }
 
             // 2. Búsqueda de páginas y enlaces oficiales en Wikipedia/Wikidata
