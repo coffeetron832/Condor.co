@@ -1,7 +1,7 @@
 /*
  * 24col - Módulo de Búsqueda Externa, Servicios y Conceptos
  * Extrae de forma 100% dinámica el sitio web oficial vía Wikidata (Propiedad P856)
- * con filtrado estricto de enlaces secundarios y manejo de redirecciones.
+ * con tarjeta de concepto/significado e imagen vía Wikipedia REST API.
  */
 
 window.WikiSearchModule = (function () {
@@ -111,47 +111,45 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Obtener Tarjeta de Concepto (Estrictamente deshabilitada si es dropdown)
-            if (!isDropdown) {
-                try {
-                    const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
-                    const summaryRes = await fetch(summaryEndpoint);
+            // 1. Obtener Tarjeta de Concepto/Significado
+            try {
+                const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
+                const summaryRes = await fetch(summaryEndpoint);
 
-                    if (summaryRes.ok) {
-                        const summaryData = await summaryRes.json();
-                        if (summaryData.type === 'standard' && summaryData.extract) {
-                            const wikiUrl = summaryData.content_urls?.desktop?.page || `https://es.wikipedia.org/wiki/${encodeURIComponent(summaryData.title)}`;
-                            const thumbnail = summaryData.thumbnail?.source 
-                                ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 6px; margin-right: 14px; flex-shrink: 0;" />` 
-                                : '';
+                if (summaryRes.ok) {
+                    const summaryData = await summaryRes.json();
+                    if (summaryData.type === 'standard' && summaryData.extract) {
+                        const wikiUrl = summaryData.content_urls?.desktop?.page || `https://es.wikipedia.org/wiki/${encodeURIComponent(summaryData.title)}`;
+                        const thumbnail = summaryData.thumbnail?.source 
+                            ? `<img src="${summaryData.thumbnail.source}" alt="${escapeHtml(summaryData.title)}" style="width: 54px; height: 54px; object-fit: cover; border-radius: 6px; margin-right: 14px; flex-shrink: 0;" />` 
+                            : '';
 
-                            conceptCardHtml = `
-                                <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 16px; margin-bottom: 12px; border-radius: 8px; font-family: Arial, Helvetica, sans-serif;">
-                                    <div style="display: flex; align-items: flex-start;">
-                                        ${thumbnail}
-                                        <div style="flex-grow: 1;">
-                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                                <span style="font-size: 14px; font-weight: bold; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
-                                                <span style="font-size: 10px; font-weight: bold; background: #e0e7ff; color: #3730a3; padding: 3px 8px; border-radius: 4px;">Concepto / Definición</span>
-                                            </div>
-                                            <div style="font-size: 12px; color: var(--text-secondary, #475569); line-height: 1.4; margin-bottom: 8px;">
-                                                ${escapeHtml(summaryData.extract)}
-                                            </div>
-                                            <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; color: var(--link-color, #2563eb); font-weight: bold; text-decoration: none;">
-                                                Ver artículo completo en Wikipedia &rarr;
-                                            </a>
+                        conceptCardHtml = `
+                            <li style="border-bottom: 2px solid var(--border-color, #e2e8f0); background: var(--bg-hover, #f8fafc); padding: 14px; margin-bottom: 8px; border-radius: 8px; font-family: Arial, Helvetica, sans-serif;">
+                                <div style="display: flex; align-items: flex-start;">
+                                    ${thumbnail}
+                                    <div style="flex-grow: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                            <span style="font-size: 13px; font-weight: bold; color: var(--text-color, #1e293b);">${escapeHtml(summaryData.title)}</span>
+                                            <span style="font-size: 9px; font-weight: bold; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px;">Concepto / Definición</span>
                                         </div>
+                                        <div style="font-size: 11px; color: var(--text-secondary, #475569); line-height: 1.4; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                            ${escapeHtml(summaryData.extract)}
+                                        </div>
+                                        <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 10px; color: var(--link-color, #2563eb); font-weight: bold; text-decoration: none;">
+                                            Ver artículo completo en Wikipedia &rarr;
+                                        </a>
                                     </div>
-                                </li>
-                            `;
-                        }
+                                </div>
+                            </li>
+                        `;
                     }
-                } catch (err) {
-                    console.warn('No se pudo obtener el resumen de concepto:', err);
                 }
+            } catch (err) {
+                console.warn('No se pudo obtener el resumen de concepto:', err);
             }
 
-            // 2. Búsqueda de páginas en Wikipedia
+            // 2. Búsqueda de páginas y enlaces oficiales en Wikipedia/Wikidata
             const fetchLimit = isDropdown ? 5 : targetLimit;
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
@@ -161,7 +159,6 @@ window.WikiSearchModule = (function () {
             const topCandidates = candidates.slice(0, fetchLimit);
 
             for (const candidate of topCandidates) {
-                // Interrupción inmediata si ya alcanzamos el límite exacto requerido
                 if (searchId !== currentSearchId) return;
                 if (validResults.length >= targetLimit) break;
 
@@ -232,18 +229,18 @@ window.WikiSearchModule = (function () {
                     }
                 }
 
-                // Salir inmediatamente al encontrar el primer resultado cuando se especifica targetLimit (1 para dropdown)
                 if (validResults.length >= targetLimit) break;
             }
 
-            // Si se inició otra búsqueda mientras terminaba esta, descartamos renderizar
             if (searchId !== currentSearchId) return;
 
-            // 3. Renderizado estrictamente cortado a targetLimit
+            // 3. Renderizado de resultados
             const displayResults = validResults.slice(0, targetLimit);
 
+            let listHtml = '';
+
             if (displayResults.length > 0) {
-                let listHtml = displayResults.map(item => {
+                listHtml = displayResults.map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     const faviconUrl = getFaviconUrl(item.url, item.isWikiPage);
 
@@ -267,20 +264,21 @@ window.WikiSearchModule = (function () {
                         </li>
                     `;
                 }).join('');
+            }
 
-                if (isDropdown) {
-                    listHtml += `
-                        <li style="text-align: center; background: var(--bg-hover, #f8fafc); border-top: 1px solid var(--border-color, #e2e8f0); font-family: Arial, Helvetica, sans-serif;">
-                            <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="display: block; padding: 10px; font-size: 12px; font-weight: bold; color: var(--link-color, #2563eb); text-decoration: none;">
-                                Ver todos los resultados para "${escapeHtml(trimmedQuery)}" &rarr;
-                            </a>
-                        </li>
-                    `;
-                }
+            if (isDropdown) {
+                listHtml += `
+                    <li style="text-align: center; background: var(--bg-hover, #f8fafc); border-top: 1px solid var(--border-color, #e2e8f0); font-family: Arial, Helvetica, sans-serif;">
+                        <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="display: block; padding: 10px; font-size: 12px; font-weight: bold; color: var(--link-color, #2563eb); text-decoration: none;">
+                            Ver todos los resultados para "${escapeHtml(trimmedQuery)}" &rarr;
+                        </a>
+                    </li>
+                `;
+            }
 
-                resultsContainer.innerHTML = (isDropdown ? '' : conceptCardHtml) + listHtml;
-            } else if (conceptCardHtml && !isDropdown) {
-                resultsContainer.innerHTML = conceptCardHtml;
+            // Ensamblar la tarjeta de concepto + la lista de resultados
+            if (conceptCardHtml || listHtml) {
+                resultsContainer.innerHTML = conceptCardHtml + listHtml;
             } else {
                 renderNoResults(resultsContainer);
             }
