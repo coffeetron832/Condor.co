@@ -68,13 +68,14 @@ window.WikiSearchModule = (function () {
      * @param {string} rawQuery - Término a buscar
      * @param {HTMLElement} resultsContainer - Elemento contenedor (UL o DIV)
      * @param {Function} escapeHtml - Función escapadora de caracteres HTML
-     * @param {Object} options - Opciones adicionales ({ limit: 10, isDropdown: false })
+     * @param {Object} options - Opciones adicionales ({ limit: 3, isDropdown: true })
      */
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
 
-        const limit = options.limit || (options.isDropdown ? 4 : 10);
-        const isDropdown = options.isDropdown || false;
+        // Si es desplegable / búsqueda en inicio, se limita a 3 resultados por defecto
+        const limit = options.limit || (options.isDropdown ? 3 : 10);
+        const isDropdown = options.isDropdown !== undefined ? options.isDropdown : true;
         const trimmedQuery = rawQuery.trim();
 
         if (trimmedQuery.length < 3) {
@@ -211,7 +212,7 @@ window.WikiSearchModule = (function () {
 
             // 3. Renderizado de resultados
             if (validResults.length > 0) {
-                const listHtml = validResults.map(item => {
+                const listHtml = validResults.slice(0, limit).map(item => {
                     const badge = getBadgeConfig(item.url, item.isWikiPage, item.isFallback);
                     return `
                         <li style="border-bottom: 1px solid var(--border-color, #e2e8f0);">
@@ -232,12 +233,12 @@ window.WikiSearchModule = (function () {
                 }).join('');
 
                 let footerHtml = '';
-                // Si es un dropdown en la barra principal, agregamos un footer para ir a resultados.html
+                // Botón al final para redirigir a la página completa de resultados
                 if (isDropdown) {
                     footerHtml = `
-                        <li style="background: var(--bg-hover, #f8fafc); text-align: center; padding: 10px;">
-                            <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="font-size: 11px; font-weight: 600; color: var(--accent-color, #2563eb); text-decoration: none;">
-                                Ver todos los resultados en una página aparte &rarr;
+                        <li style="background: var(--bg-hover, #f8fafc); text-align: center; padding: 12px;">
+                            <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="display: block; font-size: 12px; font-weight: 600; color: var(--accent-color, #2563eb); text-decoration: none;">
+                                Ver todos los resultados &rarr;
                             </a>
                         </li>
                     `;
@@ -245,7 +246,14 @@ window.WikiSearchModule = (function () {
 
                 resultsContainer.innerHTML = conceptCardHtml + listHtml + footerHtml;
             } else if (conceptCardHtml) {
-                resultsContainer.innerHTML = conceptCardHtml;
+                let footerHtml = isDropdown ? `
+                    <li style="background: var(--bg-hover, #f8fafc); text-align: center; padding: 12px;">
+                        <a href="resultados.html?q=${encodeURIComponent(trimmedQuery)}" style="display: block; font-size: 12px; font-weight: 600; color: var(--accent-color, #2563eb); text-decoration: none;">
+                            Ver todos los resultados &rarr;
+                        </a>
+                    </li>
+                ` : '';
+                resultsContainer.innerHTML = conceptCardHtml + footerHtml;
             } else {
                 renderNoResults(resultsContainer);
             }
