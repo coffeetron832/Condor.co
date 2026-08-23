@@ -92,6 +92,7 @@
             </section>
 
             <!-- DIRECTORIO DE SERVICIOS DESPLEGABLE -->
+            <!-- DIRECTORIO DE SERVICIOS DESPLEGABLE -->
             <section class="categories-section">
                 <details class="directory-accordion">
                     <summary class="directory-toggle-btn">
@@ -107,13 +108,25 @@
                                 <i data-lucide="chevron-right" class="btn-arrow"></i>
                             </button>
                         </li>
-                        <li>
-                            <button class="category-trigger-btn" data-modal-target="modal-trm">
+
+                        <!-- Oculto visualmente en la lista del directorio -->
+                        <li style="display: none;">
+                            <button class="category-trigger-btn" data-modal-target="modal-dolar">
                                 <i data-lucide="dollar-sign" class="btn-icon"></i>
-                                <span class="btn-text">Dólar HOY (TRM Colombia)</span>
+                                <span class="btn-text">Dólar hoy en Colombia</span>
                                 <i data-lucide="chevron-right" class="btn-arrow"></i>
                             </button>
                         </li>
+
+                        <!-- Oculto visualmente en la lista del directorio -->
+                        <li style="display: none;">
+                            <button class="category-trigger-btn" data-modal-target="modal-weather">
+                                <i data-lucide="cloud-sun" class="btn-icon"></i>
+                                <span class="btn-text">Clima y Pronóstico</span>
+                                <i data-lucide="chevron-right" class="btn-arrow"></i>
+                            </button>
+                        </li>
+
                         <li>
                             <button class="category-trigger-btn" data-modal-target="modal-consumer">
                                 <i data-lucide="shield-check" class="btn-icon"></i>
@@ -125,13 +138,6 @@
                             <button class="category-trigger-btn" data-modal-target="modal-supers">
                                 <i data-lucide="building-2" class="btn-icon"></i>
                                 <span class="btn-text">Superintendencias de Colombia</span>
-                                <i data-lucide="chevron-right" class="btn-arrow"></i>
-                            </button>
-                        </li>
-                        <li>
-                            <button class="category-trigger-btn" data-modal-target="modal-weather">
-                                <i data-lucide="cloud-sun" class="btn-icon"></i>
-                                <span class="btn-text">Clima por Municipio</span>
                                 <i data-lucide="chevron-right" class="btn-arrow"></i>
                             </button>
                         </li>
