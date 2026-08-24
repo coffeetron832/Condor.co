@@ -369,7 +369,7 @@ body {
     list-style: none;
     user-select: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    transition: all 0.2s ease-in-out;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
 
 [data-theme="dark"] .directory-toggle-btn {
@@ -393,20 +393,20 @@ body {
 }
 
 .directory-toggle-btn:active {
-    transform: scale(0.995);
+    transform: scale(0.985);
 }
 
 .accordion-arrow {
     font-size: 12px;
     opacity: 0.7;
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .directory-accordion[open] .accordion-arrow {
     transform: rotate(180deg);
 }
 
-/* Lista de Categorías y Botones de Trámites */
+/* Lista de Categorías y Animación de Despliegue */
 .categories-list {
     list-style: none;
     padding: 8px 0 0 0;
@@ -415,6 +415,21 @@ body {
     flex-direction: column;
     gap: 6px;
     width: 100%;
+}
+
+.directory-accordion[open] .categories-list {
+    animation: accordionSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes accordionSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .category-trigger-btn {
@@ -436,7 +451,7 @@ body {
     font-size: 13.5px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
     text-align: left;
 }
 
@@ -448,15 +463,18 @@ body {
 .category-trigger-btn:hover {
     background: rgba(255, 255, 255, 0.65);
     border-color: var(--link-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="dark"] .category-trigger-btn:hover {
     background: rgba(39, 39, 42, 0.7);
     border-color: var(--link-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .category-trigger-btn:active {
-    transform: scale(0.99);
+    transform: scale(0.985) translateY(0);
 }
 
 .btn-icon {
@@ -464,6 +482,11 @@ body {
     margin-right: 10px;
     display: inline-flex;
     align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.category-trigger-btn:hover .btn-icon {
+    transform: scale(1.1);
 }
 
 .btn-text {
@@ -475,18 +498,18 @@ body {
     font-size: 14px;
     color: var(--text-secondary);
     opacity: 0.6;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, color 0.2s ease;
 }
 
 .category-trigger-btn:hover .btn-arrow {
-    transform: translateX(3px);
+    transform: translateX(4px);
     opacity: 1;
     color: var(--link-color);
 }
 
 
 /* ==========================================
-   7. MODALES NATIVAS (<dialog>) CON GLASSMORPHISM (ARIAL)
+   7. MODALES NATIVAS (<dialog>) CON GLASSMORPHISM (ARIAL + ANIMACIÓN)
    ========================================== */
 
 dialog.category-modal,
@@ -509,6 +532,22 @@ dialog#reportModal {
     margin: auto;
 }
 
+/* Animación de apertura de la ventana Modal */
+dialog[open] {
+    animation: modalScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.94) translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
 [data-theme="dark"] dialog.category-modal,
 [data-theme="dark"] dialog.modal-welcome,
 [data-theme="dark"] dialog#reportModal {
@@ -521,6 +560,20 @@ dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+    transition: opacity 0.2s ease;
+}
+
+dialog[open]::backdrop {
+    animation: backdropFadeIn 0.2s ease forwards;
+}
+
+@keyframes backdropFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-header {
@@ -551,12 +604,16 @@ dialog::backdrop {
     line-height: 1;
     padding: 4px 8px;
     border-radius: 4px;
-    transition: background 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .modal-close-btn:hover {
     background: rgba(0, 0, 0, 0.06);
     color: var(--text-color);
+}
+
+.modal-close-btn:active {
+    transform: scale(0.9);
 }
 
 [data-theme="dark"] .modal-close-btn:hover {
@@ -576,6 +633,7 @@ dialog::backdrop {
 .national-links-list li {
     padding: 10px 0;
     border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.15s ease;
 }
 
 .national-links-list li:last-child {
@@ -587,6 +645,7 @@ dialog::backdrop {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 600;
     text-decoration: none;
+    transition: color 0.15s ease;
 }
 
 .national-links-list a:hover {
@@ -612,11 +671,15 @@ dialog::backdrop {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 600;
     font-size: 13px;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease, transform 0.1s ease;
 }
 
 .modal-action-btn:hover {
-    opacity: 0.9;
+    opacity: 0.92;
+}
+
+.modal-action-btn:active {
+    transform: scale(0.985);
 }
 
 .form-input, .form-select, .form-textarea {
@@ -630,6 +693,7 @@ dialog::backdrop {
     color: var(--text-color);
     margin-top: 4px;
     outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .form-input:focus, .form-select:focus, .form-textarea:focus {
