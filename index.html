@@ -64,10 +64,16 @@
                     </div>
 
                     <div class="search-container">
-                        <form id="searchForm" onsubmit="event.preventDefault();">
+                        <form id="searchForm" action="resultados.html" method="GET">
                             <div class="search-box">
                                 <i data-lucide="search" class="search-icon" style="width: 16px; height: 16px;"></i>
-                                <input type="text" id="searchInput" class="search-input" placeholder="¿Qué quieres buscar hoy?" autocomplete="off" maxlength="100">
+                                <input type="text" id="searchInput" name="q" class="search-input" placeholder="¿Qué quieres buscar hoy?" autocomplete="off" maxlength="100" required>
+                            </div>
+                            
+                            <div class="search-actions" style="margin-top: 10px; text-align: center;">
+                                <button type="submit" id="searchBtn" class="search-btn">
+                                    <i data-lucide="search" style="width: 14px; height: 14px; margin-right: 6px; vertical-align: middle;"></i>Buscar
+                                </button>
                             </div>
                         </form>
 
