@@ -191,7 +191,7 @@ body {
 /* Título de Marca Central */
 .hero-title-text {
     font-family: 'Archivo Black', sans-serif;
-    font-size: 3rem;
+    font-size: 5rem;
     color: var(--text-color);
     margin: 0;
     line-height: 1;
