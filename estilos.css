@@ -120,13 +120,20 @@ body {
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 6px;
     text-decoration: none;
-    color: var(--header-text);
-    font-family: 'Archivo Black', sans-serif;
-    font-size: 20px;
-    letter-spacing: -0.5px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Isotipo en el Header superior izquierdo */
+.header-logo-img {
+    height: 38px;
+    width: auto;
+    filter: var(--svg-filter);
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.header-logo-img:hover {
+    transform: scale(1.05);
 }
 
 .header-credit {
@@ -181,12 +188,15 @@ body {
     width: 100%;
 }
 
-.logo-img {
-    width: 240px;
-    height: auto;
-    filter: var(--svg-filter);
-    display: block;
-    margin: 0 auto;
+/* Título de Marca Central */
+.hero-title-text {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 3rem;
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 .hero-subtitle {
@@ -646,8 +656,8 @@ dialog[open]::backdrop {
         padding: 0 0 16px 0;
     }
 
-    .logo-img {
-        width: 160px;
+    .hero-title-text {
+        font-size: 2.25rem;
     }
 
     .hero-subtitle {
