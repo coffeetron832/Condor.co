@@ -89,7 +89,7 @@ window.WikiSearchModule = (function () {
     async function searchOfficialLinks(rawQuery, resultsContainer, escapeHtml = (text => text), options = {}) {
         if (!resultsContainer) return;
 
-        const searchId = ++currentSearchId; // Identificador único para esta ejecución
+        const searchId = ++currentSearchId;
         const isDropdown = options.isDropdown || false;
         const targetLimit = isDropdown ? 1 : (options.limit || 12);
         const trimmedQuery = rawQuery.trim();
@@ -111,7 +111,7 @@ window.WikiSearchModule = (function () {
             let conceptCardHtml = '';
             const validResults = [];
 
-            // 1. Obtener Tarjeta de Concepto/Significado (Filtro Estricto de Palabra/Definición)
+            // 1. Obtener Tarjeta de Concepto/Significado
             try {
                 const summaryEndpoint = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(trimmedQuery)}?redirect=true`;
                 const summaryRes = await fetch(summaryEndpoint);
@@ -123,7 +123,6 @@ window.WikiSearchModule = (function () {
                     const titleLower = (summaryData.title || '').toLowerCase();
                     const descriptionLower = (summaryData.description || '').toLowerCase();
 
-                    // Lista de palabras clave que indican entidades NO conceptuales
                     const nonConceptKeywords = [
                         'película', 'film', 'canción', 'album', 'álbum', 'banda', 'grupo musical',
                         'empresa', 'compañía', 'localidad', 'municipio', 'ciudad', 'distrito',
@@ -131,8 +130,6 @@ window.WikiSearchModule = (function () {
                     ];
 
                     const isNonConceptEntity = nonConceptKeywords.some(keyword => descriptionLower.includes(keyword));
-                    
-                    // Verificar coincidencia directa del término y que no sea una entidad comercial/multimedia/geográfica
                     const isDirectWordMatch = titleLower === queryLower || titleLower.startsWith(queryLower + ' (');
 
                     if (summaryData.type === 'standard' && summaryData.extract && isDirectWordMatch && !isNonConceptEntity) {
@@ -166,7 +163,7 @@ window.WikiSearchModule = (function () {
                 console.warn('No se pudo obtener la definición del concepto:', err);
             }
 
-            // 2. Búsqueda de páginas y enlaces oficiales en Wikipedia/Wikidata
+            // 2. Búsqueda de páginas y enlaces oficiales
             const fetchLimit = isDropdown ? 5 : targetLimit;
             const searchEndpoint = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(trimmedQuery)}&format=json&origin=*`;
             const searchRes = await fetch(searchEndpoint);
@@ -253,7 +250,6 @@ window.WikiSearchModule = (function () {
 
             // 3. Renderizado de resultados
             const displayResults = validResults.slice(0, targetLimit);
-
             let listHtml = '';
 
             if (displayResults.length > 0) {
@@ -293,7 +289,6 @@ window.WikiSearchModule = (function () {
                 `;
             }
 
-            // Ensamblar la tarjeta de concepto + la lista de resultados
             if (conceptCardHtml || listHtml) {
                 resultsContainer.innerHTML = conceptCardHtml + listHtml;
             } else {
@@ -314,8 +309,10 @@ window.WikiSearchModule = (function () {
     function initSearchFormListener() {
         const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
         const webSearchResults = document.getElementById('webSearchResults');
 
+        // Búsqueda en tiempo real al escribir
         if (searchInput && webSearchResults) {
             let debounceTimer = null;
 
@@ -335,14 +332,28 @@ window.WikiSearchModule = (function () {
             });
         }
 
-        if (searchForm && searchInput) {
+        // Función reutilizable para ejecutar la redirección
+        function executeSearchRedirect() {
+            if (!searchInput) return;
+            const query = searchInput.value.trim();
+            if (query.length >= 2) {
+                window.location.href = `resultados.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        // Evento Envío del Formulario (Submit por Enter o botón dentro de form)
+        if (searchForm) {
             searchForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const query = searchInput.value.trim();
+                executeSearchRedirect();
+            });
+        }
 
-                if (query.length >= 2) {
-                    window.location.href = `resultados.html?q=${encodeURIComponent(query)}`;
-                }
+        // Evento Clic directo en el botón Buscar
+        if (searchBtn) {
+            searchBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                executeSearchRedirect();
             });
         }
     }
