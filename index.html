@@ -32,18 +32,7 @@
             <div id="imageCredit" class="header-credit"></div>
 
             <nav class="header-nav">
-                <!-- Botón Modo Oscuro -->
-                <button id="themeToggleBtn" class="header-btn" type="button" aria-label="Cambiar tema">
-                    <i id="themeIconSun" data-lucide="sun" style="display: none; width: 14px; height: 14px;"></i>
-                    <i id="themeIconMoon" data-lucide="moon" style="width: 14px; height: 14px;"></i>
-                    <span id="themeToggleText">Modo Oscuro</span>
-                </button>
-
-                <!-- Botón ¿Cómo funciona? -->
-                <button id="openWelcomeModal" class="header-btn">
-                    <i data-lucide="help-circle" style="width: 14px; height: 14px;"></i>
-                    ¿Cómo funciona?
-                </button>
+                <!-- Se eliminaron los botones de Tema Oscuro y Cómo funciona -->
             </nav>
         </div>
     </header>
@@ -385,38 +374,6 @@
             <div>RECHACE IMITACIONES</div>
         </div>
     </footer>
-
-    <!-- MODAL INFORMATIVO: Bienvenida -->
-    <dialog id="welcomeModal" class="modal-welcome">
-        <div class="modal-header">
-            <h3>¡Bienvenido a 24col!</h3>
-            <button id="closeWelcomeModalCross" class="modal-close-btn">&times;</button>
-        </div>
-
-        <p class="welcome-intro">
-            <strong>24col</strong> es tu guía de confianza. Navega por los servicios del país de forma clara, rápida y sin tanta vuelta.
-        </p>
-
-        <ul class="welcome-list">
-            <li>
-                <strong>
-                    <i data-lucide="check-circle-2" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; color: var(--ok-color);"></i> Verificación Directa:
-                </strong> Acceso sin desvíos a las sedes electrónicas públicas.
-            </li>
-            <li>
-                <strong>
-                    <i data-lucide="lock" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Enlaces Oficiales:
-                </strong> Todos los portales listados pertenecen directamente a entes gubernamentales (.gov.co).
-            </li>
-            <li>
-                <strong>
-                    <i data-lucide="zap" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Sin Colas ni Enredos:
-                </strong> Encuentra tu municipio, gobernación, o trámite nacional usando el buscador.
-            </li>
-        </ul>
-
-        <button id="closeWelcomeModalBtn" class="modal-action-btn">Entendido, vamos p'alante</button>
-    </dialog>
 
     <script src="data.js"></script>
     <script src="script.js"></script>
