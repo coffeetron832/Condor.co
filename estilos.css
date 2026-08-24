@@ -700,6 +700,47 @@ dialog[open]::backdrop {
     border-color: var(--link-color);
 }
 
+
+
+
+
+
+/* Corrección de colores para enlaces de ciudades y tags en Modales (Modo Claro y Oscuro) */
+
+.city-link-wrapper a {
+    color: var(--link-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.city-link-wrapper a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+/* Tag de coincidencia adaptativo según el tema */
+.matched-service-tag {
+    color: var(--link-color) !important; /* Reemplaza el azul fijo #1976d2 */
+    opacity: 0.9;
+}
+
+/* Reglas específicas cuando la modal está en Dark Mode */
+[data-theme="dark"] .city-link-wrapper a {
+    color: var(--link-color); /* Utiliza #60a5fa en modo oscuro */
+}
+
+[data-theme="dark"] .city-link-wrapper a:hover {
+    color: var(--link-hover); /* Utiliza #93c5fd en modo oscuro */
+}
+
+[data-theme="dark"] .matched-service-tag {
+    color: var(--link-color) !important;
+}
+
+
+
+
 /* ==========================================
    8. COMPONENTE FOOTER
    ========================================== */
