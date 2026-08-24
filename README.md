@@ -1,4 +1,4 @@
-# 24col v3.1
+# 24col v3.2
 
 > Directorio ciudadano público de portales de trámites y servicios públicos en Colombia.
 
@@ -19,10 +19,8 @@ Es una plataforma web ligera y de acceso rápido diseñada para centralizar los 
 
 ## Características Principales
 
-- 🔍 **Buscador Inteligente con Sinónimos**: Encuentra trámites al instante escribiendo palabras clave cotidianas como `luz`, `agua`, `predial`, `fotomulta` o `cedula`.
 - 🛡️ **Privacidad Absoluta (Privacy-First)**: Cero rastreadores, cero cookies de analítica y cero recolección de datos personales.
 - 🟢 **Monitoreo de Enlaces en Tiempo Real**: Verificación visual de disponibilidad HTTPS e indicadores de estado activo para los sitios gubernamentales.
-- 📱 **Ligero y Responsivo**: Optimizado para cargar en segundos desde cualquier dispositivo, incluso en redes móviles de baja velocidad.
 
 ---
 
