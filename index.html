@@ -23,7 +23,7 @@
 <body>
 
     <header class="site-header">
-        <div class="header-container">
+        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center;">
             <!-- Isotipo SVG ubicado en la esquina superior izquierda -->
             <a href="#" class="header-brand" aria-label="Inicio 24col">
                 <img src="condor01.svg" alt="Cóndor 24col" class="header-logo-img">
@@ -32,8 +32,19 @@
             <!-- Crédito de la imagen dinámico (Centro) -->
             <div id="imageCredit" class="header-credit"></div>
 
-            <nav class="header-nav">
-                <!-- Espacio reservado para navegación si se requiere -->
+            <nav class="header-nav" style="margin-left: auto;">
+                <!-- Widget Sutil: TRM y Clima en el extremo derecho sin bordes redondeados -->
+                <div id="heroWidgetBar" class="hero-widget-bar" style="border-radius: 0; background: transparent; border: none;">
+                    <span class="widget-item" id="heroTrmItem" title="Tasa Representativa del Mercado">
+                        <i data-lucide="dollar-sign" class="widget-icon"></i>
+                        <span id="heroTrmText">TRM: Cargando...</span>
+                    </span>
+                    <span class="widget-divider">•</span>
+                    <span class="widget-item" id="heroWeatherItem" title="Clima actual">
+                        <span id="heroWeatherEmoji">🌤️</span>
+                        <span id="heroWeatherText">Clima: Cargando...</span>
+                    </span>
+                </div>
             </nav>
         </div>
     </header>
@@ -48,19 +59,6 @@
                     <!-- Título de marca centralizado -->
                     <div class="hero-brand-title">
                         <h1 class="hero-title-text">24col</h1>
-                    </div>
-
-                    <!-- Widget Sutil: TRM y Clima -->
-                    <div id="heroWidgetBar" class="hero-widget-bar">
-                        <span class="widget-item" id="heroTrmItem" title="Tasa Representativa del Mercado">
-                            <i data-lucide="dollar-sign" class="widget-icon"></i>
-                            <span id="heroTrmText">TRM: Cargando...</span>
-                        </span>
-                        <span class="widget-divider">•</span>
-                        <span class="widget-item" id="heroWeatherItem" title="Clima actual">
-                            <span id="heroWeatherEmoji">🌤️</span>
-                            <span id="heroWeatherText">Clima: Cargando...</span>
-                        </span>
                     </div>
 
                     <div class="search-container">
