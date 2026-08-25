@@ -36,13 +36,32 @@
 <body>
 
     <header class="site-header">
-        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
 
-            <!-- Crédito de la imagen dinámico (Centro) -->
+            <!-- Crédito de la imagen dinámico (Izquierda) -->
             <div id="imageCredit" class="header-credit"></div>
 
-            <nav class="header-nav" style="margin-left: auto;">
-                <!-- Widget Sutil: TRM y Clima en el extremo derecho sin bordes redondeados -->
+            <!-- Buscador Integrado Sutil (Centro) -->
+            <div class="header-search-container" style="flex: 1; max-width: 400px; position: relative;">
+                <form id="searchForm" action="resultados.html" method="GET" style="display: flex; gap: 6px; align-items: center; margin: 0;">
+                    <div class="search-box" style="position: relative; flex: 1; display: flex; align-items: center;">
+                        <i data-lucide="search" class="search-icon" style="position: absolute; left: 10px; width: 14px; height: 14px; color: var(--text-secondary);"></i>
+                        <input type="text" id="searchInput" name="q" class="search-input" placeholder="Buscar..." autocomplete="off" maxlength="100" required style="width: 100%; padding: 6px 10px 6px 30px; font-size: 13px; font-family: inherit; background-color: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); border-radius: 6px; outline: none;">
+                    </div>
+                    <button type="submit" id="searchBtn" class="search-btn" style="padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--text-color); background-color: var(--card-bg); border: 1px solid var(--input-border); border-radius: 6px; cursor: pointer; white-space: nowrap;">
+                        Buscar
+                    </button>
+                </form>
+
+                <div id="noResultsMsg" style="display: none; position: absolute; top: 100%; left: 0; right: 0; padding: 8px; text-align: center; font-size: 12px; color: var(--text-secondary); background: var(--modal-bg); border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; z-index: 1000;">
+                    No se encontraron enlaces en el directorio local.
+                </div>
+
+                <ul id="webSearchResults" class="web-search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0; list-style: none; padding: 0; margin: 4px 0 0 0; background: var(--modal-bg); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow-color); z-index: 1000;"></ul>
+            </div>
+
+            <!-- Nav Extremo Derecho: TRM y Clima -->
+            <nav class="header-nav">
                 <div id="heroWidgetBar" class="hero-widget-bar" style="border-radius: 0; background: transparent; border: none;">
                     <span class="widget-item" id="heroTrmItem" title="Tasa Representativa del Mercado">
                         <i data-lucide="dollar-sign" class="widget-icon"></i>
@@ -68,27 +87,6 @@
                     <!-- Título de marca centralizado -->
                     <div class="hero-brand-title">
                         <h1 class="hero-title-text">24col</h1>
-                    </div>
-
-                    <div class="search-container">
-                        <form id="searchForm" action="resultados.html" method="GET">
-                            <div class="search-box">
-                                <i data-lucide="search" class="search-icon" style="width: 16px; height: 16px;"></i>
-                                <input type="text" id="searchInput" name="q" class="search-input" placeholder="¿Qué quieres buscar hoy?" autocomplete="off" maxlength="100" required>
-                            </div>
-                            
-                            <div class="search-actions" style="margin-top: 10px; text-align: center;">
-                                <button type="submit" id="searchBtn" class="search-btn">
-                                    Buscar
-                                </button>
-                            </div>
-                        </form>
-
-                        <div id="noResultsMsg" style="display: none; padding: 12px; text-align: center; font-size: 13px; color: var(--text-secondary, #666);">
-                            No se encontraron enlaces en el directorio local.
-                        </div>
-
-                        <ul id="webSearchResults" class="web-search-results" style="display: none; list-style: none; padding: 0; margin: 10px 0 0 0; background: var(--bg-card, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"></ul>
                     </div>
                 </div>
             </section>
