@@ -16,7 +16,7 @@
     --link-color: #60a5fa;
     --link-hover: #93c5fd;
     
-    /* Fondos negros sólidos para reemplazo de Glassmorphism */
+    /* Fondos y Modales */
     --card-bg: #0a0a0a;
     --card-hover-bg: #171717;
     --card-border: #27272a;
@@ -318,7 +318,7 @@ body {
 
 
 /* ==========================================
-   7. DIRECTORIO DESPLEGABLE Y TRÁMITES
+   7. DIRECTORIO EN GRID (SIN RECUADROS NEGROS)
    ========================================== */
 
 .categories-section {
@@ -328,114 +328,57 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.directory-accordion {
-    width: 100%;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Botón Principal: Directorio de Servicios */
-.directory-toggle-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    color: var(--text-color);
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    list-style: none;
-    user-select: none;
-    touch-action: manipulation;
-    box-shadow: 0 4px 12px var(--shadow-color);
-    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
-}
-
-.directory-toggle-btn::-webkit-details-marker {
-    display: none;
-}
-
-.directory-toggle-btn:hover {
-    background: var(--card-hover-bg);
-    border-color: var(--link-color);
-}
-
-.directory-toggle-btn:active {
-    transform: scale(0.985);
-}
-
-.accordion-arrow {
-    font-size: 12px;
-    opacity: 0.7;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.directory-accordion[open] .accordion-arrow {
-    transform: rotate(180deg);
-}
-
-/* Lista de Categorías */
+/* Grilla de 2 columnas */
 .categories-list {
     list-style: none;
-    padding: 8px 0 0 0;
+    padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px;
     width: 100%;
 }
 
-.directory-accordion[open] .categories-list {
-    animation: accordionSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.grid-span-full {
+    grid-column: 1 / -1;
 }
 
-@keyframes accordionSlideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* Botón transparente sin recuadro negro */
 .category-trigger-btn {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 11px 14px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 7px;
+    padding: 8px 4px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
     color: var(--text-color);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 13.5px;
     font-weight: 500;
     cursor: pointer;
     touch-action: manipulation;
-    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
+    transition: color 0.2s ease, transform 0.15s ease;
     text-align: left;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .category-trigger-btn:hover {
-    background: var(--card-hover-bg);
-    border-color: var(--link-color);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--link-color);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .category-trigger-btn:active {
-    transform: scale(0.985) translateY(0);
+    transform: scale(0.98);
 }
 
 .btn-icon {
     font-size: 16px;
-    margin-right: 10px;
+    margin-right: 8px;
     display: inline-flex;
     align-items: center;
     transition: transform 0.2s ease;
@@ -694,8 +637,13 @@ dialog[open]::backdrop {
         padding: 10px 12px 10px 38px;
     }
 
+    .categories-list {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
     .category-trigger-btn {
-        padding: 10px 12px;
+        padding: 8px 0;
         font-size: 13px;
     }
 
