@@ -184,6 +184,31 @@ body {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
+.hero-widget-bar .widget-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.hero-widget-bar .widget-icon {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.2;
+    color: var(--ok-color);
+}
+
+.hero-widget-bar .widget-divider {
+    opacity: 0.4;
+    font-size: 0.75rem;
+}
+
+.hero-widget-bar .widget-item span,
+.hero-widget-bar .widget-divider {
+    color: #ffffff;
+    opacity: 1;
+}
 
 /* ==========================================
    6. SECCIÓN HERO Y BÚSQUEDA
