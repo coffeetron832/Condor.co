@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
             creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/loro-rojo-verde-y-azul-en-la-rama-marron-del-arbol-durante-el-dia-57SHaZUAOtQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Camilo Guarin P (Unsplash)</a>';
         } else {
             timeTheme = 'night';
-            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/rascador-de-la-ciudad-por-la-noche-03gVOLHq9ec?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Saravia (Unsplash)</a>';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/foto-aerea-del-edificio-iluminado-en-rojo-qQ5xOZBv_Ms?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Sebastian Seck (Unsplash)</a>';
         }
 
         document.body.setAttribute('data-time', timeTheme);
