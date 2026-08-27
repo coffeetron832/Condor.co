@@ -1,9 +1,9 @@
 /* ==========================================
-   1. VARIABLES DE TEMA Y PALETA DE COLOR (DARK/CONTRASTE)
+   1. VARIABLES DE TEMA Y PALETA DE COLOR (DARK/CONTRASTE NEGRO)
    ========================================== */
 
 :root {
-    --bg-color: #090d16;
+    --bg-color: #000000;
     
     /* Header y Footer transparentes */
     --header-bg: transparent;
@@ -11,24 +11,24 @@
     --header-border: transparent;
     
     --text-color: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --border-color: rgba(255, 255, 255, 0.12);
+    --text-secondary: #a1a1aa;
+    --border-color: #27272a;
     --link-color: #60a5fa;
     --link-hover: #93c5fd;
     
-    /* Fondos oscuros sólidos para reemplazo de Glassmorphism */
-    --card-bg: #0f172a;
-    --card-hover-bg: #1e293b;
-    --card-border: #334155;
-    --input-bg: #0f172a;
-    --input-border: #334155;
-    --modal-bg: #0f172a;
+    /* Fondos negros sólidos para reemplazo de Glassmorphism */
+    --card-bg: #0a0a0a;
+    --card-hover-bg: #171717;
+    --card-border: #27272a;
+    --input-bg: #0a0a0a;
+    --input-border: #27272a;
+    --modal-bg: #0a0a0a;
 
     --footer-bg: transparent;
     --footer-text: #cbd5e1;
     --footer-link: #38bdf8;
     
-    --shadow-color: rgba(0, 0, 0, 0.5);
+    --shadow-color: rgba(0, 0, 0, 0.8);
     --ok-color: #4ade80;
     --hero-bg: transparent;
     --svg-filter: brightness(0) invert(1);
@@ -238,7 +238,7 @@ body {
     margin: 0;
     line-height: 1;
     letter-spacing: -1px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .hero-subtitle {
@@ -544,7 +544,7 @@ dialog[open]::backdrop {
 }
 
 .modal-close-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #171717;
     color: var(--text-color);
 }
 
