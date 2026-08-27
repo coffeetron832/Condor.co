@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (hour >= 6 && hour < 12) {
             timeTheme = 'morning';
-            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/vista-superior-de-sombreros-para-el-sol-marrones-y-blancos-QkOy8LbWtdg?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Ricardo Gomez Angel (Unsplash)</a>';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/una-vista-de-una-cadena-montanosa-con-un-cielo-nublado-en-el-fondo-ZcxWesjyigQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Jair Medina Nossa (Unsplash)</a>';
         } else if (hour >= 12 && hour < 18) {
             timeTheme = 'afternoon';
             creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/campo-rodeado-de-hierba-durante-el-dia-BeggL3fA_ww?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Michael Barón (Unsplash)</a>';
