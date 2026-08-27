@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     }
 
-    // --- LÓGICA DE RELOJ AL HACER DOBLE CLIC EN EL TÍTULO ---
+    // --- LÓGICA DE RELOJ AL HACER DOBLE CLIC EN EL TÍTULO (FORMATO 12H) ---
     function setupHeaderClock() {
         const brandTitle = document.querySelector('.hero-brand-title');
         if (!brandTitle) return;
@@ -27,14 +27,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 clockInterval = null;
                 titleText.textContent = originalText;
             } else {
-                // Si está apagado, iniciamos el reloj
+                // Si está apagado, iniciamos el reloj en formato 12 horas
                 const updateClock = () => {
                     const now = new Date();
-                    const hours = String(now.getHours()).padStart(2, '0');
-                    const minutes = String(now.getMinutes()).padStart(2, '0');
-                    const seconds = String(now.getSeconds()).padStart(2, '0');
-                    
-                    titleText.textContent = `${hours}:${minutes}:${seconds}`;
+                    titleText.textContent = now.toLocaleTimeString('es-CO', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    });
                 };
 
                 updateClock();
