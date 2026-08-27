@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/vista-superior-de-sombreros-para-el-sol-marrones-y-blancos-QkOy8LbWtdg?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Ricardo Gomez Angel (Unsplash)</a>';
         } else if (hour >= 12 && hour < 18) {
             timeTheme = 'afternoon';
-            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/loro-rojo-verde-y-azul-en-la-rama-marron-del-arbol-durante-el-dia-57SHaZUAOtQ?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Juan Camilo Guarin P (Unsplash)</a>';
+            creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/campo-rodeado-de-hierba-durante-el-dia-BeggL3fA_ww?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Michael Barón (Unsplash)</a>';
         } else {
             timeTheme = 'night';
             creditHTML = 'Foto: <a href="https://unsplash.com/es/fotos/casa-marron-y-negra-bajo-la-noche-estrellada-Gnyx762dqQM?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink" target="_blank" rel="noopener noreferrer">Linn Karen Hoyos Ortiz (Unsplash)</a>';
