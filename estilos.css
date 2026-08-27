@@ -33,8 +33,8 @@
     --hero-bg: transparent;
     --svg-filter: brightness(0) invert(1);
     
-    /* Opacidad sobre la imagen de fondo (negro al 60% de opacidad) */
-    --bg-overlay: rgba(0, 0, 0, 0.6);
+    /* Opacidad reducida sobre la imagen (negro al 45% de opacidad) */
+    --bg-overlay: rgba(0, 0, 0, 0.45);
 }
 
 
@@ -64,7 +64,7 @@ html, body {
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: var(--bg-color);
-    /* Superposición de capa oscura + imagen de fondo */
+    /* Capa de oscurecimiento ligero + imagen de fondo */
     background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), var(--bg-image);
     background-size: cover;
     background-position: center;
