@@ -5,6 +5,46 @@ document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     }
 
+    // --- LÓGICA DE RELOJ AL HACER DOBLE CLIC EN EL TÍTULO ---
+    function setupHeaderClock() {
+        const brandTitle = document.querySelector('.hero-brand-title');
+        if (!brandTitle) return;
+
+        const titleText = brandTitle.querySelector('.hero-title-text');
+        if (!titleText) return;
+
+        const originalText = titleText.textContent;
+        let clockInterval = null;
+
+        brandTitle.style.cursor = 'pointer';
+        brandTitle.style.userSelect = 'none';
+        brandTitle.style.webkitUserSelect = 'none';
+
+        brandTitle.addEventListener('dblclick', () => {
+            if (clockInterval) {
+                // Si el reloj está activo, lo detenemos y restauramos el título original
+                clearInterval(clockInterval);
+                clockInterval = null;
+                titleText.textContent = originalText;
+            } else {
+                // Si está apagado, iniciamos el reloj
+                const updateClock = () => {
+                    const now = new Date();
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    const seconds = String(now.getSeconds()).padStart(2, '0');
+                    
+                    titleText.textContent = `${hours}:${minutes}:${seconds}`;
+                };
+
+                updateClock();
+                clockInterval = setInterval(updateClock, 1000);
+            }
+        });
+    }
+
+    setupHeaderClock();
+
     // --- Fondo Dinámico y Créditos según Hora del Día ---
     function updateTimeTheme() {
         const hour = new Date().getHours();
