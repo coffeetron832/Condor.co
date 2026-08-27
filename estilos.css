@@ -32,6 +32,9 @@
     --ok-color: #4ade80;
     --hero-bg: transparent;
     --svg-filter: brightness(0) invert(1);
+    
+    /* Opacidad sobre la imagen de fondo (negro al 60% de opacidad) */
+    --bg-overlay: rgba(0, 0, 0, 0.6);
 }
 
 
@@ -61,8 +64,8 @@ html, body {
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: var(--bg-color);
-    /* Imagen directa a pantalla completa sin capas de opacidad ni degradados */
-    background-image: var(--bg-image);
+    /* Superposición de capa oscura + imagen de fondo */
+    background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), var(--bg-image);
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
