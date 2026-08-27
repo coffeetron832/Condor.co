@@ -318,7 +318,7 @@ body {
 
 
 /* ==========================================
-   7. DIRECTORIO EN GRID (SIN RECUADROS NEGROS)
+   7. DIRECTORIO EN GRID
    ========================================== */
 
 .categories-section {
@@ -343,15 +343,16 @@ body {
     grid-column: 1 / -1;
 }
 
-/* Botón transparente sin recuadro negro */
+/* Botón transparente por defecto */
 .category-trigger-btn {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 4px;
+    padding: 8px 10px;
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
+    border-radius: 6px;
     box-shadow: none;
     color: var(--text-color);
     font-family: Arial, Helvetica, sans-serif;
@@ -359,15 +360,15 @@ body {
     font-weight: 500;
     cursor: pointer;
     touch-action: manipulation;
-    transition: color 0.2s ease, transform 0.15s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
     text-align: left;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
+/* Fondo negro sutil solo en Hover */
 .category-trigger-btn:hover {
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    background: var(--card-hover-bg);
+    border-color: rgba(255, 255, 255, 0.05);
     color: var(--link-color);
     transform: translateY(-1px);
 }
@@ -643,7 +644,7 @@ dialog[open]::backdrop {
     }
 
     .category-trigger-btn {
-        padding: 8px 0;
+        padding: 8px 6px;
         font-size: 13px;
     }
 
