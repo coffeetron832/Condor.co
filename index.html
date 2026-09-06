@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>24col - Buscador y directorio colombiano</title>
+    <title>24col - Directorio colombiano</title>
     
     <!-- Políticas de Seguridad (CSP) permitiendo Lucide Icons -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://es.wikipedia.org https://www.wikidata.org https://www.datos.gov.co;">
@@ -40,25 +40,6 @@
 
             <!-- Crédito de la imagen dinámico (Izquierda) -->
             <div id="imageCredit" class="header-credit"></div>
-
-            <!-- Buscador Integrado Sutil (Centro) -->
-            <div class="header-search-container" style="flex: 1; max-width: 400px; position: relative;">
-                <form id="searchForm" action="resultados.html" method="GET" style="display: flex; gap: 6px; align-items: center; margin: 0;">
-                    <div class="search-box" style="position: relative; flex: 1; display: flex; align-items: center;">
-                        <i data-lucide="search" class="search-icon" style="position: absolute; left: 10px; width: 14px; height: 14px; color: var(--text-secondary);"></i>
-                        <input type="text" id="searchInput" name="q" class="search-input" placeholder="¿Qué quieres buscar hoy?" autocomplete="off" maxlength="100" required style="width: 100%; padding: 6px 10px 6px 30px; font-size: 13px; font-family: inherit; background-color: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); border-radius: 6px; outline: none;">
-                    </div>
-                    <button type="submit" id="searchBtn" class="search-btn" style="padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--text-color); background-color: var(--card-bg); border: 1px solid var(--input-border); border-radius: 6px; cursor: pointer; white-space: nowrap;">
-                        Buscar
-                    </button>
-                </form>
-
-                <div id="noResultsMsg" style="display: none; position: absolute; top: 100%; left: 0; right: 0; padding: 8px; text-align: center; font-size: 12px; color: var(--text-secondary); background: var(--modal-bg); border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; z-index: 1000;">
-                    No se encontraron enlaces en el directorio local.
-                </div>
-
-                <ul id="webSearchResults" class="web-search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0; list-style: none; padding: 0; margin: 4px 0 0 0; background: var(--modal-bg); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow-color); z-index: 1000;"></ul>
-            </div>
 
             <!-- Nav Extremo Derecho: TRM y Clima -->
             <nav class="header-nav">
@@ -370,7 +351,6 @@
 
     <script src="data.js"></script>
     <script src="script.js"></script>
-    <script src="js/busqueda-wiki.js"></script>
     <script src="js/clima-dolar.js"></script>
 </body>
 </html>
