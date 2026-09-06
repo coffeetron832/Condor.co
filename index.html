@@ -5,30 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>24col - Directorio colombiano</title>
     
-    <!-- Políticas de Seguridad (CSP) permitiendo Lucide Icons -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://formsubmit.co https://api.exchangerate-api.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://es.wikipedia.org https://www.wikidata.org https://www.datos.gov.co;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="X-Frame-Options" content="DENY">
     
-    <!-- Importación de Google Fonts: Archivo Black -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
 
-    <!-- Favicon tradicional para navegadores antiguos -->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 
-    <!-- Favicons en formato PNG para navegadores modernos -->
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
 
-    <!-- Icono para dispositivos Apple (iOS) -->
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 
-    <!-- Manifest de la PWA para Android/Chrome -->
     <link rel="manifest" href="assets/site.webmanifest">
 
-    <!-- CDN Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="estilos.css">
@@ -38,10 +31,8 @@
     <header class="site-header">
         <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
 
-            <!-- Crédito de la imagen dinámico (Izquierda) -->
             <div id="imageCredit" class="header-credit"></div>
 
-            <!-- Nav Extremo Derecho: TRM y Clima -->
             <nav class="header-nav">
                 <div id="heroWidgetBar" class="hero-widget-bar" style="border-radius: 0; background: transparent; border: none;">
                     <span class="widget-item" id="heroTrmItem" title="Tasa Representativa del Mercado">
@@ -58,21 +49,17 @@
         </div>
     </header>
 
-    <!-- WRAPPER PRINCIPAL -->
     <div class="container">
         <main class="main-content">
 
-            <!-- HERO MINIMALISTA -->
             <section class="hero-section">
                 <div class="hero-container">
-                    <!-- Título de marca centralizado -->
                     <div class="hero-brand-title">
                         <h1 class="hero-title-text">24col</h1>
                     </div>
                 </div>
             </section>
 
-            <!-- DIRECTORIO DE SERVICIOS (DISPOSICIÓN EN 2 COLUMNAS) -->
             <section class="categories-section">
                 <ul class="categories-list">
                     <li>
@@ -95,6 +82,14 @@
                         <button class="category-trigger-btn" data-modal-target="modal-supers">
                             <i data-lucide="building-2" class="btn-icon"></i>
                             <span class="btn-text">Superintendencias</span>
+                            <i data-lucide="chevron-right" class="btn-arrow"></i>
+                        </button>
+                    </li>
+
+                    <li>
+                        <button class="category-trigger-btn" data-modal-target="modal-jobs">
+                            <i data-lucide="briefcase" class="btn-icon"></i>
+                            <span class="btn-text">Empleo y Trabajo</span>
                             <i data-lucide="chevron-right" class="btn-arrow"></i>
                         </button>
                     </li>
@@ -123,7 +118,7 @@
                         </button>
                     </li>
 
-                    <li class="grid-span-full">
+                    <li>
                         <button class="category-trigger-btn" data-modal-target="modal-mobility">
                             <i data-lucide="car" class="btn-icon"></i>
                             <span class="btn-text">Movilidad y Tránsito Local</span>
@@ -136,9 +131,6 @@
         </main>
     </div>
 
-    <!-- MODALES DE CONTENIDO -->
-
-    <!-- MODAL 1: Trámites Nacionales -->
     <dialog id="modal-national" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="landmark" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Trámites Nacionales</h3>
@@ -163,7 +155,6 @@
         </div>
     </dialog>
 
-    <!-- MODAL 2: Dólar TRM -->
     <dialog id="modal-trm" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="dollar-sign" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Dólar HOY (TRM Colombia)</h3>
@@ -179,7 +170,6 @@
         </div>
     </dialog>
 
-    <!-- MODAL 3: Protección al Consumidor -->
     <dialog id="modal-consumer" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="shield-check" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Protección al Consumidor y Reclamos</h3>
@@ -219,7 +209,6 @@
         </div>
     </dialog>
 
-    <!-- MODAL 4: Superintendencias -->
     <dialog id="modal-supers" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="building-2" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Superintendencias de Colombia</h3>
@@ -259,7 +248,45 @@
         </div>
     </dialog>
 
-    <!-- MODAL 5: Clima -->
+    <dialog id="modal-jobs" class="category-modal">
+        <div class="modal-header">
+            <h3><i data-lucide="briefcase" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Portales de Empleo y Trabajo</h3>
+            <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ul class="national-links-list">
+                <li class="searchable-item">
+                    <a href="https://www.elempleo.com/co/" target="_blank" rel="noopener noreferrer">elEmpleo.com</a> 
+                    <span class="link-desc">- vacantes locales, registro y envío de hoja de vida</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://co.computrabajo.com" target="_blank" rel="noopener noreferrer">CompuTrabajo Colombia</a> 
+                    <span class="link-desc">- ofertas de empleo por ciudades y sectores laborales</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.linkedin.com/jobs/" target="_blank" rel="noopener noreferrer">LinkedIn Jobs</a> 
+                    <span class="link-desc">- red profesional para vacantes corporativas y networking</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://co.indeed.com" target="_blank" rel="noopener noreferrer">Indeed Colombia</a> 
+                    <span class="link-desc">- buscador global de empleo y evaluaciones de empresas</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://ape.sena.edu.co" target="_blank" rel="noopener noreferrer">Agencia Pública de Empleo (SENA)</a> 
+                    <span class="link-desc">- portal oficial del estado para vacantes y convocatorias</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.serviciodeempleo.gov.co" target="_blank" rel="noopener noreferrer">Unidad del Servicio de Empleo</a> 
+                    <span class="link-desc">- red de prestadores autorizados y orientación laboral</span>
+                </li>
+                <li class="searchable-item">
+                    <a href="https://www.magneto365.com/co" target="_blank" rel="noopener noreferrer">Magneto Global</a> 
+                    <span class="link-desc">- plataforma moderna de reclutamiento y vacantes masivas</span>
+                </li>
+            </ul>
+        </div>
+    </dialog>
+
     <dialog id="modal-weather" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="cloud-sun" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Clima por Municipio</h3>
@@ -284,7 +311,6 @@
         </div>
     </dialog>
 
-    <!-- MODAL 6: Líneas de Emergencia -->
     <dialog id="modal-emergency" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="siren" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Líneas de Emergencia Nacional</h3>
@@ -303,7 +329,6 @@
         </div>
     </dialog>
 
-    <!-- MODAL 7: Impuestos Regionales -->
     <dialog id="modal-taxes" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="file-text" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Impuestos Regionales</h3>
@@ -315,7 +340,6 @@
         </div>
     </dialog>
 
-    <!-- MODAL 8: Servicios Públicos -->
     <dialog id="modal-utilities" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="droplet" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Servicios Públicos y Alcaldías</h3>
@@ -327,7 +351,6 @@
         </div>
     </dialog>
 
-    <!-- MODAL 9: Movilidad -->
     <dialog id="modal-mobility" class="category-modal">
         <div class="modal-header">
             <h3><i data-lucide="car" style="width:18px; vertical-align:middle; margin-right:4px;"></i> Movilidad y Tránsito Local</h3>
